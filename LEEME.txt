@@ -1,0 +1,33 @@
+MÓDULO DE PROYECTOS — actualización
+
+CORRECCIÓN
+- Arregla el error al crear proyecto (created_by): ahora guarda el id numérico del
+  admin (tu User usa el correo como identificador de auth). Ya crea sin problema.
+
+MEJORAS
+1) Proyecto completamente editable (datos + editar/eliminar cada avance; el % se
+   recalcula al avance más reciente).
+2) Costo OPCIONAL (si se deja vacío, el vecino ve "Sin costo definido").
+3) Evidencia (foto) OPCIONAL al registrar/editar avance, con zona de carga estilizada
+   (mismo patrón que las demás fotos del sistema). jpg/png/webp, máx 4 MB.
+
+NOTIFICACIONES (push + campana a vecinos activos)
+- Cuando el proyecto PASA a "En proceso" (al crearlo así o al editarlo a ese estado).
+- Cuando se publica un AVANCE.
+- No notifica al crear "Por iniciar", ni al re-guardar un proyecto que ya estaba en proceso.
+
+ARCHIVOS (extraer en la raíz, reemplaza/actualiza):
+- app/Http/Controllers/Administrador/ProyectoController.php
+- app/Models/Proyecto.php
+- app/Models/ProyectoAvance.php
+- database/migrations/2026_08_25_090000_create_proyectos_tables.php
+- resources/views/administrador/proyectos/ver.blade.php
+- resources/views/usuario/proyectos/index.blade.php
+- resources/views/usuario/proyectos/ver.blade.php
+- routes/web.php
+
+PASOS EN CPANEL:
+1. Extraer el zip en la raíz (sobrescribe).
+2. https://alameda-condominio.com.mx/limpiar-cache/admin123
+3. https://alameda-condominio.com.mx/migrar/admin123
+   (agrega columna 'foto' y vuelve 'costo' opcional; idempotente, no borra datos)
