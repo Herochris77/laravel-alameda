@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Detallepago;
 use App\Models\Estacionamiento;
 use App\Models\Reserva;
+use App\Models\ServicioRecurrente;
+use App\Models\User;
 use App\Notifications\NotificacionGenerica;
 use App\Services\MailService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class CronjobController extends Controller
 {
@@ -19,6 +22,7 @@ class CronjobController extends Controller
             'pagos' => ['enviados' => 0, 'errores' => 0],
             'reservaciones' => ['enviados' => 0, 'errores' => 0],
             'estacionamientos' => ['enviados' => 0, 'errores' => 0],
+            'servicios' => ['enviados' => 0, 'errores' => 0],
         ];
 
         $manana = Carbon::tomorrow()->startOfDay();
@@ -27,11 +31,13 @@ class CronjobController extends Controller
         $this->notificarPagosProximos($resultados);
         $this->notificarReservacionesProximas($manana, $mananaFin, $resultados);
         $this->notificarEstacionamientosOcupados($resultados);
+        $this->notificarServiciosPorVencer($resultados);
 
         Log::info('Cronjob notificaciones diarias ejecutado', [
             'pagos_notificados' => $resultados['pagos']['enviados'],
             'reservaciones_notificadas' => $resultados['reservaciones']['enviados'],
             'estacionamientos_recordados' => $resultados['estacionamientos']['enviados'],
+            'servicios_recordados' => $resultados['servicios']['enviados'],
         ]);
 
         return response()->json([
@@ -223,6 +229,145 @@ class CronjobController extends Controller
             } catch (\Exception $e) {
                 Log::error("Error al notificar estacionamiento ocupado a usuario {$usuario->id}: ".$e->getMessage());
                 $resultados['estacionamientos']['errores']++;
+            }
+        }
+    }
+
+    /**
+     * Avisa a la tesorería de los servicios que están por vencer.
+     *
+     * Cada servicio define con cuántos días de anticipación quiere el aviso
+     * (uno por omisión). Los vencidos se siguen recordando todos los días,
+     * porque el olvido es justo lo que este módulo intenta evitar.
+     *
+     * El aviso se marca con la fecha en `ultimo_aviso`: si el cron corre dos
+     * veces el mismo día, el segundo no vuelve a escribir ni a mandar correo.
+     */
+    private function notificarServiciosPorVencer(array &$resultados): void
+    {
+        if (! Schema::hasTable('servicios_recurrentes')) {
+            return;
+        }
+
+        $destinatarios = $this->tesoreria();
+
+        if ($destinatarios->isEmpty()) {
+            return;
+        }
+
+        $hoy = Carbon::today();
+
+        $servicios = ServicioRecurrente::activos()
+            ->whereNotNull('proximo_vencimiento')
+            ->get()
+            ->filter(function ($s) use ($hoy) {
+                // Ya se avisó hoy de este servicio.
+                if ($s->ultimo_aviso && $s->ultimo_aviso->isSameDay($hoy)) {
+                    return false;
+                }
+
+                return in_array($s->estatus(), ['vencido', 'hoy', 'por_vencer'], true);
+            });
+
+        foreach ($servicios as $servicio) {
+            try {
+                $this->avisarServicio($servicio, $destinatarios);
+
+                $servicio->update(['ultimo_aviso' => $hoy->toDateString()]);
+
+                $resultados['servicios']['enviados']++;
+            } catch (\Exception $e) {
+                Log::error("Error al notificar servicio {$servicio->id}: ".$e->getMessage());
+                $resultados['servicios']['errores']++;
+            }
+        }
+    }
+
+    /**
+     * A quién le toca enterarse: el tesorero.
+     *
+     * Si todavía no hay nadie con el cargo, el aviso va a toda la mesa, que
+     * es el mismo criterio de transición que usa User::puedeGestionarPagos().
+     */
+    private function tesoreria()
+    {
+        $tesoreros = User::where('cargo', 'tesorero')
+            ->where('estado', 1)
+            ->whereIn('rol', ['administrador', 'super-administrador'])
+            ->get();
+
+        if ($tesoreros->isNotEmpty()) {
+            return $tesoreros;
+        }
+
+        return User::whereIn('rol', ['administrador', 'super-administrador'])
+            ->where('estado', 1)
+            ->get();
+    }
+
+    private function avisarServicio(ServicioRecurrente $servicio, $destinatarios): void
+    {
+        $estatus = $servicio->estatus();
+        $dias = abs((int) $servicio->diasRestantes());
+        $vence = $servicio->proximo_vencimiento->translatedFormat('j \d\e F \d\e Y');
+        $monto = '$'.number_format($servicio->monto_estimado, 2);
+
+        [$icono, $encabezado, $urgencia] = match ($estatus) {
+            'vencido' => [
+                '🔴',
+                $dias === 1 ? 'Venció ayer' : "Venció hace {$dias} días",
+                'Este pago ya está vencido. Puede estar generando recargos.',
+            ],
+            'hoy' => [
+                '⚠️',
+                'Vence hoy',
+                'Hoy es el último día para pagarlo sin recargo.',
+            ],
+            default => [
+                '🗓️',
+                $dias === 1 ? 'Vence mañana' : "Vence en {$dias} días",
+                'Prepara el pago para no dejarlo caer en recargo.',
+            ],
+        };
+
+        $referencia = $servicio->referencia
+            ? "<strong>Referencia:</strong> {$servicio->referencia}<br>"
+            : '';
+
+        $mensajeCorreo = "{$urgencia}<br><br>
+                          <strong>Servicio:</strong> {$servicio->nombre}<br>
+                          ".($servicio->proveedor ? "<strong>Proveedor:</strong> {$servicio->proveedor}<br>" : '')."
+                          {$referencia}
+                          <strong>Monto estimado:</strong> {$monto}<br>
+                          <strong>Vencimiento:</strong> {$vence}<br>
+                          <strong>Periodicidad:</strong> {$servicio->etiquetaPeriodicidad()}<br>
+                          <strong>Forma de pago:</strong> ".(ServicioRecurrente::FORMAS_PAGO[$servicio->forma_pago] ?? '—').'<br>'
+                          .($servicio->notas ? "<br><strong>Notas:</strong> {$servicio->notas}" : '')."<br><br>
+                          Cuando lo pagues, regístralo en el módulo de Servicios para que el
+                          vencimiento avance al siguiente periodo y deje de avisarte.";
+
+        foreach ($destinatarios as $usuario) {
+            // Centro de notificaciones y webpush: siempre. Es la agenda de
+            // trabajo del tesorero, no una difusión que convenga silenciar.
+            $usuario->notify(new NotificacionGenerica(
+                "{$icono} {$encabezado}: {$servicio->nombre}",
+                "{$servicio->nombre} por <strong>{$monto}</strong> vence el {$vence}.",
+                $urgencia,
+                'administrador/servicio',
+                'administrador/servicio',
+                null,
+                '<i class="calendar times icon"></i>'
+            ));
+
+            // El correo sí respeta la preferencia de cada quien.
+            if ($usuario->emails == 1) {
+                MailService::enviar(
+                    $usuario->correo,
+                    subject: "{$icono} {$encabezado}: {$servicio->nombre} - Alameda",
+                    titulo: "{$encabezado}: {$servicio->nombre}",
+                    mensaje: $mensajeCorreo,
+                    origen: 'cronjob.servicios'
+                );
             }
         }
     }

@@ -44,6 +44,15 @@ class DashboardController extends Controller
         return (int) User::where('tipo', 'dueño')->whereNotNull('casa')->distinct()->count('casa');
     }
 
+    /**
+     * Cobranza del mes: criterio DEVENGADO.
+     *
+     * Mide qué tanto de lo que VENCE este mes ya está cobrado, así que aquí
+     * el filtro por `vencimiento` es el correcto y no debe cambiarse por
+     * `fecha_pago`. Es la contraparte de recaudacion6meses(), que sí mide
+     * flujo de efectivo. Los dos números responden preguntas distintas y no
+     * tienen por qué coincidir.
+     */
     private function cobranza(): array
     {
         try {
@@ -145,17 +154,32 @@ class DashboardController extends Controller
     private function recaudacion6meses(): array
     {
         try {
-            $detalles = Detallepago::with('pago')->where('estado', 'pagado')->get();
+            // Recaudación es dinero que entró: un recibo liquidado con saldo a
+            // favor no lo es, el ingreso se registró cuando llegó ese dinero.
+            $detalles = Detallepago::with('pago')
+                ->where('estado', 'pagado')
+                ->sinLiquidacionesConSaldo()
+                ->get();
             $meses = [];
             for ($i = 5; $i >= 0; $i--) {
                 $m = Carbon::now()->subMonths($i);
                 $meses[$m->format('Y-m')] = ['label' => $m->translatedFormat('M'), 'total' => 0];
             }
             foreach ($detalles as $d) {
-                if (! $d->pago || ! $d->pago->vencimiento) {
+                if (! $d->pago) {
                     continue;
                 }
-                $key = Carbon::parse($d->pago->vencimiento)->format('Y-m');
+
+                // Recaudación es FLUJO DE EFECTIVO: el mes en que entró el
+                // dinero, no el mes al que corresponde la cuota. Antes se
+                // agrupaba por vencimiento, así que un pago atrasado (o
+                // adelantado) se contaba en un mes en el que no hubo ingreso.
+                $fecha = $d->fecha_pago
+                    ? Carbon::parse($d->fecha_pago)
+                    : Carbon::parse($d->updated_at);
+
+                $key = $fecha->format('Y-m');
+
                 if (isset($meses[$key])) {
                     $meses[$key]['total'] += $d->cantidad_pago ? (float) $d->cantidad_pago : (float) $d->pago->cantidad;
                 }

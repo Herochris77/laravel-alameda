@@ -64,12 +64,57 @@
            HEADER
         ===================================================== */
 
+        /*
+         * Acceso al estado de cuenta. Va en la cabecera y no entre los
+         * recibos porque no es un recibo: es el resumen de todos.
+         */
+        .pay-estado-cuenta {
+            position: relative;
+            z-index: 2;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .16);
+            border: 1px solid rgba(255, 255, 255, .34);
+            color: #fff;
+            text-decoration: none;
+            transition: background .15s, transform .15s;
+            flex-shrink: 0;
+        }
+
+        .pay-estado-cuenta:hover {
+            background: rgba(255, 255, 255, .26);
+            transform: translateY(-1px);
+            color: #fff;
+        }
+
+        .pay-estado-cuenta i { font-size: 1.25rem; margin: 0; }
+
+        .pay-estado-cuenta span { display: flex; flex-direction: column; line-height: 1.3; }
+
+        .pay-estado-cuenta strong { font-size: .88rem; font-weight: 700; }
+
+        .pay-estado-cuenta small { font-size: .74rem; opacity: .86; }
+
+        @media (max-width: 640px) {
+            .pay-estado-cuenta {
+                margin: 14px 0 0;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
         .pagos-header {
             position: relative;
 
             overflow: hidden;
 
             display: flex;
+
+            flex-wrap: wrap;
 
             align-items: center;
 
@@ -1857,6 +1902,161 @@
 
         }
 
+        /* ===== MOTIVO DEL RECHAZO ===== */
+
+        .motivo-rechazo {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+        }
+
+        .motivo-rechazo i {
+            color: #dc2626;
+            margin: 2px 0 0 !important;
+            flex-shrink: 0;
+        }
+
+        .motivo-rechazo strong {
+            display: block;
+            color: #991b1b;
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            margin-bottom: 2px;
+        }
+
+        .motivo-rechazo p {
+            margin: 0;
+            color: #7f1d1d;
+            font-size: .88rem;
+            line-height: 1.5;
+        }
+
+        /* ===== SALDO A FAVOR ===== */
+
+        .saldo-favor-card {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%);
+            border: 1px solid #a7f3d0;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+        }
+
+        .saldo-favor-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .saldo-favor-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .saldo-favor-icon i {
+            color: #fff;
+            font-size: 1.4rem;
+            margin: 0 !important;
+        }
+
+        .saldo-favor-label {
+            font-size: .8rem;
+            font-weight: 600;
+            color: #047857;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+
+        .saldo-favor-monto {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #065f46;
+            line-height: 1.15;
+        }
+
+        .saldo-favor-sub {
+            font-size: .88rem;
+            color: #0f766e;
+        }
+
+        .saldo-favor-detalle {
+            margin-top: 14px;
+            border-top: 1px solid #a7f3d0;
+            padding-top: 12px;
+        }
+
+        .saldo-favor-detalle summary {
+            cursor: pointer;
+            font-size: .88rem;
+            font-weight: 600;
+            color: #047857;
+        }
+
+        .saldo-favor-detalle ul {
+            list-style: none;
+            margin: 10px 0 0;
+            padding: 0;
+        }
+
+        .saldo-favor-detalle li {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(167, 243, 208, .55);
+            font-size: .87rem;
+        }
+
+        .saldo-favor-detalle li:last-child {
+            border-bottom: 0;
+        }
+
+        .saldo-favor-detalle .mov-fecha {
+            color: #6b7280;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .saldo-favor-detalle .mov-desc {
+            color: #374151;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .saldo-favor-detalle .mov-monto {
+            font-weight: 600;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .saldo-favor-detalle .mov-monto.positivo {
+            color: #059669;
+        }
+
+        .saldo-favor-detalle .mov-monto.negativo {
+            color: #b45309;
+        }
+
+        @media (max-width: 480px) {
+            .saldo-favor-monto {
+                font-size: 1.55rem;
+            }
+
+            .saldo-favor-detalle li {
+                flex-wrap: wrap;
+            }
+        }
     </style>
 
 
@@ -1949,6 +2149,14 @@
                     </div>
 
                 </div>
+
+                <a href="{{ route('usuario.pago.estadoCuenta') }}" class="pay-estado-cuenta">
+                    <i class="file alternate outline icon"></i>
+                    <span>
+                        <strong>Mi estado de cuenta</strong>
+                        <small>Todo tu historial en un PDF</small>
+                    </span>
+                </a>
 
             </section>
 
@@ -2177,6 +2385,68 @@
                 </div>
 
             </div>
+
+
+            {{-- =================================================
+                 SALDO A FAVOR
+                 Solo aparece si el vecino tiene dinero a su favor.
+            ================================================== --}}
+
+            @if(($saldoAFavor ?? 0) > 0)
+                <div class="saldo-favor-card">
+
+                    <div class="saldo-favor-head">
+
+                        <div class="saldo-favor-icon">
+                            <i class="piggy bank icon"></i>
+                        </div>
+
+                        <div style="min-width:0; flex:1;">
+
+                            <div class="saldo-favor-label">
+                                Tienes saldo a favor
+                            </div>
+
+                            <div class="saldo-favor-monto">
+                                ${{ number_format($saldoAFavor, 2) }}
+                            </div>
+
+                            <div class="saldo-favor-sub">
+                                Se aplicará solo a tu próxima cuota. No necesitas hacer nada.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    @if(($movimientosSaldo ?? collect())->isNotEmpty())
+                        <details class="saldo-favor-detalle">
+
+                            <summary>Ver movimientos</summary>
+
+                            <ul>
+                                @foreach($movimientosSaldo as $mov)
+                                    <li>
+                                        <span class="mov-fecha">
+                                            {{ $mov->created_at->format('d/m/Y') }}
+                                        </span>
+
+                                        <span class="mov-desc">
+                                            {{ $mov->descripcion }}
+                                        </span>
+
+                                        <span class="mov-monto {{ $mov->efecto() >= 0 ? 'positivo' : 'negativo' }}">
+                                            {{ $mov->efecto() >= 0 ? '+' : '−' }}${{ number_format(abs($mov->efecto()), 2) }}
+                                        </span>
+                                    </li>
+                                @endforeach
+                            </ul>
+
+                        </details>
+                    @endif
+
+                </div>
+            @endif
 
 
             {{-- =================================================
@@ -2786,6 +3056,20 @@
                                         data-cantidad="{{
                                             $montoOriginal
                                         }}"
+                                        {{-- Para calcular el recargo según la
+                                             fecha que capture el vecino, no
+                                             según el día en que sube. --}}
+                                        data-recargo-pct="{{
+                                            $pagoPrincipal->recargo_pct ?? 0
+                                        }}"
+                                        data-vencimiento="{{
+                                            $pagoPrincipal->vencimiento
+                                                ? \Carbon\Carbon::parse($pagoPrincipal->vencimiento)->format('Y-m-d')
+                                                : ''
+                                        }}"
+                                        data-motivo-rechazo="{{
+                                            $pago->comentario_rechazo ?? ''
+                                        }}"
                                     >
 
                                         <i class="upload icon"></i>
@@ -2930,6 +3214,20 @@
                                         }}"
                                         data-cantidad="{{
                                             $montoOriginal
+                                        }}"
+                                        {{-- Para calcular el recargo según la
+                                             fecha que capture el vecino, no
+                                             según el día en que sube. --}}
+                                        data-recargo-pct="{{
+                                            $pagoPrincipal->recargo_pct ?? 0
+                                        }}"
+                                        data-vencimiento="{{
+                                            $pagoPrincipal->vencimiento
+                                                ? \Carbon\Carbon::parse($pagoPrincipal->vencimiento)->format('Y-m-d')
+                                                : ''
+                                        }}"
+                                        data-motivo-rechazo="{{
+                                            $pago->comentario_rechazo ?? ''
                                         }}"
                                     >
 
@@ -3166,6 +3464,25 @@
 
                                     </div>
 
+
+                                    {{-- Motivo que escribió tesorería. Es lo
+                                         que el vecino necesita para saber qué
+                                         corregir antes de volver a subir. --}}
+                                    @if($pago->comentario_rechazo)
+
+                                        <div class="motivo-rechazo">
+
+                                            <i class="comment alternate outline icon"></i>
+
+                                            <div>
+                                                <strong>Motivo del rechazo</strong>
+                                                <p>{{ $pago->comentario_rechazo }}</p>
+                                            </div>
+
+                                        </div>
+
+                                    @endif
+
                                 </div>
 
 
@@ -3192,6 +3509,20 @@
                                         }}"
                                         data-cantidad="{{
                                             $montoOriginal
+                                        }}"
+                                        {{-- Para calcular el recargo según la
+                                             fecha que capture el vecino, no
+                                             según el día en que sube. --}}
+                                        data-recargo-pct="{{
+                                            $pagoPrincipal->recargo_pct ?? 0
+                                        }}"
+                                        data-vencimiento="{{
+                                            $pagoPrincipal->vencimiento
+                                                ? \Carbon\Carbon::parse($pagoPrincipal->vencimiento)->format('Y-m-d')
+                                                : ''
+                                        }}"
+                                        data-motivo-rechazo="{{
+                                            $pago->comentario_rechazo ?? ''
                                         }}"
                                     >
 
@@ -3328,6 +3659,15 @@
                 enctype="multipart/form-data"
             >
 
+                {{-- Motivo del rechazo anterior, si lo hubo. --}}
+                <div
+                    id="motivo-rechazo-modal"
+                    style="display:none; margin-bottom:16px; padding:12px 14px;
+                           background:#fef2f2; border:1px solid #fecaca;
+                           border-radius:10px; color:#991b1b; font-size:.88rem;
+                           line-height:1.5;"
+                ></div>
+
                 @csrf
 
 
@@ -3449,6 +3789,55 @@
 
                 </div>
 
+
+                <div
+                    class="field"
+                    style="margin-top:16px;"
+                >
+
+                    <label>
+                        ¿Qué día realizaste el pago?
+                    </label>
+
+
+                    <div
+                        class="ui left icon input"
+                        style="width:100%;"
+                    >
+
+                        <i class="calendar alternate outline icon"></i>
+
+
+                        <input
+                            type="date"
+                            name="fecha_pago"
+                            id="fecha-pago"
+                            max="{{ now()->format('Y-m-d') }}"
+                            value="{{ now()->format('Y-m-d') }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <small style="color:#94a3b8; display:block; margin-top:6px;">
+                        Usa la fecha que aparece en tu comprobante, no la de hoy.
+                        Si transferiste a tiempo, no importa que subas el
+                        comprobante después.
+                    </small>
+
+
+                    {{-- Aviso de recargo: aparece solo si la fecha capturada
+                         es posterior al vencimiento del recibo. --}}
+                    <div
+                        id="aviso-recargo"
+                        style="display:none; margin-top:10px; padding:10px 12px;
+                               background:#fffbeb; border:1px solid #fcd34d;
+                               border-radius:10px; color:#92400e; font-size:.86rem;"
+                    ></div>
+
+                </div>
+
             </form>
 
         </div>
@@ -3539,6 +3928,19 @@
 
 
                 /*
+                 * Datos del recibo abierto en el modal, para calcular el
+                 * recargo segun la fecha que capture el vecino.
+                 */
+                let recargoPct = 0;
+
+                let cuotaBase = 0;
+
+                let vencimientoRecibo = '';
+
+                let montoEditadoPorUsuario = false;
+
+
+                /*
                  * ==================================================
                  * MODALES
                  * ==================================================
@@ -3587,8 +3989,59 @@
                             .val(id);
 
 
-                        $('#cantidad-pago')
-                            .val(cantidad);
+                        /*
+                         * Datos del recibo para calcular el recargo.
+                         */
+                        recargoPct =
+                            parseFloat(
+                                $(this).data('recargo-pct')
+                            ) || 0;
+
+                        cuotaBase =
+                            parseFloat(cantidad) || 0;
+
+                        vencimientoRecibo =
+                            $(this).data('vencimiento') || '';
+
+
+                        /*
+                         * Si el comprobante anterior fue rechazado, el motivo
+                         * se muestra aqui mismo: es justo lo que el vecino
+                         * necesita tener enfrente al volver a subirlo.
+                         */
+                        const motivo =
+                            $(this).data('motivo-rechazo') || '';
+
+                        if (motivo) {
+
+                            $('#motivo-rechazo-modal')
+                                .html(
+                                    '<strong>Tu comprobante anterior fue rechazado:</strong><br>'
+                                    + $('<div>').text(motivo).html()
+                                )
+                                .show();
+
+                        } else {
+
+                            $('#motivo-rechazo-modal').hide();
+
+                        }
+
+
+                        /*
+                         * La fecha arranca en hoy, pero el vecino debe
+                         * poder cambiarla si pagó días antes.
+                         */
+                        $('#fecha-pago')
+                            .val(
+                                '{{ now()->format('Y-m-d') }}'
+                            );
+
+
+                        /*
+                         * El monto sugerido depende de la fecha, no de hoy.
+                         */
+                        actualizarMontoSugerido();
 
 
                         limpiarArchivo();
@@ -3599,6 +4052,108 @@
                                 'show'
                             );
 
+                    }
+                );
+
+
+                /*
+                 * ==================================================
+                 * MONTO SUGERIDO SEGUN LA FECHA DEL PAGO
+                 * ==================================================
+                 *
+                 * El recargo por mora se calcula contra la fecha en que el
+                 * vecino REALIZO la transferencia, no contra la fecha en que
+                 * sube el comprobante. Quien transfirio a tiempo y captura dos
+                 * dias despues no debe recargo, y el formulario no debe
+                 * sugerirle un monto mayor.
+                 *
+                 * El monto es solo una sugerencia: el vecino siempre puede
+                 * capturar lo que realmente pago.
+                 */
+
+                function actualizarMontoSugerido() {
+
+                    const fecha =
+                        $('#fecha-pago').val();
+
+                    let recargo = 0;
+
+
+                    if (
+                        recargoPct > 0
+                        && vencimientoRecibo
+                        && fecha
+                        && fecha > vencimientoRecibo
+                    ) {
+
+                        recargo =
+                            Math.round(
+                                cuotaBase * recargoPct
+                            ) / 100;
+
+                    }
+
+
+                    const total =
+                        Math.round(
+                            (cuotaBase + recargo) * 100
+                        ) / 100;
+
+
+                    /*
+                     * Solo se reescribe el monto si el vecino no lo ha
+                     * tocado, para no pisar una cantidad que el haya
+                     * capturado a proposito.
+                     */
+                    if (!montoEditadoPorUsuario) {
+
+                        $('#cantidad-pago')
+                            .val(
+                                total.toFixed(2)
+                            );
+
+                    }
+
+
+                    if (recargo > 0) {
+
+                        $('#aviso-recargo')
+                            .html(
+                                'Esa fecha es posterior al vencimiento ('
+                                + vencimientoRecibo
+                                + '), por lo que aplica un recargo de <strong>$'
+                                + recargo.toFixed(2)
+                                + '</strong>. Total: <strong>$'
+                                + total.toFixed(2)
+                                + '</strong> ($'
+                                + cuotaBase.toFixed(2)
+                                + ' de cuota + $'
+                                + recargo.toFixed(2)
+                                + ' de recargo).'
+                            )
+                            .show();
+
+                    } else {
+
+                        $('#aviso-recargo').hide();
+
+                    }
+
+                }
+
+
+                $(document).on(
+                    'change',
+                    '#fecha-pago',
+                    actualizarMontoSugerido
+                );
+
+
+                $(document).on(
+                    'input',
+                    '#cantidad-pago',
+                    function () {
+                        montoEditadoPorUsuario = true;
                     }
                 );
 
@@ -3684,6 +4239,20 @@
                                     '#removeImage'
                                 )
                                 .length
+                        ) {
+                            return;
+                        }
+
+
+                        /*
+                         * El input de archivo vive DENTRO del area. Si el
+                         * clic ya viene de el, no hay que volver a
+                         * dispararlo: el evento burbujea hasta aqui otra
+                         * vez y el handler se llama a si mismo sin fin
+                         * ("Maximum call stack size exceeded").
+                         */
+                        if (
+                            e.target === fileInput[0]
                         ) {
                             return;
                         }
@@ -4024,6 +4593,19 @@
 
                                 alertify.error(
                                     'Ingresa la cantidad'
+                                );
+
+                                return false;
+                            }
+
+
+                            if (
+                                !$('#fecha-pago')
+                                    .val()
+                            ) {
+
+                                alertify.error(
+                                    'Indica la fecha en que realizaste el pago'
                                 );
 
                                 return false;

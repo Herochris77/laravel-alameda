@@ -19,9 +19,20 @@
                     </div>
                 </div>
 
-                <div class="detalle-pagos-hero-pill">
-                    <i class="users icon"></i>
-                    Validación de pagos
+                <div class="detalle-pagos-hero-acciones">
+                    {{-- Reporte de este concepto: quién pagó, cuánto entró
+                         realmente a la cuenta y qué falta por cobrar. --}}
+                    <a href="{{ route('admin.pago.exportarConcepto', $id_pago) }}"
+                       class="btn-exportar-concepto"
+                       title="Descarga un CSV con el detalle de este concepto y los totales de lo que entró a la cuenta. Se abre en Excel.">
+                        <i class="file excel outline icon"></i>
+                        Descargar reporte
+                    </a>
+
+                    <div class="detalle-pagos-hero-pill">
+                        <i class="users icon"></i>
+                        Validación de pagos
+                    </div>
                 </div>
             </div>
         </div>
@@ -254,6 +265,48 @@
                     El usuario no subió comprobante, ingresa el monto con el que se registrará el pago.
                 </p>
             </div>
+
+            <div class="form-group" id="campo-comentario-rechazo" style="display: none;">
+                <label class="form-label">Motivo del rechazo *</label>
+
+                <textarea
+                    name="comentario_rechazo"
+                    id="edit-comentario-rechazo"
+                    class="form-input detalle-input"
+                    rows="3"
+                    maxlength="500"
+                    placeholder="Ej. Registraste que pagaste a tiempo y la transferencia es del 25. Requerimos el pago con recargo."
+                ></textarea>
+
+                <p class="form-help-text">
+                    <i class="info circle icon"></i>
+                    El vecino recibe este texto por correo y en su notificación,
+                    y lo ve en su pantalla al volver a subir el comprobante.
+                    Sé concreto sobre qué debe corregir.
+                </p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Fecha real del pago</label>
+
+                <div class="input-icon-wrapper">
+                    <i class="calendar alternate outline icon"></i>
+                    <input
+                        type="date"
+                        name="fecha_pago"
+                        id="edit-fecha-pago"
+                        class="form-input detalle-input input-with-icon"
+                        max="{{ now()->format('Y-m-d') }}"
+                    >
+                </div>
+
+                <p class="form-help-text">
+                    <i class="info circle icon"></i>
+                    Es la fecha en que el vecino hizo el movimiento, no la de hoy.
+                    De ella depende si el pago cuenta como puntual o tardío.
+                    Déjala vacía para conservar la que ya estaba registrada.
+                </p>
+            </div>
         </form>
     </div>
 
@@ -417,6 +470,39 @@
         font-size: 1rem;
         line-height: 1.45;
         overflow-wrap: anywhere;
+    }
+
+    /* El hero lleva el boton de reporte junto a la etiqueta de validacion. */
+    .detalle-pagos-hero-acciones {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-exportar-concepto {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.92);
+        border: 1px solid rgba(255,255,255,0.35);
+        color: #047857;
+        font-size: 0.86rem;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background .15s ease;
+    }
+
+    .btn-exportar-concepto:hover {
+        background: #ffffff;
+        color: #065f46;
+    }
+
+    .btn-exportar-concepto i {
+        margin: 0 !important;
     }
 
     .detalle-pagos-hero-pill {
@@ -1496,6 +1582,8 @@
             const evidenciaSrc = obtenerSrcEvidencia(pagoHtml);
             const tieneComprobante = Boolean(evidenciaSrc);
             const esTarde = obtenerPagoTarde(detalle);
+            const fechaPagoTexto = extraerTexto(detalle.fecha_pago || '') || 'Sin registrar';
+            const saldoFavor = parseFloat(detalle.saldo_favor || 0) || 0;
 
             const evidenciaButton = tieneComprobante
                 ? `
@@ -1581,10 +1669,22 @@
                             <span>${escapeHtml(cantidadPago)}</span>
                         </div>
 
+                        <div class="detalle-meta-item">
+                            <i class="calendar alternate outline icon"></i>
+                            <span>Pagado: ${escapeHtml(fechaPagoTexto)}</span>
+                        </div>
+
+                        ${saldoFavor > 0 ? `
+                            <div class="detalle-meta-item" title="Dinero que este vecino pagó de más y está disponible para cubrir recibos.">
+                                <i class="piggy bank icon"></i>
+                                <span>Saldo a favor: <strong>$${saldoFavor.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></span>
+                            </div>
+                        ` : ''}
+
                         ${esTarde ? `
                             <div class="detalle-meta-item">
                                 <i class="clock icon"></i>
-                                <span>Pago marcado como tardío porque fue registrado después del vencimiento.</span>
+                                <span>El pago se realizó después de la fecha de vencimiento.</span>
                             </div>
                         ` : ''}
                     </div>
@@ -1604,6 +1704,15 @@
     }
 
     function obtenerPagoTarde(detalle) {
+        /*
+         * El backend ahora envía la puntualidad ya calculada contra la fecha
+         * real del pago. Se usa ese dato cuando viene; el parseo de HTML de
+         * abajo queda solo como respaldo para respuestas antiguas en caché.
+         */
+        if (typeof detalle.es_tarde === 'boolean') {
+            return detalle.es_tarde;
+        }
+
         const pagoHtml = String(detalle.pago || '');
         const estadoHtml = String(detalle.estado || '');
         const textoPago = normalizarTexto(extraerTexto(pagoHtml));
@@ -1815,6 +1924,7 @@
                 usuario + ' ' +
                 pagoTexto + ' ' +
                 cantidadPago + ' ' +
+                extraerTexto(detalle.fecha_pago || '') + ' ' +
                 estadoTexto + ' ' +
                 estado.texto + ' ' +
                 (tieneComprobante ? 'con comprobante' : 'sin comprobante') + ' ' +
@@ -1876,12 +1986,18 @@
         $('#edit-cantidad-pago').val('');
         $('#campo-cantidad-pago').hide();
         $('#edit-cantidad-pago').prop('required', false);
+        $('#edit-fecha-pago').val($btn.data('fecha-pago') || '');
+        $('#edit-comentario-rechazo').val($btn.data('comentario-rechazo') || '');
+
+        // Deja los campos coherentes con el estado que ya trae el recibo,
+        // sin esperar a que el tesorero toque el selector.
+        alternarCamposEstado();
 
         $('#modal-editar').modal('show');
     });
 
-    $('#edit-estado').on('change', function() {
-        const estado = $(this).val();
+    function alternarCamposEstado() {
+        const estado = $('#edit-estado').val();
         const cantidadOriginal = $('#edit-cantidad-original').val();
 
         if (estado === 'pagado' && !cantidadOriginal) {
@@ -1891,7 +2007,19 @@
             $('#campo-cantidad-pago').hide();
             $('#edit-cantidad-pago').prop('required', false);
         }
-    });
+
+        // El motivo solo aplica al rechazar, y ahí es obligatorio: sin él
+        // el vecino no sabe qué corregir antes de volver a subir.
+        if (estado === 'rechazado') {
+            $('#campo-comentario-rechazo').show();
+            $('#edit-comentario-rechazo').prop('required', true);
+        } else {
+            $('#campo-comentario-rechazo').hide();
+            $('#edit-comentario-rechazo').prop('required', false);
+        }
+    }
+
+    $('#edit-estado').on('change', alternarCamposEstado);
 
     $('#form-editar').submit(function(e) {
         e.preventDefault();
@@ -1917,7 +2045,17 @@
                         cargarDetallePagos();
                     });
                 },
-                error: function() {
+                error: function(xhr) {
+                    // Un 422 es un error de captura (por ejemplo, rechazar sin
+                    // escribir el motivo): conviene decir qué falta en vez de
+                    // un mensaje genérico.
+                    const res = xhr.responseJSON;
+
+                    if (xhr.status === 422 && res && res.message) {
+                        alertify.alert(res.header || 'Faltan datos', res.message);
+                        return;
+                    }
+
                     alertify.error('Error al actualizar');
                 },
                 complete: function() {

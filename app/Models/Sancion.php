@@ -21,9 +21,14 @@ class Sancion extends Model
         'comentario',
         'foto_path',
         'pago_path',
+        'fecha_pago',
         'estado',
         'created_by',
         'deleted_by',
+    ];
+
+    protected $casts = [
+        'fecha_pago' => 'date',
     ];
 
     // Sobreescribir el método delete para guardar quien eliminó

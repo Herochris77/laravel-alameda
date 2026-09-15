@@ -318,13 +318,26 @@
                         </div>
                         
                         <div class="ui input" style="width: 100%; margin-bottom: 16px;">
-                            <input type="number" name="cantidad_pago" id="cantidad-pago-detalle" 
-                                   value="{{ $pago->pago->cantidad }}" 
-                                   placeholder="Cantidad pagada" 
-                                   min="0" step="0.01" 
+                            <input type="number" name="cantidad_pago" id="cantidad-pago-detalle"
+                                   value="{{ $pago->pago->cantidad }}"
+                                   placeholder="Cantidad pagada"
+                                   min="0" step="0.01"
                                    style="width: 100%;" required>
                         </div>
-                        
+
+                        <label for="fecha-pago-detalle" style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px;">
+                            ¿Qué día realizaste el pago?
+                        </label>
+                        <div class="ui input" style="width: 100%; margin-bottom: 6px;">
+                            <input type="date" name="fecha_pago" id="fecha-pago-detalle"
+                                   value="{{ optional($pago->fecha_pago)->format('Y-m-d') ?? now()->format('Y-m-d') }}"
+                                   max="{{ now()->format('Y-m-d') }}"
+                                   style="width: 100%;" required>
+                        </div>
+                        <small style="display: block; color: #94a3b8; margin-bottom: 16px;">
+                            Usa la fecha que aparece en tu comprobante, no la de hoy.
+                        </small>
+
                         <button type="submit" class="btn btn-primary" id="btn-subir-detalle">
                             <i class="upload icon"></i>
                             Subir Comprobante
@@ -349,13 +362,26 @@
                         </div>
                         
                         <div class="ui input" style="width: 100%; margin-bottom: 16px;">
-                            <input type="number" name="cantidad_pago" id="cantidad-pago-detalle" 
-                                   value="{{ $pago->pago->cantidad }}" 
-                                   placeholder="Cantidad pagada" 
-                                   min="0" step="0.01" 
+                            <input type="number" name="cantidad_pago" id="cantidad-pago-detalle"
+                                   value="{{ $pago->pago->cantidad }}"
+                                   placeholder="Cantidad pagada"
+                                   min="0" step="0.01"
                                    style="width: 100%;" required>
                         </div>
-                        
+
+                        <label for="fecha-pago-detalle" style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px;">
+                            ¿Qué día realizaste el pago?
+                        </label>
+                        <div class="ui input" style="width: 100%; margin-bottom: 6px;">
+                            <input type="date" name="fecha_pago" id="fecha-pago-detalle"
+                                   value="{{ optional($pago->fecha_pago)->format('Y-m-d') ?? now()->format('Y-m-d') }}"
+                                   max="{{ now()->format('Y-m-d') }}"
+                                   style="width: 100%;" required>
+                        </div>
+                        <small style="display: block; color: #94a3b8; margin-bottom: 16px;">
+                            Usa la fecha que aparece en tu comprobante, no la de hoy.
+                        </small>
+
                         <button type="submit" class="btn btn-primary" id="btn-subir-detalle">
                             <i class="upload icon"></i>
                             Subir Comprobante
@@ -398,7 +424,12 @@ $(document).ready(function() {
             alertify.error('Selecciona un comprobante');
             return false;
         }
-        
+
+        if (!$('#fecha-pago-detalle').val()) {
+            alertify.error('Indica la fecha en que realizaste el pago');
+            return false;
+        }
+
         isSubmitting = true;
         btn.addClass('loading').html('<i class="spinner loading icon"></i> Subiendo...');
         

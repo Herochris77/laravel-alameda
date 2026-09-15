@@ -230,29 +230,29 @@
             border:
                 1px solid var(--border);
 
-            border-radius: 18px;
+            border-radius: 14px;
 
-            padding: 17px;
+            padding: 12px 14px;
 
             box-shadow:
-                0 8px 22px rgba(15,23,42,.05);
+                0 4px 12px rgba(15,23,42,.04);
 
             display: flex;
 
             align-items: center;
 
-            gap: 13px;
+            gap: 10px;
 
             min-width: 0;
         }
 
         .tp-kpi .ic {
-            width: 48px;
-            height: 48px;
+            width: 36px;
+            height: 36px;
 
             flex-shrink: 0;
 
-            border-radius: 14px;
+            border-radius: 10px;
 
             display: flex;
 
@@ -260,7 +260,7 @@
 
             justify-content: center;
 
-            font-size: 1.25rem;
+            font-size: 1rem;
         }
 
         .tp-kpi .ic i {
@@ -291,6 +291,14 @@
                 var(--primary);
         }
 
+        .ic-blue {
+            background:
+                rgba(59,130,246,.12);
+
+            color:
+                #2563eb;
+        }
+
         .tp-kpi-content {
             min-width: 0;
         }
@@ -305,7 +313,7 @@
         }
 
         .tp-kpi .val {
-            font-size: 1.45rem;
+            font-size: 1.25rem;
 
             line-height: 1.05;
 
@@ -318,14 +326,14 @@
         }
 
         .tp-kpi .sub {
-            margin-top: 5px;
+            margin-top: 3px;
 
             color:
                 var(--muted);
 
-            font-size: .69rem;
+            font-size: .68rem;
 
-            line-height: 1.3;
+            line-height: 1.25;
         }
 
         .tp-kpi .sub strong {
@@ -1557,6 +1565,15 @@
                 </div>
 
 
+                {{-- La tarjeta "Pagado por adelantado" se retiró: sumaba todo
+                     lo cobrado por encima de la cuota, mezclando adelantos
+                     reales, la derrama de la puerta pagada en parcialidades y
+                     los recargos por mora. Al lado del saldo del fondo daba a
+                     entender que ese dinero estaba disponible. El adelanto
+                     vigente y exacto se muestra ahora dentro de "Saldo del
+                     fondo", que es donde importa para presupuestar. --}}
+
+
                 {{-- GASTADO --}}
                 <div class="tp-kpi">
 
@@ -1606,8 +1623,28 @@
                             $0
                         </div>
 
-                        <div class="sub">
+                        <div class="sub" id="k-saldo-sub">
                             Ingresos históricos menos egresos
+                        </div>
+
+                        {{-- Parte del dinero en la cuenta son cuotas que
+                             algunos vecinos ya pagaron por adelantado: está
+                             en el banco pero no es del condominio para
+                             gastar. Solo aparece si existe ese compromiso. --}}
+                        <div
+                            id="k-saldo-desglose"
+                            style="display:none; margin-top:6px; padding-top:6px;
+                                   border-top:1px dashed rgba(0,0,0,.12); font-size:.7rem;
+                                   line-height:1.5;"
+                        >
+                            <div style="display:flex; justify-content:space-between; gap:8px; color:#b45309; white-space:nowrap;">
+                                <span>− Adelantos</span>
+                                <strong id="k-saldo-comprometido">$0</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; gap:8px; color:#047857; font-weight:800; white-space:nowrap;">
+                                <span>Disponible</span>
+                                <strong id="k-saldo-disponible">$0</strong>
+                            </div>
                         </div>
 
                     </div>
@@ -2391,6 +2428,47 @@
                     f.saldo_fondo || 0
                 )
             );
+
+
+            /*
+             * Desglose del fondo. Aparece solo cuando hay vecinos con saldo a
+             * favor, para no presupuestar proyectos con dinero que en realidad
+             * son cuotas futuras ya pagadas.
+             */
+            const comprometido =
+                parseFloat(
+                    f.saldo_comprometido
+                    || 0
+                );
+
+
+            if (comprometido > 0) {
+
+                $('#k-saldo-comprometido').text(
+                    tpFmt.format(comprometido)
+                );
+
+                $('#k-saldo-disponible').text(
+                    tpFmt.format(
+                        f.saldo_disponible || 0
+                    )
+                );
+
+                $('#k-saldo-sub').text(
+                    'En la cuenta, incluye adelantos'
+                );
+
+                $('#k-saldo-desglose').show();
+
+            } else {
+
+                $('#k-saldo-sub').text(
+                    'Ingresos históricos menos egresos'
+                );
+
+                $('#k-saldo-desglose').hide();
+
+            }
 
 
             $('#k-recaudacion-info').html(

@@ -25,6 +25,9 @@ class UsuariosController extends Controller
                 'casa',
                 'tipo',
                 'rol',
+                // Sin esta columna en el select, $c->cargo llega siempre null
+                // y el modal reabría en "Sin cargo" aunque hubiera uno guardado.
+                'cargo',
                 'estado',
                 'celular',
                 'pago',
@@ -35,14 +38,24 @@ class UsuariosController extends Controller
     
                 ->editColumn('rol', function ($c) {
                     if ($c->rol == 'usuario') {
-                        return '<div class="ui blue horizontal label">usuario</div>';
+                        $base = '<div class="ui blue horizontal label">usuario</div>';
                     } elseif ($c->rol == 'administrador') {
-                        return '<div class="ui green horizontal label">administrador</div>';
+                        $base = '<div class="ui green horizontal label">administrador</div>';
                     } elseif ($c->rol == 'super-administrador') {
-                        return '<div class="ui purple horizontal label">super-administrador</div>';
+                        $base = '<div class="ui purple horizontal label">super-administrador</div>';
+                    } else {
+                        $base = '<div class="ui grey horizontal label">'.$c->rol.'</div>';
                     }
-    
-                    return '<div class="ui grey horizontal label">'.$c->rol.'</div>';
+
+                    // El cargo va junto al rol: es lo que define quién mueve el
+                    // dinero dentro de la mesa directiva.
+                    if ($c->cargo && isset(User::CARGOS[$c->cargo])) {
+                        $color = $c->cargo === 'tesorero' ? 'teal' : 'grey';
+                        $base .= ' <div class="ui '.$color.' horizontal label" title="Cargo en la mesa directiva">'
+                            .'<i class="briefcase icon"></i> '.User::CARGOS[$c->cargo].'</div>';
+                    }
+
+                    return $base;
                 })
     
                 ->editColumn('estado', function ($c) {
@@ -187,6 +200,18 @@ class UsuariosController extends Controller
                                 </button>';
                         }
 
+                        // El cargo solo aplica a quien forma parte de la mesa.
+                        if (in_array($c->rol, ['administrador', 'super-administrador'], true)) {
+                            $button .= '
+                                <button class="ui violet icon button btn-cargo"
+                                    data-id="'.$c->id.'"
+                                    data-nombre="'.e($c->nombre).'"
+                                    data-cargo="'.e($c->cargo ?? '').'"
+                                    title="Define si esta persona es quien maneja el dinero">
+                                    <i class="briefcase icon"></i> Cargo
+                                </button>';
+                        }
+
                         $button .= '</div></div>';
 
                         return $button;
@@ -195,15 +220,53 @@ class UsuariosController extends Controller
                     return '';
                 })
     
+                // Campos explícitos para el frontend: la vista arma sus propias
+                // tarjetas y no reutiliza los botones que manda el backend, así
+                // que necesita el cargo como dato, no dentro de una etiqueta.
+                ->addColumn('cargo_actual', fn ($c) => $c->cargo ?? '')
+                ->addColumn('puede_tener_cargo', fn ($c) => in_array($c->rol, ['administrador', 'super-administrador'], true))
                 ->rawColumns(['rol', 'acciones', 'estado', 'pago'])
                 ->make(true);
         }
+    }
+
+    /**
+     * ¿Quitar a este usuario dejaría al sistema sin ningún super-administrador?
+     */
+    private function esUltimoSuperAdmin(User $usuario): bool
+    {
+        if ($usuario->rol !== 'super-administrador') {
+            return false;
+        }
+
+        return User::where('rol', 'super-administrador')
+            ->where('estado', 1)
+            ->where('id', '!=', $usuario->id)
+            ->doesntExist();
     }
 
     public function bloquearUsuario($id)
     {
         try {
             $usuario = User::findOrFail($id);
+
+            // Bloquearse a uno mismo cierra el propio acceso sin vuelta atrás
+            // desde la plataforma.
+            if ($usuario->id === auth()->user()->id) {
+                return response()->json([
+                    'header' => '🔒 Acción no permitida',
+                    'success' => false,
+                    'message' => 'No puedes bloquear tu propia cuenta.',
+                ], 422);
+            }
+
+            if ($this->esUltimoSuperAdmin($usuario)) {
+                return response()->json([
+                    'header' => '🔒 Es el último super-administrador',
+                    'success' => false,
+                    'message' => 'Si lo bloqueas, nadie podrá volver a repartir roles. Nombra antes a otro super-administrador.',
+                ], 422);
+            }
 
             // Si es un inquilino que trae el pago, se lo regresamos al dueño.
             $dueno = $this->devolverPagoAlDueno($usuario);
@@ -267,6 +330,25 @@ class UsuariosController extends Controller
         try {
             $usuario = User::findOrFail($id);
 
+            // Nadie se elimina a sí mismo: cerraría su propia sesión y, si es
+            // el último super-administrador, dejaría la plataforma sin quien
+            // pueda repartir roles.
+            if ($usuario->id === auth()->user()->id) {
+                return response()->json([
+                    'header' => '🔒 Acción no permitida',
+                    'success' => false,
+                    'message' => 'No puedes eliminar tu propia cuenta.',
+                ], 422);
+            }
+
+            if ($this->esUltimoSuperAdmin($usuario)) {
+                return response()->json([
+                    'header' => '🔒 Es el último super-administrador',
+                    'success' => false,
+                    'message' => 'Si lo eliminas, nadie podrá volver a repartir roles. Nombra antes a otro super-administrador.',
+                ], 422);
+            }
+
             // Si es un inquilino que trae el pago, se lo regresamos al dueño ANTES de borrar.
             $dueno = $this->devolverPagoAlDueno($usuario);
 
@@ -292,6 +374,61 @@ class UsuariosController extends Controller
                     'message' => 'Problemas al eliminar el usuario: '.$e,
                 ]
             );
+        }
+    }
+
+    /**
+     * Asigna o quita el cargo dentro de la mesa directiva.
+     *
+     * El cargo es independiente del rol: define quién mueve el dinero. Solo
+     * el Tesorero puede crear recibos y validar pagos; mientras nadie tenga
+     * ese cargo, el módulo sigue abierto a toda la mesa (ver
+     * User::puedeGestionarPagos()).
+     */
+    public function asignarCargo(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'cargo' => 'nullable|in:'.implode(',', array_keys(User::CARGOS)),
+            ]);
+
+            $usuario = User::findOrFail($id);
+
+            if ($usuario->rol === 'usuario') {
+                return response()->json([
+                    'header' => '❌ No aplica',
+                    'success' => false,
+                    'message' => 'Los cargos son para integrantes de la mesa directiva. Primero haz administrador a este usuario.',
+                ], 422);
+            }
+
+            $usuario->update([
+                'cargo' => $request->filled('cargo') ? $request->cargo : null,
+            ]);
+
+            $nombreCargo = $usuario->cargo
+                ? User::CARGOS[$usuario->cargo]
+                : 'sin cargo';
+
+            return response()->json([
+                'header' => 'Cargo actualizado ✅',
+                'success' => true,
+                'message' => $usuario->nombre.' quedó como '.$nombreCargo.'.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'header' => '⚠️ Datos inválidos',
+                'success' => false,
+                'message' => implode(' ', $e->validator->errors()->all()),
+            ], 422);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error al asignar cargo: '.$e->getMessage());
+
+            return response()->json([
+                'header' => '❌ Error',
+                'success' => false,
+                'message' => 'No se pudo actualizar el cargo.',
+            ], 500);
         }
     }
 
@@ -327,8 +464,42 @@ class UsuariosController extends Controller
         try {
             $usuario = User::findOrFail($id);
 
+            /*
+             * Nadie puede quitarse a sí mismo el acceso, ni dejar al sistema
+             * sin ningún super-administrador.
+             *
+             * Solo un super-administrador puede repartir roles, así que si el
+             * último se degrada no queda nadie capaz de revertirlo: habría que
+             * entrar a la base de datos a mano para recuperar la plataforma.
+             */
+            if ($usuario->id === auth()->user()->id) {
+                return response()->json([
+                    'header' => '🔒 Acción no permitida',
+                    'success' => false,
+                    'message' => 'No puedes quitarte a ti mismo el acceso de administrador. Pídele a otro administrador que lo haga.',
+                ], 422);
+            }
+
+            if ($usuario->rol === 'super-administrador') {
+                $otros = User::where('rol', 'super-administrador')
+                    ->where('estado', 1)
+                    ->where('id', '!=', $usuario->id)
+                    ->count();
+
+                if ($otros === 0) {
+                    return response()->json([
+                        'header' => '🔒 Es el último super-administrador',
+                        'success' => false,
+                        'message' => 'Si le quitas el acceso, nadie podrá volver a repartir roles y habría que corregirlo desde la base de datos. Nombra antes a otro super-administrador.',
+                    ], 422);
+                }
+            }
+
             $usuario->update([
                 'rol' => 'usuario',
+                // El cargo pertenece a la mesa directiva: al salir de ella no
+                // tiene sentido conservarlo.
+                'cargo' => null,
             ]);
 
             return response()->json(

@@ -14,13 +14,17 @@ class ComunicadosController extends Controller
     {
         $hoy = date('Y-m-d');
         $arr_comu = [];
-        $comunicados = Comunicado::where('vencimiento', '>=', $hoy)->get();
+        $comunicados = Comunicado::where('vencimiento', '>=', $hoy)
+            ->orderByDesc('updated_at')
+            ->get();
 
         foreach ($comunicados as $comunicado) {
             $arr_comu[] = [
                 'Titulo' => $comunicado->titulo,
                 'Comunicado' => $comunicado->comunicado,
                 'Vencimiento' => Carbon::parse($comunicado->vencimiento)->translatedFormat('j \\d\\e F \\d\\e Y'),
+                'Actualizado' => Carbon::parse($comunicado->updated_at)->diffForHumans(),
+                'ActualizadoExacto' => Carbon::parse($comunicado->updated_at)->translatedFormat('j \\d\\e F \\d\\e Y, H:i'),
             ];
         }
 

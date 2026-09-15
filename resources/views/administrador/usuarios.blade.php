@@ -695,6 +695,17 @@
             background: #fee2e2 !important;
         }
 
+        .usuario-actions .btn-cargo {
+            background: #f5f3ff;
+            border: 1px solid #ddd6fe;
+            color: #6d28d9;
+        }
+
+        .usuario-actions .btn-cargo:hover {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
         .usuario-actions .btn-admin,
         .usuario-actions .btn-user,
         .usuario-actions .btn-enviar-verificacion {
@@ -990,6 +1001,52 @@
         }
     </style>
 
+    {{-- Cargo en la mesa directiva --}}
+    <div class="ui modal" id="modal-cargo">
+        <div class="header">
+            <i class="briefcase icon"></i>
+            Cargo en la mesa directiva
+        </div>
+
+        <div class="content">
+            <input type="hidden" id="cargo-user-id">
+
+            <p style="margin-bottom:14px; color:#475569;">
+                Asignando cargo a <strong id="cargo-nombre"></strong>.
+            </p>
+
+            <div class="form-group">
+                <label class="form-label">Cargo</label>
+                <select id="cargo-select" class="form-input" style="width:100%;">
+                    <option value="">Sin cargo</option>
+                    @foreach(\App\Models\User::CARGOS as $valor => $etiqueta)
+                        <option value="{{ $valor }}">{{ $etiqueta }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div style="margin-top:14px; padding:12px 14px; background:#f0f9ff;
+                        border:1px solid #bae6fd; border-radius:10px;
+                        color:#075985; font-size:.88rem; line-height:1.55;">
+                <i class="info circle icon"></i>
+                Solo el <strong>Tesorero</strong> puede registrar recibos, validar pagos y
+                eliminarlos. Los demás cargos consultan la cobranza y descargan el reporte,
+                pero no mueven dinero.
+                <br><br>
+                Mientras <strong>nadie</strong> tenga el cargo de Tesorero, el módulo de pagos
+                sigue abierto a toda la mesa directiva, como hasta ahora.
+            </div>
+        </div>
+
+        <div class="actions">
+            <div class="ui black deny button">Cancelar</div>
+            <button type="button" class="ui violet button" id="btn-guardar-cargo">
+                <i class="check icon"></i>
+                Guardar cargo
+            </button>
+        </div>
+    </div>
+
     <script>
         const BASE_URL = "{{ url('/') }}";
 
@@ -1105,7 +1162,11 @@
                 const estadoTexto = extraerTexto(estado || '');
                 const iniciales = obtenerIniciales(nombre);
                 const estadoInfo = obtenerEstadoUsuario(estadoTexto);
-                const accionesHtml = construirAccionesUsuario(id, estadoInfo, rolTexto, accionesOriginales);
+                const accionesHtml = construirAccionesUsuario(id, estadoInfo, rolTexto, accionesOriginales, {
+                    nombre: nombre,
+                    cargo: String(usuario.cargo_actual || ''),
+                    puedeTenerCargo: Boolean(usuario.puede_tener_cargo)
+                });
 
                 const card = `
                     <div class="usuario-item-card">
@@ -1176,7 +1237,14 @@
             renderizarPaginacionUsuarios(totalPaginas, usuariosFiltrados.length);
         }
 
-        function construirAccionesUsuario(id, estadoInfo, rolTexto, accionesOriginales) {
+        // Etiquetas legibles de los cargos, en el mismo orden que User::CARGOS.
+        const CARGOS = @json(\App\Models\User::CARGOS);
+
+        function nombreDeCargo(valor) {
+            return CARGOS[valor] || valor;
+        }
+
+        function construirAccionesUsuario(id, estadoInfo, rolTexto, accionesOriginales, extra = {}) {
             if (!id) {
                 return `
                     <button type="button" class="btn btn-secondary btn-sm disabled" disabled>
@@ -1229,6 +1297,23 @@
                 `
                 : '';
 
+            /*
+             * Cargo en la mesa directiva. Solo tiene sentido para quien es
+             * parte de ella; a un vecino no se le ofrece.
+             */
+            const botonCargo = extra.puedeTenerCargo
+                ? `
+                    <button type="button" class="btn btn-sm btn-cargo"
+                        data-id="${escapeHtml(id)}"
+                        data-nombre="${escapeHtml(extra.nombre || '')}"
+                        data-cargo="${escapeHtml(extra.cargo || '')}"
+                        title="Define quién maneja el dinero de la mesa directiva">
+                        <i class="briefcase icon"></i>
+                        ${extra.cargo ? 'Cargo: ' + nombreDeCargo(extra.cargo) : 'Asignar cargo'}
+                    </button>
+                `
+                : '';
+
             const puedeRegresarPago = accionesOriginales.includes('btn-regresar-pago');
             const botonPago = puedeRegresarPago
                 ? `
@@ -1250,6 +1335,8 @@
                 ${botonRol}
 
                 ${botonVerificacion}
+
+                ${botonCargo}
 
                 ${botonPago}
             `;
@@ -1608,6 +1695,58 @@
                     alertify.message('Cancelado');
                 }
             );
+        });
+
+        /*
+         * Cargo en la mesa directiva.
+         *
+         * Define quién puede mover dinero: solo el Tesorero registra recibos
+         * y valida pagos. Mientras nadie tenga ese cargo, el módulo sigue
+         * abierto a toda la mesa, así que asignarlo es lo que activa la
+         * separación de permisos.
+         */
+        $(document).on('click', '.btn-cargo', function() {
+            const id = $(this).data('id');
+            const nombre = $(this).data('nombre');
+            const actual = String($(this).data('cargo') || '');
+
+            $('#cargo-user-id').val(id);
+            $('#cargo-nombre').text(nombre);
+            $('#cargo-select').val(actual);
+
+            $('#modal-cargo').modal('show');
+        });
+
+        $(document).on('click', '#btn-guardar-cargo', function() {
+            const id = $('#cargo-user-id').val();
+            const cargo = $('#cargo-select').val();
+
+            mostrarLoaderPantalla();
+
+            $.ajax({
+                url: `${BASE_URL}/administrador/usuarios/asignar-cargo/${id}`,
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    cargo: cargo
+                },
+                success: function(response) {
+                    $('#modal-cargo').modal('hide');
+                    alertify.alert(response.header, response.message, function() {
+                        cargarUsuarios();
+                    });
+                },
+                error: function(xhr) {
+                    const res = xhr.responseJSON;
+                    alertify.alert(
+                        (res && res.header) || 'Error',
+                        (res && res.message) || 'No se pudo actualizar el cargo.'
+                    );
+                },
+                complete: function() {
+                    ocultarLoaderPantalla();
+                }
+            });
         });
 
         $(document).on('click', '.btn-admin', function() {

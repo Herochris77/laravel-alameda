@@ -755,11 +755,15 @@
                     <div class="mini-card">
 
                         <div class="mini-label">
-                            Fecha de pago / aprobación
+                            @if($fechaPago === 'No registrada')
+                                Fecha de validación
+                            @else
+                                Fecha de pago
+                            @endif
                         </div>
 
                         <div class="mini-value">
-                            {{ $fechaPago }}
+                            {{ $fechaPago === 'No registrada' ? $fechaValidacion : $fechaPago }}
                         </div>
 
                     </div>

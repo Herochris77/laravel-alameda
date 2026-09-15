@@ -118,6 +118,49 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="form-label">Fecha del movimiento bancario *</label>
+                                <div class="input-icon-wrapper">
+                                    <i class="calendar icon"></i>
+                                    <input
+                                        type="date"
+                                        name="fecha_gasto"
+                                        id="fecha-gasto"
+                                        class="form-input documento-input input-with-icon"
+                                    >
+                                </div>
+                                <small class="form-help-text">
+                                    El día en que el dinero salió de la cuenta, no el de hoy.
+                                    Es lo que hace que el reporte mensual cuadre contra tu
+                                    estado de cuenta.
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Proveedor</label>
+                                <div class="input-icon-wrapper">
+                                    <i class="truck icon"></i>
+                                    <input
+                                        type="text"
+                                        name="proveedor"
+                                        id="proveedor-gasto"
+                                        class="form-input documento-input input-with-icon"
+                                        maxlength="150"
+                                        placeholder="A quién se le pagó"
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Forma de pago</label>
+                                <select name="forma_pago" id="forma-pago-gasto" class="ui fluid dropdown documento-input">
+                                    <option value="transferencia">Transferencia</option>
+                                    <option value="ventanilla">Ventanilla / OXXO</option>
+                                    <option value="domiciliado">Cargo domiciliado</option>
+                                    <option value="efectivo">Efectivo</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-label">Concepto de pago asociado</label>
 
                                 <select
@@ -276,6 +319,105 @@
             </div>
         </div>
     </div>
+
+    {{-- Corrección de los datos bancarios de un gasto ya cargado --}}
+    <div class="ui small modal" id="modal-gasto">
+        <div class="header">Datos del gasto</div>
+        <div class="content">
+            <p id="gasto-titulo" class="gasto-modal-titulo"></p>
+
+            <form id="form-gasto">
+                @csrf
+                <input type="hidden" id="gasto-id">
+
+                <div class="form-group">
+                    <label class="form-label">Fecha del movimiento bancario *</label>
+                    <input type="date" id="gasto-fecha" class="form-input" required>
+                    <small class="form-help-text">
+                        El día en que el dinero salió de la cuenta. Con esto el gasto
+                        se cuenta en el mes correcto del reporte.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Proveedor</label>
+                    <input type="text" id="gasto-proveedor" class="form-input" maxlength="150"
+                           placeholder="A quién se le pagó">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Forma de pago</label>
+                    <select id="gasto-forma" class="form-input">
+                        <option value="">Sin especificar</option>
+                        <option value="transferencia">Transferencia</option>
+                        <option value="ventanilla">Ventanilla / OXXO</option>
+                        <option value="domiciliado">Cargo domiciliado</option>
+                        <option value="efectivo">Efectivo</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="actions">
+            <button class="ui button" onclick="$('#modal-gasto').modal('hide')">Cancelar</button>
+            <button class="ui primary button" id="btn-guardar-gasto">
+                <i class="save icon"></i> Guardar
+            </button>
+        </div>
+    </div>
+
+    <style>
+        .gasto-modal-titulo {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 8px 11px;
+            font-weight: 600;
+            color: #0f172a;
+            font-size: .9rem;
+            margin-bottom: 14px;
+        }
+    </style>
+
+    <script>
+        $(function () {
+            $(document).on('click', '.btn-editar-gasto', function () {
+                const b = $(this);
+
+                $('#gasto-id').val(b.data('id'));
+                $('#gasto-titulo').text(b.data('titulo'));
+                $('#gasto-fecha').val(b.data('fecha') || '');
+                $('#gasto-proveedor').val(b.data('proveedor') || '');
+                $('#gasto-forma').val(b.data('forma') || '');
+
+                $('#modal-gasto').modal('show');
+            });
+
+            $('#btn-guardar-gasto').on('click', function () {
+                if (!$('#form-gasto')[0].reportValidity()) return;
+
+                $.ajax({
+                    url: `{{ url('/') }}/administrador/documento/actualizar-gasto/${$('#gasto-id').val()}`,
+                    method: 'POST',
+                    data: {
+                        _token: $('input[name=_token]').first().val(),
+                        fecha_gasto: $('#gasto-fecha').val(),
+                        proveedor: $('#gasto-proveedor').val(),
+                        forma_pago: $('#gasto-forma').val()
+                    },
+                    success: function (res) {
+                        $('#modal-gasto').modal('hide');
+                        alertify.alert(res.header, res.message, function () {
+                            if (typeof cargarDocumentos === 'function') cargarDocumentos();
+                            else location.reload();
+                        });
+                    },
+                    error: function (xhr) {
+                        const r = xhr.responseJSON || {};
+                        alertify.alert(r.header || 'Error', r.message || 'No se pudo guardar.');
+                    }
+                });
+            });
+        });
+    </script>
 </x-app-layout>
 
 <div class="ui fullscreen modal documento-preview-modal" id="modal-archivo">
@@ -1406,15 +1548,27 @@
             const cantidadInput = $('#cantidad-gasto');
             const categoriaInput = $('#categoria-gasto');
 
+            const fechaInput = $('#fecha-gasto');
+
             if ($(this).val() === 'referencia') {
                 gastoFields.slideDown(160);
                 cantidadInput.attr('required', true);
                 categoriaInput.attr('required', true);
+                fechaInput.attr('required', true);
+
+                // Se propone hoy solo como punto de partida: el tesorero casi
+                // siempre sube el comprobante días después de pagar.
+                if (!fechaInput.val()) {
+                    fechaInput.val(new Date().toISOString().slice(0, 10));
+                }
+
                 cargarConceptos();
             } else {
                 gastoFields.slideUp(160);
                 cantidadInput.attr('required', false).val('');
                 categoriaInput.attr('required', false).val('');
+                fechaInput.attr('required', false).val('');
+                $('#proveedor-gasto').val('');
                 $('#categoria-gasto').dropdown('clear');
                 $('#concepto-pago').dropdown('clear');
             }

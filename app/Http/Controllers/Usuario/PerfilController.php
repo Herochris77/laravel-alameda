@@ -125,6 +125,26 @@ class PerfilController extends Controller
         ]);
     }
 
+    /**
+     * Solo el dueño de la misma casa decide sobre su inquilino.
+     *
+     * Sin esta comprobación bastaba con cambiar el id de la petición para que
+     * cualquier vecino aprobara o diera de baja al inquilino de otra casa.
+     * La administración sí puede intervenir en cualquier casa.
+     */
+    private function puedeAdministrarInquilino(User $inquilino): bool
+    {
+        $user = auth()->user();
+
+        if (in_array($user->rol, ['administrador', 'super-administrador'], true)) {
+            return true;
+        }
+
+        return $user->tipo === 'dueño'
+            && $user->casa !== null
+            && (string) $user->casa === (string) $inquilino->casa;
+    }
+
     public function aprobarInquilino($id)
     {
         $inquilino = User::findOrFail($id);
@@ -133,6 +153,12 @@ class PerfilController extends Controller
             return response()->json([
                 'message' => 'El usuario no es un inquilino válido',
             ], 422);
+        }
+
+        if (! $this->puedeAdministrarInquilino($inquilino)) {
+            return response()->json([
+                'message' => 'Solo el dueño de esa casa puede aprobar a su inquilino.',
+            ], 403);
         }
 
         if ($inquilino->estado == 1) {
@@ -175,6 +201,12 @@ class PerfilController extends Controller
             return response()->json([
                 'message' => 'El usuario no es un inquilino válido',
             ], 422);
+        }
+
+        if (! $this->puedeAdministrarInquilino($inquilino)) {
+            return response()->json([
+                'message' => 'Solo el dueño de esa casa puede dar de baja a su inquilino.',
+            ], 403);
         }
 
         try {

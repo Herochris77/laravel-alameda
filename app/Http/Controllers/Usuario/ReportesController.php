@@ -9,6 +9,7 @@ use App\Models\Sancion;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportesController extends Controller
 {
@@ -43,6 +44,41 @@ class ReportesController extends Controller
         ];
     }
 
+    /*
+     * =====================================================
+     * CRITERIO DE FECHA EN LOS REPORTES
+     * =====================================================
+     *
+     * Este módulo mezclaba tres criterios distintos para responder "cuándo
+     * entró el dinero": created_at en los recibos, updated_at en las multas y
+     * vencimiento en el Dashboard. Los totales no cuadraban entre sí.
+     *
+     * A partir de ahora hay un solo criterio, con dos lecturas declaradas:
+     *
+     *   FLUJO DE EFECTIVO  -> cuándo entró el dinero. Usa `fecha_pago`.
+     *   DEVENGADO          -> a qué periodo corresponde. Usa `vencimiento`.
+     *
+     * Los reportes de ingresos son de FLUJO DE EFECTIVO.
+     *
+     * Para los pagos anteriores a la columna `fecha_pago` ese dato no existe.
+     * En lugar de excluirlos (perdería todo el histórico) se aproxima con
+     * `updated_at`, la fecha de validación, y cada respuesta informa cuántos
+     * registros van aproximados para que la interfaz pueda advertirlo.
+     */
+    private const SQL_FECHA_EFECTIVA_PAGO = 'COALESCE(detallepagos.fecha_pago, DATE(detallepagos.updated_at))';
+
+    private const SQL_FECHA_EFECTIVA_SANCION = 'COALESCE(sanciones.fecha_pago, DATE(sanciones.updated_at))';
+
+    /**
+     * Fecha efectiva de un registro ya cargado en memoria.
+     */
+    private function fechaEfectiva($modelo): Carbon
+    {
+        return $modelo->fecha_pago
+            ? Carbon::parse($modelo->fecha_pago)
+            : Carbon::parse($modelo->updated_at);
+    }
+
     /**
      * Nombre de usuario, incluso si fue eliminado.
      */
@@ -72,9 +108,10 @@ class ReportesController extends Controller
         $range = $this->getDateRange();
 
         $detallesPago = Detallepago::where('estado', 'pagado')
+            ->sinLiquidacionesConSaldo()
             ->whereBetween(
-                'created_at',
-                [$range['inicio'], $range['fin'].' 23:59:59']
+                DB::raw(self::SQL_FECHA_EFECTIVA_PAGO),
+                [$range['inicio'], $range['fin']]
             )
             ->with('pago')
             ->get();
@@ -108,8 +145,8 @@ class ReportesController extends Controller
 
         $sancionesPagadas = Sancion::where('estado', 'pagado')
             ->whereBetween(
-                'created_at',
-                [$range['inicio'], $range['fin'].' 23:59:59']
+                DB::raw(self::SQL_FECHA_EFECTIVA_SANCION),
+                [$range['inicio'], $range['fin']]
             )
             ->get();
 
@@ -189,17 +226,26 @@ class ReportesController extends Controller
     {
         $range = $this->getDateRange();
 
+        // Mismo criterio para recibos y multas: antes uno usaba created_at y
+        // el otro updated_at, así que las dos mitades del mismo listado no
+        // eran comparables entre sí.
         $detallesPago = Detallepago::where('estado', 'pagado')
+            ->sinLiquidacionesConSaldo()
             ->whereBetween(
-                'created_at',
-                [$range['inicio'], $range['fin'].' 23:59:59']
+                DB::raw(self::SQL_FECHA_EFECTIVA_PAGO),
+                [$range['inicio'], $range['fin']]
             )
             ->with('pago')
             ->get();
 
+        $aproximados = 0;
         $recibosData = [];
 
         foreach ($detallesPago as $detalle) {
+            if (! $detalle->fecha_pago) {
+                $aproximados++;
+            }
+
             $recibosData[] = [
                 'id' => $detalle->id,
 
@@ -212,8 +258,10 @@ class ReportesController extends Controller
                     ?: ($detalle->pago ? $detalle->pago->cantidad : 0)
                 ),
 
-                'fecha_pago' => $detalle->created_at
+                'fecha_pago' => $this->fechaEfectiva($detalle)
                     ->format('Y-m-d'),
+
+                'fecha_aproximada' => ! $detalle->fecha_pago,
 
                 'usuario' => $this->getUserName(
                     $detalle->user_id
@@ -221,28 +269,37 @@ class ReportesController extends Controller
             ];
         }
 
-        $sancionesData = Sancion::where('estado', 'pagado')
+        $sanciones = Sancion::where('estado', 'pagado')
             ->whereBetween(
-                'created_at',
-                [$range['inicio'], $range['fin'].' 23:59:59']
+                DB::raw(self::SQL_FECHA_EFECTIVA_SANCION),
+                [$range['inicio'], $range['fin']]
             )
-            ->get()
-            ->map(function ($sancion) {
-                return [
-                    'id' => $sancion->id,
-                    'motivo' => $sancion->motivo,
-                    'monto' => floatval($sancion->monto),
+            ->get();
 
-                    'fecha_pago' => $sancion->updated_at
-                        ->format('Y-m-d'),
+        $sancionesData = $sanciones->map(function ($sancion) use (&$aproximados) {
+            if (! $sancion->fecha_pago) {
+                $aproximados++;
+            }
 
-                    'usuario' => $this->getUserName(
-                        $sancion->user_id
-                    ),
-                ];
-            });
+            return [
+                'id' => $sancion->id,
+                'motivo' => $sancion->motivo,
+                'monto' => floatval($sancion->monto),
+
+                'fecha_pago' => $this->fechaEfectiva($sancion)
+                    ->format('Y-m-d'),
+
+                'fecha_aproximada' => ! $sancion->fecha_pago,
+
+                'usuario' => $this->getUserName(
+                    $sancion->user_id
+                ),
+            ];
+        });
 
         return response()->json([
+            'criterio' => 'flujo_efectivo',
+            'aproximados' => $aproximados,
             'recibos' => $recibosData,
             'sanciones' => $sancionesData,
 
@@ -258,18 +315,20 @@ class ReportesController extends Controller
     {
         $range = $this->getDateRange();
 
+        // Flujo de efectivo: se agrupa por la fecha en que entró el dinero.
         $detallesPago = Detallepago::where('estado', 'pagado')
+            ->sinLiquidacionesConSaldo()
             ->whereBetween(
-                'created_at',
-                [$range['inicio'], $range['fin'].' 23:59:59']
+                DB::raw(self::SQL_FECHA_EFECTIVA_PAGO),
+                [$range['inicio'], $range['fin']]
             )
             ->with('pago')
             ->get();
 
         $sanciones = Sancion::where('estado', 'pagado')
             ->whereBetween(
-                'created_at',
-                [$range['inicio'], $range['fin'].' 23:59:59']
+                DB::raw(self::SQL_FECHA_EFECTIVA_SANCION),
+                [$range['inicio'], $range['fin']]
             )
             ->get();
 
@@ -279,8 +338,14 @@ class ReportesController extends Controller
             $meses[$i] = 0;
         }
 
+        $aproximados = 0;
+
         foreach ($detallesPago as $detalle) {
-            $mes = $detalle->created_at->month;
+            $mes = $this->fechaEfectiva($detalle)->month;
+
+            if (! $detalle->fecha_pago) {
+                $aproximados++;
+            }
 
             $cantidad = floatval(
                 $detalle->cantidad_pago
@@ -291,7 +356,11 @@ class ReportesController extends Controller
         }
 
         foreach ($sanciones as $sancion) {
-            $mes = $sancion->created_at->month;
+            $mes = $this->fechaEfectiva($sancion)->month;
+
+            if (! $sancion->fecha_pago) {
+                $aproximados++;
+            }
 
             $meses[$mes] += floatval(
                 $sancion->monto
@@ -300,6 +369,8 @@ class ReportesController extends Controller
 
         return response()->json([
             'rango' => $range,
+            'criterio' => 'flujo_efectivo',
+            'aproximados' => $aproximados,
             'meses' => array_values($meses),
 
             'labels' => [
@@ -406,9 +477,10 @@ class ReportesController extends Controller
         $range = $this->getDateRange();
 
         $detallesPago = Detallepago::where('estado', 'pagado')
+            ->sinLiquidacionesConSaldo()
             ->whereBetween(
-                'created_at',
-                [$range['inicio'], $range['fin'].' 23:59:59']
+                DB::raw(self::SQL_FECHA_EFECTIVA_PAGO),
+                [$range['inicio'], $range['fin']]
             )
             ->with('pago')
             ->get();
@@ -466,10 +538,11 @@ class ReportesController extends Controller
     {
         $range = $this->getDateRange();
 
+        // Son multas COBRADAS (estado pagado), así que el mes es el del cobro.
         $sanciones = Sancion::where('estado', 'pagado')
             ->whereBetween(
-                'created_at',
-                [$range['inicio'], $range['fin'].' 23:59:59']
+                DB::raw(self::SQL_FECHA_EFECTIVA_SANCION),
+                [$range['inicio'], $range['fin']]
             )
             ->get();
 
@@ -482,7 +555,7 @@ class ReportesController extends Controller
         }
 
         foreach ($sanciones as $sancion) {
-            $mes = $sancion->created_at->month;
+            $mes = $this->fechaEfectiva($sancion)->month;
 
             $mesesData[$mes]++;
 
@@ -553,9 +626,10 @@ class ReportesController extends Controller
         $range = $this->getDateRange();
 
         $detallesPago = Detallepago::where('estado', 'pagado')
+            ->sinLiquidacionesConSaldo()
             ->whereBetween(
-                'created_at',
-                [$range['inicio'], $range['fin'].' 23:59:59']
+                DB::raw(self::SQL_FECHA_EFECTIVA_PAGO),
+                [$range['inicio'], $range['fin']]
             )
             ->with(['user', 'pago'])
             ->get();
@@ -614,11 +688,16 @@ class ReportesController extends Controller
              * =====================================================
              */
 
+            // Ingresos = flujo de efectivo: el dinero se cuenta en el periodo
+            // en que entró, no en aquel en que se creó el cargo.
             $recibosPagados = Detallepago::with('pago')
                 ->where('estado', 'pagado')
+                // Un recibo liquidado con saldo no es dinero que entra ahora:
+                // entró cuando el vecino hizo la transferencia que lo generó.
+                ->sinLiquidacionesConSaldo()
                 ->whereBetween(
-                    'created_at',
-                    [$ini, $fin]
+                    DB::raw(self::SQL_FECHA_EFECTIVA_PAGO),
+                    [Carbon::parse($ini)->toDateString(), Carbon::parse($fin)->toDateString()]
                 )
                 ->get();
 
@@ -637,8 +716,8 @@ class ReportesController extends Controller
             $recaudadoMultas = floatval(
                 Sancion::where('estado', 'pagado')
                     ->whereBetween(
-                        'created_at',
-                        [$ini, $fin]
+                        DB::raw(self::SQL_FECHA_EFECTIVA_SANCION),
+                        [Carbon::parse($ini)->toDateString(), Carbon::parse($fin)->toDateString()]
                     )
                     ->sum('monto')
             );
@@ -655,29 +734,57 @@ class ReportesController extends Controller
 
             $esperado = 0;
 
+            // Lo esperado es DEVENGADO: los cargos que VENCEN dentro del
+            // periodo. Antes se filtraba por created_at, la fecha en que se
+            // dio de alta el cargo, que puede caer en un periodo distinto al
+            // que corresponde la cuota.
             $todosLosDetalles = Detallepago::with('pago')
-                ->whereBetween(
-                    'created_at',
-                    [$ini, $fin]
-                )
+                ->whereHas('pago', function ($q) use ($ini, $fin) {
+                    $q->whereBetween('vencimiento', [
+                        Carbon::parse($ini)->toDateString(),
+                        Carbon::parse($fin)->toDateString(),
+                    ]);
+                })
                 ->get();
 
+            $cobradoDeLoVencido = 0;
+            $excedentes = 0;
+
             foreach ($todosLosDetalles as $d) {
-                $esperado += floatval(
+                $monto = floatval(
                     $d->pago
                         ? $d->pago->cantidad
                         : ($d->cantidad_pago ?: 0)
                 );
+
+                $esperado += $monto;
+
+                if ($d->estado !== 'pagado') {
+                    continue;
+                }
+
+                $pagado = floatval($d->cantidad_pago ?: $monto);
+
+                // Lo que excede la cuota no es cobranza de este recibo: es
+                // dinero a favor del vecino (normalmente cuotas adelantadas).
+                // Se cuenta aparte para que el porcentaje no rebase el 100 %
+                // y para dimensionar cuánto excedente está sin asignar.
+                $cobradoDeLoVencido += min($pagado, $monto);
+                $excedentes += max($pagado - $monto, 0);
             }
 
             /*
-             * % financiero de recibos.
+             * % de cobranza de recibos (NO incluye multas).
              *
-             * NO incluye multas.
+             * Compara devengado contra devengado: de los recibos que VENCEN en
+             * el periodo, cuánto se ha cobrado. Antes dividía el dinero que
+             * entró (flujo de efectivo) entre lo que vencía, y bastaba con que
+             * alguien pagara un adeudo viejo o adelantara una cuota para que el
+             * resultado pasara del 100 %.
              */
             $recaudacionPct = $esperado > 0
                 ? round(
-                    ($recaudadoRecibos / $esperado) * 100
+                    ($cobradoDeLoVencido / $esperado) * 100
                 )
                 : 0;
 
@@ -869,6 +976,11 @@ class ReportesController extends Controller
             foreach (
                 Detallepago::with('pago')
                     ->where('estado', 'pagado')
+                    // El fondo es dinero real. Un recibo liquidado con saldo a
+                    // favor ya se contó cuando el vecino hizo la transferencia
+                    // que generó ese saldo; sumarlo otra vez mostraría en el
+                    // fondo un dinero que no está en la cuenta.
+                    ->sinLiquidacionesConSaldo()
                     ->get()
                 as $d
             ) {
@@ -887,6 +999,22 @@ class ReportesController extends Controller
                 Documento::whereNotNull('cantidad')
                     ->sum('cantidad')
             );
+
+            /*
+             * Saldo a favor vigente de todos los vecinos: dinero que está en
+             * la cuenta pero corresponde a cuotas futuras ya pagadas.
+             */
+            $saldoComprometido = 0.0;
+
+            if (\Illuminate\Support\Facades\Schema::hasTable('saldo_movimientos')) {
+                $servicioSaldos = app(\App\Services\SaldoService::class);
+
+                foreach (\App\Models\SaldoMovimiento::select('user_id')->distinct()->pluck('user_id') as $uid) {
+                    $saldoComprometido += max($servicioSaldos->saldo($uid), 0);
+                }
+            }
+
+            $saldoComprometido = round($saldoComprometido, 2);
 
             $saldoFondo = round(
                 $ingresosHist - $egresosHist,
@@ -1163,9 +1291,19 @@ class ReportesController extends Controller
                     ),
 
                     /*
-                     * Porcentaje financiero.
+                     * Porcentaje de cobranza (devengado contra devengado).
                      */
                     'recaudacion_pct' => $recaudacionPct,
+
+                    /*
+                     * Dinero cobrado por encima de la cuota, típicamente
+                     * cuotas adelantadas. Hoy no tiene dónde registrarse
+                     * como saldo a favor del vecino.
+                     */
+                    'excedentes' => round(
+                        $excedentes,
+                        2
+                    ),
 
                     'gastado' => round(
                         $gastado,
@@ -1173,6 +1311,17 @@ class ReportesController extends Controller
                     ),
 
                     'saldo_fondo' => $saldoFondo,
+
+                    /*
+                     * Del dinero que hay en la cuenta, una parte son cuotas
+                     * que algunos vecinos ya pagaron por adelantado. Está en
+                     * el banco, pero no es del condominio para gastar: es un
+                     * compromiso. Separarlo evita presupuestar un proyecto
+                     * con dinero que ya tiene dueño.
+                     */
+                    'saldo_comprometido' => $saldoComprometido,
+
+                    'saldo_disponible' => round($saldoFondo - $saldoComprometido, 2),
                 ],
 
                 'ingresos_egresos' =>
@@ -1277,8 +1426,11 @@ class ReportesController extends Controller
                     'recaudado_multas' => 0,
                     'esperado' => 0,
                     'recaudacion_pct' => 0,
+                    'excedentes' => 0,
                     'gastado' => 0,
                     'saldo_fondo' => 0,
+                    'saldo_comprometido' => 0,
+                    'saldo_disponible' => 0,
                 ],
 
                 'ingresos_egresos' => [],

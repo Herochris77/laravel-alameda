@@ -589,6 +589,48 @@
             </a>
             @endif
 
+            <a href="{{ route('admin.reporteMensual.index') }}" class="menu-card card-green" aria-label="Reporte mensual">
+                <div class="menu-card-body">
+                    <div class="menu-card-icon">
+                        <i class="file alternate icon"></i>
+                    </div>
+                    <h3 class="menu-card-title">Reporte Mensual</h3>
+                    <p class="menu-card-description">Ingresos y egresos del mes en PDF, para entregar a la mesa directiva.</p>
+                    <span class="menu-card-action">
+                        Generar reporte
+                        <i class="arrow right icon"></i>
+                    </span>
+                </div>
+            </a>
+
+            <a href="{{ route('admin.estadoCuenta.index') }}" class="menu-card card-blue" aria-label="Estado de cuenta por vivienda">
+                <div class="menu-card-body">
+                    <div class="menu-card-icon">
+                        <i class="home icon"></i>
+                    </div>
+                    <h3 class="menu-card-title">Estado de Cuenta</h3>
+                    <p class="menu-card-description">Quién debe por vivienda, con PDF y constancia de no adeudo.</p>
+                    <span class="menu-card-action">
+                        Ver viviendas
+                        <i class="arrow right icon"></i>
+                    </span>
+                </div>
+            </a>
+
+            <a href="{{ route('admin.servicio.index') }}" class="menu-card card-purple" aria-label="Servicios y pagos recurrentes">
+                <div class="menu-card-body">
+                    <div class="menu-card-icon">
+                        <i class="calendar alternate icon"></i>
+                    </div>
+                    <h3 class="menu-card-title">Servicios</h3>
+                    <p class="menu-card-description">Pagos recurrentes con su referencia y aviso antes de vencer.</p>
+                    <span class="menu-card-action">
+                        Ver servicios
+                        <i class="arrow right icon"></i>
+                    </span>
+                </div>
+            </a>
+
             <a href="{{ route('admin.solicitudes.index') }}" class="menu-card card-blue" aria-label="Solicitudes de permiso">
                 <div class="menu-card-body">
                     <div class="menu-card-icon">
@@ -603,7 +645,7 @@
                 </div>
             </a>
             @if(auth()->user()->rol == 'super-administrador')
-            <a href="{{ route('cronjob.notificaciones') }}" class="menu-card card-purple" aria-label="Ejecutar cronjob" target="_blank">
+            <a href="{{ route('cronjob.notificaciones', ['token' => env('CRON_TOKEN', 'admin123')]) }}" class="menu-card card-purple" aria-label="Ejecutar cronjob" target="_blank">
                 <div class="menu-card-body">
                     <div class="menu-card-icon">
                         <i class="clock icon"></i>

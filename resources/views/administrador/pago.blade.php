@@ -104,6 +104,59 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label class="form-label">Recargo por pago tardío</label>
+                            <div class="input-icon-wrapper">
+                                <i class="percent icon"></i>
+                                <input
+                                    type="number"
+                                    name="recargo_pct"
+                                    id="recargo-pct"
+                                    class="form-input pago-input input-with-icon"
+                                    min="0"
+                                    max="100"
+                                    step="0.01"
+                                    placeholder="Ej. 10 — déjalo vacío si este concepto no lleva recargo"
+                                >
+                            </div>
+                            <p class="form-help-text" style="margin-top:6px;">
+                                <i class="info circle icon"></i>
+                                Se cobra solo si el vecino <strong>transfirió</strong> después del
+                                vencimiento. Si transfirió a tiempo y sube el comprobante días
+                                después, no se le cobra recargo.
+                            </p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Saldo a favor</label>
+
+                            {{--
+                                El formulario se manda con serialize(), y un
+                                checkbox desmarcado no viaja. Este hidden hace
+                                que "no aplicar" llegue explícito como 0.
+                            --}}
+                            <input type="hidden" name="aplica_saldo" value="0">
+
+                            <label class="saldo-opcion">
+                                <input type="checkbox" name="aplica_saldo" id="aplica-saldo" value="1" checked>
+                                <span>
+                                    <strong>Cubrir con el saldo a favor de quien lo tenga</strong>
+                                    <small>
+                                        Al publicarlo, a los vecinos que pagaron por adelantado se les
+                                        descuenta y el recibo les queda liquidado.
+                                    </small>
+                                </span>
+                            </label>
+
+                            <p class="form-help-text" style="margin-top:6px;">
+                                <i class="info circle icon"></i>
+                                Déjalo marcado para la <strong>cuota de mantenimiento</strong>.
+                                <strong>Desmárcalo</strong> en derramas, proyectos y gastos
+                                extraordinarios: ese adelanto es de su cuota, y tomarlo para otra
+                                cosa sería cobrárselo dos veces.
+                            </p>
+                        </div>
+
                         <button id="btn-recibo" class="btn btn-primary btn-lg btn-submit-pago" type="submit">
                             <i class="paper plane icon"></i>
                             Publicar recibo
@@ -124,6 +177,17 @@
                             <p class="pago-card-subtitle">Consulta, busca y administra los recibos publicados.</p>
                         </div>
                     </div>
+
+                    {{-- Reporte consolidado para trabajarlo en Excel: una fila
+                         por vecino y concepto, con montos, recargos y saldos. --}}
+                    <a
+                        href="{{ route('admin.pago.exportarConsolidado') }}"
+                        class="btn btn-secondary btn-exportar-consolidado"
+                        title="Descarga un CSV con todos los recibos, pagos, recargos y saldos. Se abre en Excel."
+                    >
+                        <i class="file excel outline icon"></i>
+                        Descargar reporte
+                    </a>
                 </div>
 
                 <div class="pagos-toolbar">
@@ -348,6 +412,40 @@
         background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
     }
 
+    /* El encabezado de la lista lleva el botón de exportar a la derecha. */
+    .pago-card-header.list-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .btn-exportar-consolidado {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-weight: 600;
+        font-size: .88rem;
+        text-decoration: none;
+        transition: background .15s ease;
+    }
+
+    .btn-exportar-consolidado:hover {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .btn-exportar-consolidado i {
+        margin: 0 !important;
+    }
+
     .pago-card-title-wrap {
         display: flex;
         align-items: center;
@@ -443,6 +541,38 @@
 
     .input-with-icon {
         padding-left: 42px !important;
+    }
+
+    .pago-badge-sinsaldo {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fcd34d;
+    }
+
+    .saldo-opcion {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 11px 13px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: border-color .15s, background .15s;
+    }
+
+    .saldo-opcion:hover { border-color: #cbd5e1; background: #f8fafc; }
+
+    .saldo-opcion input { margin-top: 3px; flex-shrink: 0; }
+
+    .saldo-opcion span { display: flex; flex-direction: column; gap: 3px; }
+
+    .saldo-opcion strong { font-size: .88rem; color: #0f172a; font-weight: 600; }
+
+    .saldo-opcion small { font-size: .78rem; color: #64748b; line-height: 1.45; }
+
+    .saldo-opcion:has(input:not(:checked)) {
+        border-color: #fcd34d;
+        background: #fffbeb;
     }
 
     .form-help-text {
@@ -1256,6 +1386,27 @@
             return;
         }
 
+        /*
+         * Solo se marca el caso excepcional: el concepto que NO consume el
+         * saldo a favor. Lo normal es que sí, y avisarlo en cada tarjeta
+         * sería ruido. Si el dato no viene (base todavía sin migrar) no se
+         * pinta nada.
+         */
+        function insigniaSaldo(pago) {
+            const v = pago.aplica_saldo;
+
+            if (v === undefined || v === null) return '';
+            if (v === false || v === 0 || v === '0') {
+                return `<span class="pago-badge pago-badge-sinsaldo"
+                              title="Al publicarlo no se tomó saldo a favor de nadie">
+                            <i class="ban icon"></i>
+                            No usa saldo a favor
+                        </span>`;
+            }
+
+            return '';
+        }
+
         const totalPaginas = Math.ceil(pagosFiltrados.length / pagosPorPagina);
         const inicio = (paginaActualPagos - 1) * pagosPorPagina;
         const fin = inicio + pagosPorPagina;
@@ -1304,6 +1455,7 @@
                                     <i class="${estado.icono} icon"></i>
                                     ${estado.texto}
                                 </span>
+                                ${insigniaSaldo(pago)}
                             </div>
                         </div>
                     </div>

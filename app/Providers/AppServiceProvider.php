@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Http\Middleware\RolMiddleware;
+use App\Http\Middleware\TesoreriaMiddleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::aliasMiddleware('rol', RolMiddleware::class);
+        Route::aliasMiddleware('tesoreria', TesoreriaMiddleware::class);
     }
 }

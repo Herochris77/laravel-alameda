@@ -211,6 +211,22 @@ class PagoController extends Controller
             $tabActivo
         );
 
+        /*
+         * =====================================================
+         * SALDO A FAVOR
+         * =====================================================
+         *
+         * Dinero que el vecino pagó de más y que se aplicará solo
+         * a su próxima cuota.
+         */
+        $saldos = app(\App\Services\SaldoService::class);
+
+        $saldoAFavor = $saldos->saldo($userId);
+
+        $movimientosSaldo = $saldoAFavor != 0.0
+            ? $saldos->movimientos($userId)
+            : collect();
+
         return view(
             'usuario.pago.index',
             compact(
@@ -219,7 +235,9 @@ class PagoController extends Controller
                 'aprobados',
                 'rechazados',
                 'pagosPaginados',
-                'tabActivo'
+                'tabActivo',
+                'saldoAFavor',
+                'movimientosSaldo'
             )
         );
     }
@@ -314,6 +332,13 @@ class PagoController extends Controller
 
             'cantidad_pago' =>
                 'required|numeric|min:0',
+
+            /*
+             * Fecha real en que el vecino hizo el movimiento.
+             * No puede ser futura. Tesorería puede corregirla al validar.
+             */
+            'fecha_pago' =>
+                'required|date|before_or_equal:today',
         ]);
 
         $detallePago = Detallepago::where(
@@ -364,6 +389,17 @@ class PagoController extends Controller
             'cantidad_pago' =>
                 $request->cantidad_pago,
 
+            'fecha_pago' =>
+                $request->fecha_pago,
+
+            /*
+             * El motivo del rechazo anterior deja de aplicar en cuanto el
+             * vecino sube un comprobante nuevo: ya corrigió lo que se le
+             * pidió y el recibo vuelve a revisión. Dejarlo colgado le haría
+             * seguir viendo un reclamo que ya atendió.
+             */
+            'comentario_rechazo' => null,
+
             'estado' =>
                 'pendiente',
         ]);
@@ -383,6 +419,38 @@ class PagoController extends Controller
      *
      * Solo disponible para pagos aprobados.
      */
+    /**
+     * Estado de cuenta del propio vecino.
+     *
+     * Deliberadamente no recibe un id: siempre se arma con el usuario de la
+     * sesión. Así no hay forma de pedir el de otra vivienda cambiando un
+     * número en la barra de direcciones.
+     */
+    public function estadoCuenta()
+    {
+        Carbon::setLocale('es');
+
+        $datos = app(\App\Services\EstadoCuentaService::class)->datos(Auth::user()->id);
+
+        $options = new Options;
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->setPaper('LETTER', 'portrait');
+        $dompdf->loadHtml(
+            view('administrador.estado-cuenta-pdf', compact('datos'))->render()
+        );
+        $dompdf->render();
+
+        $casa = preg_replace('/[^A-Za-z0-9]/', '', (string) Auth::user()->casa) ?: 'vivienda';
+
+        return response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="estado-de-cuenta-casa-'.$casa.'.pdf"',
+        ]);
+    }
+
     public function descargarRecibo($id)
     {
         $detallePago = Detallepago::with([
@@ -462,7 +530,19 @@ class PagoController extends Controller
                         'd/m/Y'
                     ),
 
+                /*
+                 * Fecha real del movimiento, no la de validación.
+                 * Antes usaba updated_at y el recibo mostraba el día en que
+                 * tesorería aprobó, no el día en que el vecino pagó.
+                 */
                 'fechaPago' =>
+                    optional(
+                        $pago->fechaEfectivaPago()
+                    )->translatedFormat(
+                        'd \d\e F \d\e Y'
+                    ) ?? 'No registrada',
+
+                'fechaValidacion' =>
                     Carbon::parse(
                         $pago->updated_at
                     )->translatedFormat(

@@ -10,6 +10,7 @@ use App\Notifications\NotificacionGenerica;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentoController extends Controller
@@ -30,9 +31,26 @@ class DocumentoController extends Controller
     public function crearDocumento(Request $request)
     {
         try {
+            $esGasto = $request->tipo_documento === 'referencia';
+
+            if ($esGasto) {
+                $request->validate([
+                    'cantidad' => 'required|numeric|min:0',
+                    'categoria_gasto' => 'required|string|max:50',
+                    // Sin la fecha del movimiento el reporte mensual no puede
+                    // cuadrar contra el estado de cuenta.
+                    'fecha_gasto' => 'required|date|before_or_equal:today',
+                    'proveedor' => 'nullable|string|max:150',
+                    'forma_pago' => 'nullable|string|max:20',
+                ], [
+                    'fecha_gasto.required' => 'Captura el día en que salió el dinero de la cuenta.',
+                    'fecha_gasto.before_or_equal' => 'La fecha del movimiento no puede ser futura.',
+                ]);
+            }
+
             $path = $request->file('doc_path')->store('documentos', 'public');
 
-            Documento::create([
+            $datos = [
                 'titulo' => $request->titulo,
                 'descripcion' => $request->descripcion,
                 'tipo' => $request->tipo_documento,
@@ -41,7 +59,18 @@ class DocumentoController extends Controller
                 'cantidad' => $request->cantidad ? $request->cantidad : null,
                 'categoria_gasto' => $request->categoria_gasto,
                 'created_by' => Auth::user()->id,
-            ]);
+            ];
+
+            // Las columnas llegan con /migrar, y en producción los archivos se
+            // suben antes de correrlo. En esa ventana el gasto se guarda como
+            // se guardaba antes en vez de reventar con un error de SQL.
+            if ($esGasto && Schema::hasColumn('documentos', 'fecha_gasto')) {
+                $datos['fecha_gasto'] = $request->fecha_gasto;
+                $datos['proveedor'] = $request->proveedor;
+                $datos['forma_pago'] = $request->forma_pago;
+            }
+
+            Documento::create($datos);
 
             $subjectmail = '🧾 Nuevo documento cargado';
             $titulomail = 'Se agregó un nuevo documento a la plataforma';
@@ -70,6 +99,14 @@ class DocumentoController extends Controller
                 'header' => 'Documento cargado ✅',
                 'message' => 'El documento se cargó correctamente.',
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Sin este catch, el genérico de abajo convertía "falta la fecha"
+            // en "error al cargar el documento" y no había forma de saberlo.
+            return response()->json([
+                'success' => false,
+                'header' => '⚠️ Faltan datos',
+                'message' => implode(' ', $e->validator->errors()->all()),
+            ], 422);
         } catch (\Exception $e) {
             Log::error('Error al crear documento: '.$e->getMessage());
 
@@ -80,13 +117,48 @@ class DocumentoController extends Controller
     public function obtenerDocumentos(Request $request)
     {
         if ($request->ajax()) {
-            $documento = Documento::with('user', 'pago')
-                ->select(['id', 'titulo', 'descripcion', 'tipo', 'pago_id', 'doc_path', 'cantidad', 'categoria_gasto', 'created_by', 'created_at']);
+            $columnas = ['id', 'titulo', 'descripcion', 'tipo', 'pago_id', 'doc_path', 'cantidad', 'categoria_gasto', 'created_by', 'created_at'];
+
+            // Condicional porque la columna puede no existir todavía si aún
+            // no se corre /migrar.
+            $hayFechaGasto = Schema::hasColumn('documentos', 'fecha_gasto');
+
+            if ($hayFechaGasto) {
+                $columnas = array_merge($columnas, ['fecha_gasto', 'proveedor', 'forma_pago']);
+            }
+
+            $documento = Documento::with('user', 'pago')->select($columnas);
 
             return datatables()->of($documento)
                 ->addColumn('autor', fn ($c) => $c->user->nombre ?? '—')
-                ->addColumn('acciones', function ($c) {
+                ->addColumn('fecha_movimiento', function ($c) use ($hayFechaGasto) {
+                    if (! $c->cantidad) {
+                        return null;
+                    }
+
+                    return [
+                        'texto' => $hayFechaGasto && $c->fecha_gasto
+                            ? \Carbon\Carbon::parse($c->fecha_gasto)->format('d/m/Y')
+                            : 'Sin registrar',
+                        'real' => $hayFechaGasto && $c->fecha_gasto !== null,
+                    ];
+                })
+                ->addColumn('acciones', function ($c) use ($hayFechaGasto) {
+                    // Los 34 gastos anteriores a esta función no traen fecha
+                    // bancaria; este botón es la forma de completarla.
+                    $editar = ($c->cantidad && $hayFechaGasto)
+                        ? '<button class="ui blue small icon button btn-editar-gasto" data-id="'.$c->id.'"
+                                   data-fecha="'.($c->fecha_gasto ? \Carbon\Carbon::parse($c->fecha_gasto)->format('Y-m-d') : '').'"
+                                   data-proveedor="'.e($c->proveedor ?? '').'"
+                                   data-forma="'.e($c->forma_pago ?? '').'"
+                                   data-titulo="'.e($c->titulo).'"
+                                   title="Editar datos del gasto">
+                                <i class="edit icon"></i>
+                            </button>'
+                        : '';
+
                     return '<div class="ui center aligned">
+                                    '.$editar.'
                                     <button class="ui red small icon button btn-eliminar" data-id="'.$c->id.'">
                                         <i class="trash icon"></i>
                                     </button>
@@ -126,6 +198,73 @@ class DocumentoController extends Controller
                 })
                 ->rawColumns(['acciones', 'documento', 'concepto', 'categoria'])
                 ->make(true);
+        }
+    }
+
+    /**
+     * Completa o corrige los datos bancarios de un gasto ya cargado.
+     *
+     * Los 34 gastos anteriores a esta función no tienen fecha de movimiento,
+     * y el reporte los está fechando por el día en que se subió el PDF. Esto
+     * es lo que permite irlos corrigiendo sin volver a subir el comprobante.
+     */
+    public function actualizarGasto(Request $request, $id)
+    {
+        try {
+            if (! Schema::hasColumn('documentos', 'fecha_gasto')) {
+                return response()->json([
+                    'success' => false,
+                    'header' => '⚠️ Falta migrar',
+                    'message' => 'Corre /migrar para habilitar la fecha de los gastos.',
+                ], 409);
+            }
+
+            $request->validate([
+                'fecha_gasto' => 'required|date|before_or_equal:today',
+                'proveedor' => 'nullable|string|max:150',
+                'forma_pago' => 'nullable|string|max:20',
+            ], [
+                'fecha_gasto.required' => 'Captura el día en que salió el dinero de la cuenta.',
+                'fecha_gasto.before_or_equal' => 'La fecha del movimiento no puede ser futura.',
+            ]);
+
+            $documento = Documento::findOrFail($id);
+
+            if (! $documento->cantidad) {
+                return response()->json([
+                    'success' => false,
+                    'header' => '❌ No es un gasto',
+                    'message' => 'Solo los comprobantes de gasto llevan fecha de movimiento.',
+                ], 422);
+            }
+
+            // Se tocan SOLO estos tres campos: el archivo, el monto y la
+            // categoría se quedan exactamente como estaban.
+            $documento->update([
+                'fecha_gasto' => $request->fecha_gasto,
+                'proveedor' => $request->proveedor,
+                'forma_pago' => $request->forma_pago,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'header' => 'Gasto actualizado ✅',
+                'message' => 'El reporte mensual ya lo cuenta en el mes en que salió el dinero.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'header' => '⚠️ Revisa los datos',
+                'message' => implode(' ', $e->validator->errors()->all()),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error al actualizar gasto: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'header' => '❌ Error',
+                'message' => 'No se pudo actualizar el gasto.',
+            ], 500);
         }
     }
 

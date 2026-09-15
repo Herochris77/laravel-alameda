@@ -87,7 +87,9 @@ class SancionController extends Controller
     {
         if ($request->ajax()) {
             $comunicados = Sancion::with('user')
-                ->select(['id', 'motivo', 'monto', 'incidencia', 'comentario', 'foto_path', 'pago_path', 'estado', 'user_id', 'created_by']);
+                // `fecha_pago` debe ir en el select o los reportes y el cálculo
+                // de puntualidad la leen como null.
+                ->select(['id', 'motivo', 'monto', 'incidencia', 'comentario', 'foto_path', 'pago_path', 'fecha_pago', 'estado', 'user_id', 'created_by']);
 
             return datatables()->of($comunicados)
                 ->addColumn('usuario', fn ($c) => $c->sancionado->nombre ?? '—')

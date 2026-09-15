@@ -15,11 +15,28 @@ class Pago extends Model
         'concepto',
         'cantidad',
         'vencimiento',
+        'recargo_pct',
+        'aplica_saldo',
         'created_at',
         'updated_at',
         'created_by',
         'deleted_by',
     ];
+
+    protected $casts = [
+        'aplica_saldo' => 'boolean',
+    ];
+
+    /**
+     * ¿Este concepto se puede liquidar con el saldo a favor del vecino?
+     *
+     * Los conceptos anteriores a esta función no tienen el dato, y ahí la
+     * respuesta es que sí: es como se venían comportando.
+     */
+    public function aplicaSaldo(): bool
+    {
+        return $this->aplica_saldo === null ? true : (bool) $this->aplica_saldo;
+    }
 
     // Sobreescribir el método delete para guardar quien eliminó
     public function delete()

@@ -55,6 +55,9 @@ class SancionController extends Controller
         $request->validate([
             'cantidad' => 'required|numeric|min:0',
             'comprobante' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            // Fecha real del movimiento. Opcional para no romper el formulario
+            // actual si aún no envía el campo.
+            'fecha_pago' => 'nullable|date|before_or_equal:today',
         ]);
 
         try {
@@ -80,6 +83,7 @@ class SancionController extends Controller
             $sancion->update([
                 'pago_path' => $pagoPath,
                 'monto' => $montoNuevo,
+                'fecha_pago' => $request->input('fecha_pago', now()->toDateString()),
                 'estado' => 'pendiente',
             ]);
 

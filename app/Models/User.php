@@ -21,6 +21,7 @@ class User extends Authenticatable
         'casa',
         'tipo',
         'rol',
+        'cargo',
         'pago',
         'estado',
         'token_auth',
@@ -50,6 +51,60 @@ class User extends Authenticatable
     public function solicitudesRecibidas()
     {
         return $this->hasMany(\App\Models\SolicitudPermiso::class, 'dueno_id');
+    }
+
+    /*
+     * =====================================================
+     * CARGOS DE LA MESA DIRECTIVA
+     * =====================================================
+     *
+     * El `rol` decide a qué módulos entra alguien; el `cargo` decide qué le
+     * toca hacer dentro del módulo de pagos. Se separan porque toda la mesa
+     * necesita ver la cobranza, pero el dinero lo mueve quien es tesorero.
+     */
+    public const CARGOS = [
+        'tesorero' => 'Tesorero',
+        'presidente' => 'Presidente',
+        'secretario' => 'Secretario',
+        'vocal' => 'Vocal',
+    ];
+
+    /**
+     * ¿Hay alguien nombrado tesorero?
+     *
+     * Mientras no lo haya, el módulo de pagos sigue abierto a toda la mesa,
+     * igual que antes. Así activar esta función no le quita el acceso a nadie
+     * de un día para otro: la restricción empieza cuando se asigna el cargo.
+     */
+    public static function hayTesoreroAsignado(): bool
+    {
+        return static::where('cargo', 'tesorero')
+            ->where('estado', 1)
+            ->exists();
+    }
+
+    /**
+     * ¿Este usuario puede mover dinero? (crear recibos, validar pagos,
+     * eliminarlos, ajustar saldos)
+     */
+    public function puedeGestionarPagos(): bool
+    {
+        // Quien administra el sistema siempre puede, para no quedarse fuera
+        // de su propia plataforma por una mala asignación de cargos.
+        if ($this->rol === 'super-administrador') {
+            return true;
+        }
+
+        if ($this->rol !== 'administrador') {
+            return false;
+        }
+
+        if ($this->cargo === 'tesorero') {
+            return true;
+        }
+
+        // Periodo de transición: sin tesorero nombrado, todo sigue como antes.
+        return ! static::hayTesoreroAsignado();
     }
 
     public function getAuthIdentifierName()

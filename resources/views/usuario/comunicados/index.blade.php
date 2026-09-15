@@ -38,7 +38,7 @@
                     </div>
                     <div style="padding: 14px 24px; border-top: 1px solid #f1f5f9; display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.85rem;">
                         <i class="clock outline icon"></i>
-                        Actualizado recientemente
+                        <span title="{{ $comunicado['ActualizadoExacto'] }}">Actualizado {{ $comunicado['Actualizado'] }}</span>
                     </div>
                 </div>
             @endforeach
