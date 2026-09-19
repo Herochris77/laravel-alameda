@@ -1035,7 +1035,7 @@
 
                                         ${{ number_format(
                                             $proyecto->costo,
-                                            0
+                                            2
                                         ) }}
 
                                     @else

@@ -12,7 +12,37 @@ class CorreoController extends Controller
 {
     public function index()
     {
-        return view('administrador.correos');
+        return view('administrador.correos', ['consumo' => $this->consumo()]);
+    }
+
+    /**
+     * Cuántos mensajes SMTP han salido, para vigilar la cuota del hosting.
+     *
+     * Cada renglón de `correos_enviados` es UN mensaje, aunque lleve 44
+     * destinatarios en copia oculta: es así como lo cuenta el proveedor de
+     * correo, y por eso es el número que importa vigilar.
+     */
+    private function consumo(): array
+    {
+        $porDia = CorreoEnviado::selectRaw('DATE(created_at) dia, COUNT(*) total')
+            ->where('created_at', '>=', now()->subDays(14)->startOfDay())
+            ->groupByRaw('DATE(created_at)')
+            ->orderByRaw('DATE(created_at)')
+            ->get();
+
+        return [
+            'hoy' => CorreoEnviado::whereDate('created_at', today())->count(),
+            'mes' => CorreoEnviado::where('created_at', '>=', now()->startOfMonth())->count(),
+            'destinatarios_hoy' => CorreoEnviado::whereDate('created_at', today())->get()
+                ->sum(fn ($c) => count(array_filter(explode(',', (string) $c->destinatarios)))),
+            'errores_hoy' => CorreoEnviado::whereDate('created_at', today())
+                ->where('estado', 'error')->count(),
+            'pico' => (int) $porDia->max('total'),
+            'serie' => $porDia->map(fn ($d) => [
+                'dia' => \Carbon\Carbon::parse($d->dia)->format('d/m'),
+                'total' => (int) $d->total,
+            ])->all(),
+        ];
     }
 
     public function listar(Request $request)

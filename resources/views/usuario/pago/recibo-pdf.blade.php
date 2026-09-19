@@ -80,6 +80,14 @@
             vertical-align: middle;
         }
 
+        /* Misma caja que el ícono al que sustituye, para no mover el resto
+           de la cabecera. */
+        .brand-logo {
+            height: 48px;
+            width: auto;
+            vertical-align: middle;
+        }
+
         .brand-icon {
             width: 48px;
             height: 48px;
@@ -463,21 +471,30 @@
         }
 
         .validation-icon {
-            width: 25px;
-            height: 25px;
-
-            text-align: center;
-
-            line-height: 25px;
+            width: 26px;
+            height: 26px;
 
             border-radius: 13px;
 
             background: #10b981;
 
+            border-collapse: collapse;
+        }
+
+        .validation-icon td {
+            width: 26px;
+            height: 26px;
+
+            padding: 0;
+            border: 0;
+
+            text-align: center;
+            vertical-align: middle;
+
             color: #ffffff;
 
-            font-size: 15px;
-
+            font-size: 14px;
+            line-height: 1;
             font-weight: bold;
         }
 
@@ -507,6 +524,88 @@
         /* =====================================================
            FOOTER
         ===================================================== */
+
+        /* =====================================================
+           FORMA DE PAGO Y FIRMA
+           ===================================================== */
+
+        .bloque-firma {
+            margin-top: 26px;
+        }
+
+        .tabla-firma {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .firma-datos {
+            width: 55%;
+            vertical-align: bottom;
+            padding-right: 18px;
+        }
+
+        .firma-dato {
+            margin-bottom: 9px;
+        }
+
+        .firma-dato span {
+            display: block;
+            font-size: 9px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .firma-dato strong {
+            font-size: 12px;
+            color: #0f172a;
+        }
+
+        .firma-efectivo {
+            margin-top: 10px;
+            padding: 8px 10px;
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            font-size: 9.5px;
+            color: #92400e;
+            line-height: 1.45;
+        }
+
+        .firma-espacio {
+            width: 45%;
+            text-align: center;
+            vertical-align: bottom;
+        }
+
+        /* Altura fija tanto con firma como sin ella, para que el recibo
+           impreso y el descargado midan lo mismo. */
+        .firma-imagen {
+            max-height: 62px;
+            max-width: 210px;
+            margin-bottom: 2px;
+        }
+
+        .firma-hueco {
+            height: 62px;
+        }
+
+        .firma-linea {
+            border-top: 1px solid #334155;
+            margin: 0 auto;
+        }
+
+        .firma-nombre {
+            margin-top: 5px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .firma-cargo {
+            font-size: 9px;
+            color: #64748b;
+        }
 
         .footer {
             margin-top: 25px;
@@ -568,9 +667,21 @@
 
                             <td>
 
-                                <div class="brand-icon">
-                                    $
-                                </div>
+                                {{--
+                                    Si hay logo, ocupa el lugar del ícono: es
+                                    la identidad del condominio, no un adorno
+                                    genérico. Sin logo se conserva el símbolo
+                                    de siempre para que no quede un hueco.
+                                --}}
+                                @php($logoRecibo = app(\App\Services\LogoService::class)->ruta())
+
+                                @if($logoRecibo)
+                                    <img src="{{ $logoRecibo }}" class="brand-logo" alt="">
+                                @else
+                                    <div class="brand-icon">
+                                        $
+                                    </div>
+                                @endif
 
                             </td>
 
@@ -787,9 +898,17 @@
 
                     <td class="validation-icon-cell">
 
-                        <div class="validation-icon">
-                            ✓
-                        </div>
+                        {{--
+                            El círculo va como tabla de una celda, no como div.
+                            dompdf no centra de forma fiable con line-height, y
+                            la paloma quedaba escurrida fuera del círculo.
+                            El vertical-align de una celda sí lo respeta.
+                        --}}
+                        <table class="validation-icon">
+                            <tr>
+                                <td>✓</td>
+                            </tr>
+                        </table>
 
                     </td>
 
@@ -809,6 +928,69 @@
 
                 </tr>
 
+            </table>
+
+        </div>
+
+
+        {{-- =====================================================
+             FORMA DE PAGO Y FIRMA
+
+             El efectivo se destaca porque no tiene comprobante bancario que
+             lo respalde: este papel firmado ES el comprobante del vecino.
+        ====================================================== --}}
+
+        <div class="bloque-firma">
+
+            <table class="tabla-firma">
+                <tr>
+                    <td class="firma-datos">
+
+                        <div class="firma-dato">
+                            <span>Forma de pago</span>
+                            <strong>{{ $formaPago ?? 'Transferencia' }}</strong>
+                        </div>
+
+                        @if(!empty($folioRecibo))
+                            <div class="firma-dato">
+                                <span>Folio del recibo</span>
+                                <strong>{{ $folioRecibo }}</strong>
+                            </div>
+                        @endif
+
+                        @if(!empty($esEfectivo))
+                            <div class="firma-efectivo">
+                                Pago recibido en efectivo por la Tesorería.
+                                Este recibo firmado es tu comprobante.
+                            </div>
+                        @endif
+
+                    </td>
+
+                    <td class="firma-espacio">
+
+                        @php($altoFirma = $firmaAlto ?? 62)
+
+                        @if(!empty($firmaImagen))
+                            {{-- Solo alto: el ancho libre evita deformarla. --}}
+                            <img src="{{ $firmaImagen }}" alt=""
+                                 style="height: {{ $altoFirma }}px; width: auto; margin-bottom: 2px;">
+                        @else
+                            <div style="height: {{ $altoFirma }}px;"></div>
+                        @endif
+
+                        <div class="firma-linea"></div>
+
+                        <div class="firma-nombre">
+                            {{ $firmanteNombre ?? '' }}
+                        </div>
+
+                        <div class="firma-cargo">
+                            {{ $firmanteCargo ?? 'Tesorería · Mesa Directiva' }}
+                        </div>
+
+                    </td>
+                </tr>
             </table>
 
         </div>

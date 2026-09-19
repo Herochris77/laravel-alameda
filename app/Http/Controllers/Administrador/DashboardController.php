@@ -27,6 +27,7 @@ class DashboardController extends Controller
             'success' => true,
             'cobranza' => $this->cobranza(),
             'casas' => $this->casas(),
+            'deudores' => $this->deudores(),
             'participacion' => $this->participacion(),
             'recaudacion_6m' => $this->recaudacion6meses(),
             'pendientes' => $this->pendientes(),
@@ -84,6 +85,63 @@ class DashboardController extends Controller
             Log::error('dashboard.cobranza: '.$e->getMessage());
 
             return ['recaudado' => 0, 'esperado' => 0, 'pct' => 0];
+        }
+    }
+
+    /**
+     * Quién debe y cuánto, con nombre y casa.
+     *
+     * Va SOLO en el tablero de la mesa directiva. En el módulo de
+     * transparencia, que ven todos los vecinos, se queda el agregado sin
+     * nombres: el Aviso de Privacidad dice que los adeudos por vivienda los
+     * ve únicamente la mesa, y publicar la lista lo incumpliría.
+     */
+    private function deudores(): array
+    {
+        try {
+            $servicio = app(\App\Services\EstadoCuentaService::class);
+            $hoy = Carbon::now()->startOfDay();
+
+            $conAdeudo = collect($servicio->resumenGeneral())
+                ->where('al_corriente', false)
+                ->sortByDesc('pendiente')
+                ->values();
+
+            // Días de atraso del recibo vencido más antiguo de cada vivienda:
+            // es lo que distingue un despiste de este mes de un rezago serio.
+            $atrasoPorUsuario = [];
+
+            foreach (Detallepago::with('pago')->where('estado', '!=', 'pagado')->get() as $d) {
+                if (! $d->pago || ! $d->pago->vencimiento) {
+                    continue;
+                }
+
+                $vence = Carbon::parse($d->pago->vencimiento)->startOfDay();
+
+                if ($vence->gte($hoy)) {
+                    continue;
+                }
+
+                $dias = $vence->diffInDays($hoy);
+
+                $atrasoPorUsuario[$d->user_id] = max($atrasoPorUsuario[$d->user_id] ?? 0, $dias);
+            }
+
+            return [
+                'total' => $conAdeudo->count(),
+                'monto' => round($conAdeudo->sum('pendiente'), 2),
+                'lista' => $conAdeudo->take(8)->map(fn ($v) => [
+                    'id' => $v['id'],
+                    'casa' => $v['casa'],
+                    'nombre' => $v['nombre'],
+                    'pendiente' => $v['pendiente'],
+                    'dias' => $atrasoPorUsuario[$v['id']] ?? 0,
+                ])->all(),
+            ];
+        } catch (\Throwable $e) {
+            Log::error('dashboard.deudores: '.$e->getMessage());
+
+            return ['total' => 0, 'monto' => 0, 'lista' => []];
         }
     }
 

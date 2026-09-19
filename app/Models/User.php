@@ -27,6 +27,9 @@ class User extends Authenticatable
         'token_auth',
         'emails',
         'foto',
+        'firma',
+        'acepto_aviso_en',
+        'acepto_aviso_version',
     ];
 
     protected $hidden = [
@@ -68,6 +71,29 @@ class User extends Authenticatable
         'secretario' => 'Secretario',
         'vocal' => 'Vocal',
     ];
+
+    /**
+     * ¿Este usuario ya aceptó la versión vigente del aviso de privacidad?
+     *
+     * Se compara contra la versión, no contra la fecha: si el aviso cambia de
+     * fondo se sube la versión en config y a todos les vuelve a aparecer la
+     * ventana. Corregir una coma no debería obligar a 45 vecinos a aceptar
+     * otra vez, por eso la versión se sube a mano.
+     */
+    public function haAceptadoAviso(): bool
+    {
+        if (! \Illuminate\Support\Facades\Schema::hasColumn('users', 'acepto_aviso_en')) {
+            // Todavía no se corre /migrar: no se puede exigir lo que no se
+            // puede registrar, y bloquear el sistema entero sería peor.
+            return true;
+        }
+
+        if (! $this->acepto_aviso_en) {
+            return false;
+        }
+
+        return (string) $this->acepto_aviso_version === (string) config('privacidad.version_aviso', '1.0');
+    }
 
     /**
      * ¿Hay alguien nombrado tesorero?

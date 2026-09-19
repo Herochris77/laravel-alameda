@@ -79,12 +79,7 @@ class EstadoCuentaController extends Controller
 
             $datos = $this->servicio->datos($id);
 
-            $options = new \Dompdf\Options;
-            $options->set('isRemoteEnabled', true);
-            $options->set('isHtml5ParserEnabled', true);
-
-            $dompdf = new \Dompdf\Dompdf($options);
-            $dompdf->setPaper('LETTER', 'portrait');
+            $dompdf = \App\Services\PdfService::crear('LETTER', 'portrait');
             $dompdf->loadHtml(view($vista, compact('datos'))->render());
             $dompdf->render();
 

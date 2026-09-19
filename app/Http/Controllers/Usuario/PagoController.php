@@ -432,12 +432,7 @@ class PagoController extends Controller
 
         $datos = app(\App\Services\EstadoCuentaService::class)->datos(Auth::user()->id);
 
-        $options = new Options;
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-
-        $dompdf = new \Dompdf\Dompdf($options);
-        $dompdf->setPaper('LETTER', 'portrait');
+        $dompdf = \App\Services\PdfService::crear('LETTER', 'portrait');
         $dompdf->loadHtml(
             view('administrador.estado-cuenta-pdf', compact('datos'))->render()
         );
@@ -453,132 +448,23 @@ class PagoController extends Controller
 
     public function descargarRecibo($id)
     {
-        $detallePago = Detallepago::with([
-            'pago',
-            'user',
-        ])
+        /*
+         * El recibo se arma en ReciboService, que es el mismo que usa
+         * tesorería. La diferencia es esta: aquí va firmado, porque el vecino
+         * lo descarga y nadie se lo va a firmar de puño.
+         */
+        $detallePago = Detallepago::with(['pago', 'user', 'validador'])
             ->where('id', $id)
-
-            ->where(
-                'user_id',
-                Auth::user()->id
-            )
-
-            ->where(
-                'estado',
-                'pagado'
-            )
-
+            ->where('user_id', Auth::user()->id)
+            ->where('estado', 'pagado')
             ->firstOrFail();
 
-        $pago = $detallePago;
+        $pdf = app(\App\Services\ReciboService::class)->generar($detallePago, firmar: true);
 
-        /*
-         * Configuración Dompdf.
-         */
-        $options = new Options();
-
-        $options->set(
-            'isRemoteEnabled',
-            true
-        );
-
-        $dompdf =
-            new \Dompdf\Dompdf(
-                $options
-            );
-
-        $dompdf->setPaper(
-            'A4',
-            'portrait'
-        );
-
-        /*
-         * HTML del recibo.
-         */
-        $html = view(
-            'usuario.pago.recibo-pdf',
-            [
-                'pago' =>
-                    $pago,
-
-                'nombre' =>
-                    $pago->user->nombre
-                    ?? 'Usuario',
-
-                'casa' =>
-                    $pago->user->casa
-                    ?? 'N/A',
-
-                'tipo' =>
-                    $pago->user->tipo
-                    ?? 'residente',
-
-                'concepto' =>
-                    $pago->pago->concepto,
-
-                'cantidad' =>
-                    number_format(
-                        $pago->cantidad_pago,
-                        2
-                    ),
-
-                'vencimiento' =>
-                    Carbon::parse(
-                        $pago->pago->vencimiento
-                    )->format(
-                        'd/m/Y'
-                    ),
-
-                /*
-                 * Fecha real del movimiento, no la de validación.
-                 * Antes usaba updated_at y el recibo mostraba el día en que
-                 * tesorería aprobó, no el día en que el vecino pagó.
-                 */
-                'fechaPago' =>
-                    optional(
-                        $pago->fechaEfectivaPago()
-                    )->translatedFormat(
-                        'd \d\e F \d\e Y'
-                    ) ?? 'No registrada',
-
-                'fechaValidacion' =>
-                    Carbon::parse(
-                        $pago->updated_at
-                    )->translatedFormat(
-                        'd \d\e F \d\e Y'
-                    ),
-
-                'fechaActual' =>
-                    now()->translatedFormat(
-                        'd \d\e F \d\e Y \a \l\a\s H:i'
-                    ),
-            ]
-        )->render();
-
-        $dompdf->loadHtml(
-            $html
-        );
-
-        $dompdf->render();
-
-        /*
-         * Descargar PDF.
-         */
-        return response(
-            $dompdf->output(),
-            200,
-            [
-                'Content-Type' =>
-                    'application/pdf',
-
-                'Content-Disposition' =>
-                    'attachment; filename="recibo-pago-'
-                    .$pago->id
-                    .'-'
-                    .date('Ymd')
-                    .'.pdf"',
-            ]
-        );
+        return response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="recibo-pago-'
+                .$detallePago->id.'-'.date('Ymd').'.pdf"',
+        ]);
     }
 }

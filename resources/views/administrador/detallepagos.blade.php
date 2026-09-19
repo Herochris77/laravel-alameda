@@ -154,6 +154,23 @@
                 </div>
             </div>
 
+            {{--
+                Aviso de que la vista llega filtrada desde otra pantalla. Sin
+                esto, quien entra desde el inicio ve menos recibos de los que
+                hay y puede pensar que falta información.
+            --}}
+            <div id="aviso-filtros-url" class="aviso-filtros" style="display: none;">
+                <i class="filter icon"></i>
+                <span>
+                    Estás viendo la vista filtrada que pediste desde el inicio.
+                    Para ver todos los recibos de este concepto, usa
+                    <strong>Limpiar filtros</strong>.
+                </span>
+                <button type="button" class="aviso-filtros-btn" onclick="limpiarFiltrosDetallePagos(); $('#aviso-filtros-url').hide();">
+                    Ver todos
+                </button>
+            </div>
+
             <div id="detalle-pagos-loader" class="detalle-pagos-loader">
                 <div class="ui active centered inline text loader large">Cargando pagos...</div>
             </div>
@@ -263,6 +280,29 @@
                 <p class="form-help-text">
                     <i class="info circle icon"></i>
                     El usuario no subió comprobante, ingresa el monto con el que se registrará el pago.
+                </p>
+            </div>
+
+            {{--
+                Forma de pago. El efectivo es el caso que no tiene comprobante
+                que subir: el respaldo es el recibo firmado que se entrega en
+                mano, y por eso al marcarlo se genera un folio.
+            --}}
+            <div class="form-group" id="campo-forma-pago" style="display: none;">
+                <label class="form-label">Forma de pago *</label>
+
+                <select name="forma_pago" id="edit-forma-pago" class="form-input detalle-input">
+                    <option value="transferencia">Transferencia</option>
+                    <option value="efectivo">Efectivo</option>
+                    <option value="deposito">Depósito en ventanilla</option>
+                </select>
+
+                <p class="form-help-text" id="aviso-efectivo" style="display: none;">
+                    <i class="hand holding usd icon"></i>
+                    Al guardar se genera un <strong>folio de recibo</strong>. Descarga el
+                    recibo desde la tarjeta, imprímelo y fírmalo para entregárselo al
+                    vecino: ese papel es su comprobante, porque no hay transferencia
+                    que lo respalde.
                 </p>
             </div>
 
@@ -802,6 +842,42 @@
         color: var(--detalle-text-main);
         font-size: 1.2rem;
         line-height: 1;
+    }
+
+    .aviso-filtros {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 20px 14px;
+        padding: 10px 14px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 11px;
+        color: #1e40af;
+        font-size: .85rem;
+        line-height: 1.45;
+    }
+
+    .aviso-filtros > i { font-size: 1rem; margin: 0; flex-shrink: 0; }
+
+    .aviso-filtros span { flex: 1; }
+
+    .aviso-filtros-btn {
+        background: #fff;
+        border: 1px solid #93c5fd;
+        color: #1d4ed8;
+        border-radius: 8px;
+        padding: 5px 12px;
+        font-size: .82rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .aviso-filtros-btn:hover { background: #dbeafe; }
+
+    @media (max-width: 640px) {
+        .aviso-filtros { flex-direction: column; align-items: flex-start; margin: 0 14px 12px; }
     }
 
     .detalle-pagos-loader {
@@ -1487,6 +1563,40 @@
         $('#filtro-comprobante-detalle').dropdown();
         $('#filtro-tiempo-detalle').dropdown();
 
+        /*
+         * Filtros que vienen en la URL.
+         *
+         * Permite llegar desde el inicio con la vista ya armada
+         * (?estado=pendiente&comprobante=con) en vez de seleccionarlos a mano
+         * cada vez que se entra a revisar comprobantes.
+         *
+         * Se usa 'set selected' y no .val() porque estos select son dropdowns
+         * de Fomantic: cambiar el value a secas no actualiza el texto visible
+         * y el filtro se vería activo sin estarlo.
+         */
+        (function aplicarFiltrosDeLaUrl() {
+            const params = new URLSearchParams(window.location.search);
+
+            const validos = {
+                'estado': { sel: '#filtro-estado-detalle', ok: ['todos', 'pendiente', 'pagado', 'rechazado'] },
+                'comprobante': { sel: '#filtro-comprobante-detalle', ok: ['todos', 'con', 'sin'] },
+                'tiempo': { sel: '#filtro-tiempo-detalle', ok: ['todos', 'atiempo', 'tarde'] }
+            };
+
+            let aplicado = false;
+
+            Object.entries(validos).forEach(([parametro, cfg]) => {
+                const valor = params.get(parametro);
+
+                if (valor && cfg.ok.includes(valor)) {
+                    $(cfg.sel).dropdown('set selected', valor);
+                    aplicado = true;
+                }
+            });
+
+            if (aplicado) $('#aviso-filtros-url').show();
+        })();
+
         cargarDetallePagos();
 
         $('#buscar-detalle-pago').on('keyup input change', function() {
@@ -1527,7 +1637,15 @@
                 $('#detalle-pagos-loader').hide();
 
                 detallePagosOriginales = response.data || [];
-                renderizarDetallePagos(detallePagosOriginales);
+
+                /*
+                 * Se vuelve a filtrar en vez de pintar la lista completa.
+                 * Antes, al validar un pago la lista se recargaba sin los
+                 * filtros: los select seguían marcados pero las tarjetas
+                 * salían todas, y había que mover un filtro para recuperar
+                 * la vista en la que se estaba trabajando.
+                 */
+                filtrarDetallePagos(paginaActualDetallePagos);
             },
             error: function() {
                 $('#detalle-pagos-loader').hide();
@@ -1536,9 +1654,17 @@
         });
     }
 
-    function renderizarDetallePagos(detalles) {
+    function renderizarDetallePagos(detalles, paginaDeseada) {
         detallePagosFiltrados = detalles;
-        paginaActualDetallePagos = 1;
+
+        // Si la página pedida ya no existe (el filtro dejó menos tarjetas),
+        // se cae a la última disponible en vez de mostrar una vista vacía.
+        const totalPaginas = Math.max(1, Math.ceil(detalles.length / detallePagosPorPagina));
+
+        paginaActualDetallePagos = paginaDeseada
+            ? Math.min(paginaDeseada, totalPaginas)
+            : 1;
+
         renderizarPaginaDetallePagos();
     }
 
@@ -1613,8 +1739,28 @@
                     </span>
                 `;
 
+            /*
+             * Recibo para imprimir y firmar a mano. Solo tiene sentido si el
+             * pago ya está validado: un recibo de algo no cobrado no es un
+             * recibo. Sale SIN firma a propósito; el firmado es el que el
+             * vecino descarga desde su sesión.
+             */
+            const reciboButton = estado.valor === 'pagado'
+                ? `
+                    <a href="${BASE_URL}/administrador/pago/recibo/${escapeHtml(id)}"
+                       target="_blank"
+                       class="btn btn-secondary btn-sm"
+                       title="Recibo para imprimir y firmar de puño">
+                        <i class="file pdf outline icon"></i>
+                        Recibo
+                    </a>
+                `
+                : '';
+
             const accionesHtml = `
                 ${evidenciaButton}
+
+                ${reciboButton}
 
                 <button
                     type="button"
@@ -1622,6 +1768,7 @@
                     data-id="${escapeHtml(id)}"
                     data-estado="${escapeHtml(estado.valor)}"
                     data-cantidad-pago="${escapeHtml(extraerNumero(cantidadPago))}"
+                    data-forma-pago="${escapeHtml(detalle.forma_pago || '')}"
                 >
                     <i class="edit icon"></i>
                     Editar
@@ -1904,7 +2051,13 @@
         return paginas;
     }
 
-    function filtrarDetallePagos() {
+    /**
+     * Aplica los filtros activos sobre la lista completa.
+     *
+     * `paginaDeseada` permite volver a la página en la que estaba el tesorero
+     * después de validar un pago, en vez de mandarlo de vuelta a la primera.
+     */
+    function filtrarDetallePagos(paginaDeseada) {
         const busqueda = normalizarTexto($('#buscar-detalle-pago').val());
         const estadoFiltro = $('#filtro-estado-detalle').val();
         const comprobanteFiltro = $('#filtro-comprobante-detalle').val();
@@ -1957,7 +2110,7 @@
             return coincideBusqueda && coincideEstado && coincideComprobante && coincideTiempo;
         });
 
-        renderizarDetallePagos(filtrados);
+        renderizarDetallePagos(filtrados, paginaDeseada);
     }
 
     function limpiarFiltrosDetallePagos() {
@@ -1989,6 +2142,11 @@
         $('#edit-fecha-pago').val($btn.data('fecha-pago') || '');
         $('#edit-comentario-rechazo').val($btn.data('comentario-rechazo') || '');
 
+        // Los recibos anteriores a esta función no traen forma de pago; todos
+        // fueron por transferencia, que era la única vía.
+        $('#edit-forma-pago').val($btn.data('forma-pago') || 'transferencia');
+        $('#aviso-efectivo').toggle($btn.data('forma-pago') === 'efectivo');
+
         // Deja los campos coherentes con el estado que ya trae el recibo,
         // sin esperar a que el tesorero toque el selector.
         alternarCamposEstado();
@@ -2008,6 +2166,13 @@
             $('#edit-cantidad-pago').prop('required', false);
         }
 
+        // La forma de pago solo tiene sentido cuando el pago se aprueba.
+        if (estado === 'pagado') {
+            $('#campo-forma-pago').show();
+        } else {
+            $('#campo-forma-pago').hide();
+        }
+
         // El motivo solo aplica al rechazar, y ahí es obligatorio: sin él
         // el vecino no sabe qué corregir antes de volver a subir.
         if (estado === 'rechazado') {
@@ -2021,6 +2186,11 @@
 
     $('#edit-estado').on('change', alternarCamposEstado);
 
+    // El aviso del folio solo aparece si de verdad se eligió efectivo.
+    $('#edit-forma-pago').on('change', function () {
+        $('#aviso-efectivo').toggle($(this).val() === 'efectivo');
+    });
+
     $('#form-editar').submit(function(e) {
         e.preventDefault();
 
@@ -2029,6 +2199,21 @@
         }
 
         isSubmittingEstado = true;
+
+        /*
+         * El aviso va en el propio botón, no solo en el loader de pantalla.
+         * El loader es un velo casi blanco sobre un modal blanco, así que se
+         * confunde con "no pasó nada" y el tesorero vuelve a picar Guardar.
+         * Aquí el botón queda deshabilitado y diciendo qué está haciendo,
+         * justo donde tiene puesta la vista.
+         */
+        const $boton = $('#btn-guardar-cambios');
+        const textoOriginal = $boton.html();
+
+        $boton.prop('disabled', true).addClass('loading disabled')
+              .html('<i class="spinner loading icon"></i> Guardando...');
+        $('#modal-editar .btn-modal-cancel').addClass('disabled');
+
         mostrarLoaderPantalla();
 
         const id = $('#edit-id').val();
@@ -2060,6 +2245,11 @@
                 },
                 complete: function() {
                     ocultarLoaderPantalla();
+
+                    $boton.prop('disabled', false).removeClass('loading disabled')
+                          .html(textoOriginal);
+                    $('#modal-editar .btn-modal-cancel').removeClass('disabled');
+
                     isSubmittingEstado = false;
                 }
             });

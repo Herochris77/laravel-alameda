@@ -54,7 +54,7 @@
                     <div class="pa-item">
                         <div>
                             <div class="pa-name">{{ $p->nombre }} <span class="pa-badge" style="background:{{ $col[0] }}; color:{{ $col[1] }};">{{ $estados[$p->estado] ?? $p->estado }}</span></div>
-                            <div style="font-size:12px; color:var(--muted); margin-top:2px;">${{ number_format($p->costo, 0) }} · {{ $p->avance }}% · {{ $p->avances_count }} avance(s)</div>
+                            <div style="font-size:12px; color:var(--muted); margin-top:2px;">${{ number_format($p->costo, 2) }} · {{ $p->avance }}% · {{ $p->avances_count }} avance(s)</div>
                             <div class="pa-bar"><div class="pa-fill" style="width:{{ $p->avance }}%;"></div></div>
                         </div>
                         <a href="{{ route('admin.proyectos.ver', $p->id) }}" class="pa-link">Gestionar <i class="arrow right icon"></i></a>

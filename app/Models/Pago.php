@@ -17,6 +17,7 @@ class Pago extends Model
         'vencimiento',
         'recargo_pct',
         'aplica_saldo',
+        'ultimo_aviso',
         'created_at',
         'updated_at',
         'created_by',

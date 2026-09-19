@@ -52,7 +52,7 @@
                     </div>
                 </div>
                 <div class="ex-badges">
-                    @if($adeudo > 0)<span class="ex-badge">Adeudo ${{ number_format($adeudo, 0) }}</span>@endif
+                    @if($adeudo > 0)<span class="ex-badge">Adeudo ${{ number_format($adeudo, 2) }}</span>@endif
                     @php $sancActivas = $sanciones->where('estado','pendiente')->count(); @endphp
                     @if($sancActivas > 0)<span class="ex-badge">{{ $sancActivas }} sanción(es) activa(s)</span>@endif
                     @if($adeudo == 0 && $sancActivas == 0)<span class="ex-badge">Al corriente</span>@endif

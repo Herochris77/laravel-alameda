@@ -482,6 +482,151 @@
            CATEGORÍAS
         ===================================================== */
 
+        /* =====================================================
+           DESGLOSE DEL MES
+           ===================================================== */
+
+        .mes-pista {
+            text-align: center;
+            font-size: .78rem;
+            color: var(--tp-soft, #94a3b8);
+            margin-top: 6px;
+        }
+
+        .mes-detalle {
+            margin-top: 14px;
+            border: 1px solid #c7d2fe;
+            border-radius: 14px;
+            background: #f5f7ff;
+            padding: 14px 16px;
+        }
+
+        .mes-cab {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .mes-titulo {
+            display: block;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #3730a3;
+            text-transform: capitalize;
+        }
+
+        .mes-resumen { font-size: .82rem; color: #64748b; }
+
+        .mes-cerrar {
+            background: none;
+            border: none;
+            color: #6366f1;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 2px 6px;
+            line-height: 1;
+        }
+
+        .mes-cerrar:hover { color: #3730a3; }
+
+        .mes-aviso {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+            border-radius: 9px;
+            padding: 8px 11px;
+            font-size: .8rem;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .mes-categorias { margin-bottom: 12px; }
+
+        .mes-cat { margin-bottom: 7px; }
+
+        .mes-cat-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: .82rem;
+            color: #334155;
+            margin-bottom: 3px;
+        }
+
+        .mes-cat-head strong { color: #0f172a; }
+
+        .mes-cat-barra {
+            height: 8px;
+            background: #e0e7ff;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .mes-cat-barra span {
+            display: block;
+            height: 8px;
+            background: #6366f1;
+            border-radius: 99px;
+        }
+
+        .mes-lista {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 11px;
+            overflow: hidden;
+        }
+
+        .mes-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 9px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: .85rem;
+        }
+
+        .mes-item:last-child { border-bottom: none; }
+
+        .mes-item-info { min-width: 0; }
+
+        .mes-item-titulo { color: #0f172a; font-weight: 600; }
+
+        .mes-item-meta { font-size: .76rem; color: #94a3b8; margin-top: 1px; }
+
+        .mes-item-der {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .mes-item-monto { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+        .mes-comprobante {
+            color: #6366f1;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .mes-comprobante:hover { color: #3730a3; }
+
+        .mes-sin-archivo { color: #d97706; font-size: 1rem; }
+
+        .mes-aprox {
+            display: inline-block;
+            margin-left: 5px;
+            padding: 0 6px;
+            border-radius: 99px;
+            background: #fef3c7;
+            color: #92400e;
+            font-size: .68rem;
+            font-weight: 700;
+        }
+
+        .mes-vacio { padding: 18px; text-align: center; color: #94a3b8; font-size: .85rem; }
+
         .cat-row {
             margin-bottom: 12px;
         }
@@ -1749,6 +1894,36 @@
                     <canvas id="chart-ie"></canvas>
                 </div>
 
+                <div class="mes-pista">
+                    <i class="hand pointer outline icon"></i>
+                    Pulsa un mes para ver en qué se gastó
+                </div>
+
+                {{--
+                    Desglose del mes. Antes había que bajar a la tabla y
+                    filtrar por fechas para responder "¿en qué se fue agosto?",
+                    y por eso nadie lo consultaba.
+                --}}
+                <div id="mes-detalle" class="mes-detalle" style="display:none;">
+
+                    <div class="mes-cab">
+                        <div>
+                            <span class="mes-titulo" id="mes-titulo"></span>
+                            <span class="mes-resumen" id="mes-resumen"></span>
+                        </div>
+                        <button type="button" class="mes-cerrar" id="mes-cerrar" aria-label="Cerrar">
+                            <i class="times icon"></i>
+                        </button>
+                    </div>
+
+                    <div id="mes-avisos"></div>
+
+                    <div id="mes-categorias" class="mes-categorias"></div>
+
+                    <div id="mes-lista" class="mes-lista"></div>
+
+                </div>
+
             </div>
 
 
@@ -2171,7 +2346,7 @@
 
                                 ${{ number_format(
                                     $gasto['monto'],
-                                    0,
+                                    2,
                                     '.',
                                     ','
                                 ) }}
@@ -2351,15 +2526,157 @@
 
     <script>
 
+        /*
+         * Este módulo es de transparencia: las cifras se muestran completas,
+         * con centavos. Redondear a pesos hacía que la suma de los renglones
+         * no diera el total y abría la puerta a que alguien pensara que se
+         * está escondiendo algo.
+         */
         const tpFmt =
             new Intl.NumberFormat(
                 'es-MX',
                 {
                     style: 'currency',
                     currency: 'MXN',
-                    maximumFractionDigits: 0
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
                 }
             );
+
+        /*
+         * El eje de la gráfica usa el mismo formato exacto. Se consideró
+         * dejarlo en pesos cerrados para que las etiquetas fueran más
+         * cortas, pero en un módulo de transparencia no debe haber ni una
+         * cifra redondeada: que dos números con el mismo formato no
+         * coincidan es justo lo que levanta sospechas.
+         */
+        const tpFmtEje = tpFmt;
+
+
+        /*
+         * ==================================================
+         * DESGLOSE DEL MES
+         * ==================================================
+         *
+         * Se pide al pulsar una barra. Muestra el reparto por categoría y el
+         * detalle renglón por renglón, con la liga al comprobante de cada
+         * gasto. Aquí NO va nada de cobranza individual: esta pantalla la ven
+         * todos los vecinos, y los adeudos por vivienda solo los ve la mesa
+         * directiva, como dice el Aviso de Privacidad.
+         */
+        let mesAbierto = null;
+
+        function abrirMes(periodo) {
+
+            if (mesAbierto === periodo) {
+                cerrarMes();
+                return;
+            }
+
+            mesAbierto = periodo;
+
+            const caja = document.getElementById('mes-detalle');
+
+            document.getElementById('mes-titulo').textContent = 'Cargando...';
+            document.getElementById('mes-resumen').textContent = '';
+            document.getElementById('mes-avisos').innerHTML = '';
+            document.getElementById('mes-categorias').innerHTML = '';
+            document.getElementById('mes-lista').innerHTML = '';
+
+            caja.style.display = 'block';
+            caja.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            fetch(`{{ route('usuario.reportes.egresosMes') }}?periodo=${encodeURIComponent(periodo)}`)
+                .then(r => r.json())
+                .then(pintarMes)
+                .catch(() => {
+                    document.getElementById('mes-titulo').textContent = 'No se pudo cargar';
+                    document.getElementById('mes-lista').innerHTML =
+                        '<div class="mes-vacio">Intenta de nuevo en un momento.</div>';
+                });
+        }
+
+        function cerrarMes() {
+            mesAbierto = null;
+            document.getElementById('mes-detalle').style.display = 'none';
+        }
+
+        function pintarMes(d) {
+
+            document.getElementById('mes-titulo').textContent = d.periodo_texto;
+
+            document.getElementById('mes-resumen').textContent =
+                d.cuantos === 0
+                    ? 'Sin egresos registrados'
+                    : `${d.cuantos} ${d.cuantos === 1 ? 'egreso' : 'egresos'} · ${tpFmt.format(d.total)}`;
+
+            /*
+             * Dos advertencias que conviene que el vecino vea, porque hablan
+             * de la calidad del dato y no del dato mismo.
+             */
+            const avisos = [];
+
+            if (d.sin_comprobante > 0) {
+                avisos.push(`<strong>${d.sin_comprobante}</strong> gasto(s) de este mes no tienen
+                    comprobante adjunto.`);
+            }
+
+            if (d.sin_fecha_real > 0) {
+                avisos.push(`<strong>${d.sin_fecha_real}</strong> gasto(s) se fechan por el día en
+                    que se subió el comprobante, no por el del movimiento bancario. Son cargas
+                    anteriores a que el sistema pidiera esa fecha.`);
+            }
+
+            document.getElementById('mes-avisos').innerHTML = avisos.length
+                ? `<div class="mes-aviso">${avisos.join('<br>')}</div>`
+                : '';
+
+            document.getElementById('mes-categorias').innerHTML =
+                (d.categorias || []).map(c => `
+                    <div class="mes-cat">
+                        <div class="mes-cat-head">
+                            <span>${esc(c.categoria)}</span>
+                            <span><strong>${tpFmt.format(c.monto)}</strong> · ${c.pct}%</span>
+                        </div>
+                        <div class="mes-cat-barra"><span style="width:${c.pct}%;"></span></div>
+                    </div>`).join('');
+
+            if (!d.gastos || !d.gastos.length) {
+                document.getElementById('mes-lista').innerHTML =
+                    '<div class="mes-vacio">No hay egresos registrados en este mes.</div>';
+                return;
+            }
+
+            document.getElementById('mes-lista').innerHTML = d.gastos.map(g => {
+
+                const comprobante = g.comprobante
+                    ? `<a href="${esc(g.comprobante)}" target="_blank" rel="noopener"
+                          class="mes-comprobante" title="Ver comprobante">
+                           <i class="file alternate outline icon"></i></a>`
+                    : `<i class="exclamation triangle icon mes-sin-archivo"
+                          title="Sin comprobante adjunto"></i>`;
+
+                const aprox = g.fecha_real
+                    ? ''
+                    : '<span class="mes-aprox">fecha aproximada</span>';
+
+                const proveedor = g.proveedor ? ` · ${esc(g.proveedor)}` : '';
+
+                return `
+                    <div class="mes-item">
+                        <div class="mes-item-info">
+                            <div class="mes-item-titulo">${esc(g.titulo)}</div>
+                            <div class="mes-item-meta">
+                                ${esc(g.categoria)} · ${esc(g.fecha || 'sin fecha')}${proveedor}${aprox}
+                            </div>
+                        </div>
+                        <div class="mes-item-der">
+                            <span class="mes-item-monto">${tpFmt.format(g.monto)}</span>
+                            ${comprobante}
+                        </div>
+                    </div>`;
+            }).join('');
+        }
 
 
         let chartIE = null;
@@ -2599,6 +2916,25 @@
                                 maintainAspectRatio:
                                     false,
 
+                                /*
+                                 * Al pulsar una barra se abre el desglose de
+                                 * ese mes. Se usa el índice, no la etiqueta,
+                                 * porque "sep" se repetiría de un año a otro.
+                                 */
+                                onClick: (evento, elementos, grafica) => {
+                                    if (!elementos.length) return;
+
+                                    const i = elementos[0].index;
+                                    const mes = ie[i];
+
+                                    if (mes && mes.periodo) abrirMes(mes.periodo);
+                                },
+
+                                onHover: (evento, elementos) => {
+                                    evento.native.target.style.cursor =
+                                        elementos.length ? 'pointer' : 'default';
+                                },
+
                                 plugins: {
 
                                     legend: {
@@ -2635,7 +2971,7 @@
 
                                             callback:
                                                 v =>
-                                                    tpFmt.format(
+                                                    tpFmtEje.format(
                                                         v
                                                     )
 
@@ -2645,7 +2981,51 @@
 
                                 }
 
-                            }
+                            },
+
+                            /*
+                             * Escribe el monto encima de cada barra.
+                             *
+                             * Sin esto, un egreso de $154.80 contra un eje de
+                             * $60,000 mide medio píxel: la barra existe pero
+                             * es invisible, y parecía que el gasto no se
+                             * había registrado. La cifra escrita no depende
+                             * de la escala.
+                             */
+                            plugins: [{
+                                id: 'montosSobreBarras',
+                                afterDatasetsDraw(chart) {
+                                    const ctx2 = chart.ctx;
+
+                                    ctx2.save();
+                                    ctx2.font = '600 10px -apple-system, "Segoe UI", sans-serif';
+                                    ctx2.textAlign = 'center';
+                                    ctx2.textBaseline = 'bottom';
+
+                                    chart.data.datasets.forEach((ds, di) => {
+                                        const meta = chart.getDatasetMeta(di);
+                                        if (meta.hidden) return;
+
+                                        meta.data.forEach((barra, i) => {
+                                            const valor = ds.data[i];
+                                            if (!valor) return;
+
+                                            ctx2.fillStyle = di === 0 ? '#047857' : '#b91c1c';
+
+                                            const texto = valor >= 1000
+                                                ? '$' + Math.round(valor / 1000) + 'k'
+                                                : '$' + valor.toLocaleString('es-MX', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                });
+
+                                            ctx2.fillText(texto, barra.x, barra.y - 3);
+                                        });
+                                    });
+
+                                    ctx2.restore();
+                                }
+                            }]
 
                         }
                     );
@@ -3046,6 +3426,8 @@
             pintar(
                 DATA
             );
+
+            $('#mes-cerrar').on('click', cerrarMes);
 
 
             $('#tp-filtrar').on(

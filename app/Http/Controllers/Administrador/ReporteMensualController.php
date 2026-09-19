@@ -94,12 +94,7 @@ class ReporteMensualController extends Controller
 
         $datos = $this->servicio->datos($periodo);
 
-        $options = new \Dompdf\Options;
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-
-        $dompdf = new \Dompdf\Dompdf($options);
-        $dompdf->setPaper('LETTER', 'portrait');
+        $dompdf = \App\Services\PdfService::crear('LETTER', 'portrait');
 
         $dompdf->loadHtml(
             view('administrador.reporte-mensual-pdf', compact('datos'))->render()

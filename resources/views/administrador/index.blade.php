@@ -136,6 +136,124 @@
             margin-top: 2px;
         }
 
+        /* =====================================================
+           COMPROBANTES POR REVISAR
+           ===================================================== */
+
+        .revisar-alerta {
+            background: var(--surface);
+            border: 1px solid #bae6fd;
+            border-left: 4px solid #0ea5e9;
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-bottom: 22px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* A partir de 3 días esperando deja de ser un pendiente normal. */
+        .revisar-alerta.urge {
+            border-color: #fcd34d;
+            border-left-color: #f59e0b;
+            background: #fffdf7;
+        }
+
+        .revisar-cab {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            margin-bottom: 13px;
+        }
+
+        .revisar-icono {
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            background: #e0f2fe;
+            color: #0369a1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .revisar-alerta.urge .revisar-icono { background: #fef3c7; color: #b45309; }
+
+        .revisar-icono i { font-size: 1.15rem; margin: 0; }
+
+        .revisar-texto strong {
+            display: block;
+            font-size: 1.02rem;
+            color: var(--text-main);
+        }
+
+        .revisar-texto span {
+            display: block;
+            font-size: .85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-top: 2px;
+        }
+
+        .revisar-lista { display: flex; flex-direction: column; gap: 8px; }
+
+        .revisar-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 11px 14px;
+            border: 1px solid var(--border-soft);
+            border-radius: 12px;
+            background: var(--surface-soft);
+            text-decoration: none;
+            color: inherit;
+            transition: border-color .15s, background .15s, transform .15s;
+        }
+
+        .revisar-item:hover {
+            border-color: #7dd3fc;
+            background: #f0f9ff;
+            transform: translateX(2px);
+        }
+
+        .revisar-item-info { min-width: 0; }
+
+        .revisar-item-concepto {
+            display: block;
+            font-weight: 600;
+            font-size: .92rem;
+            color: var(--text-main);
+        }
+
+        .revisar-item-meta {
+            display: block;
+            font-size: .8rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .revisar-espera { color: #b45309; font-weight: 600; }
+
+        .revisar-item-boton {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, var(--admin-start), var(--admin-end));
+            color: #fff;
+            padding: 7px 14px;
+            border-radius: 9px;
+            font-size: .84rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .revisar-item-boton i { margin: 0; font-size: .8rem; }
+
+        @media (max-width: 640px) {
+            .revisar-item { flex-direction: column; align-items: stretch; }
+            .revisar-item-boton { justify-content: center; }
+        }
+
         .admin-menu-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -398,6 +516,73 @@
             <i class="ui cog icon admin-hero-bg-icon"></i>
         </section>
 
+        {{--
+            Comprobantes esperando validación.
+
+            Es el único pendiente del sistema con alguien esperando del otro
+            lado: el vecino ya pagó y ya subió su comprobante, pero su recibo
+            sigue diciendo "pendiente" hasta que tesorería lo valide. Se avisa
+            aquí porque antes había que acordarse de entrar concepto por
+            concepto a buscarlos.
+        --}}
+        @if(($porRevisar['total'] ?? 0) > 0 && auth()->user()->puedeGestionarPagos())
+            <div class="revisar-alerta {{ ($porRevisar['mas_antiguo'] ?? 0) >= 3 ? 'urge' : '' }}">
+
+                <div class="revisar-cab">
+                    <div class="revisar-icono">
+                        <i class="inbox icon"></i>
+                    </div>
+
+                    <div class="revisar-texto">
+                        <strong>
+                            {{ $porRevisar['total'] }}
+                            {{ $porRevisar['total'] === 1 ? 'comprobante' : 'comprobantes' }}
+                            por revisar
+                        </strong>
+                        <span>
+                            @if(($porRevisar['mas_antiguo'] ?? 0) >= 1)
+                                El más antiguo lleva {{ $porRevisar['mas_antiguo'] }}
+                                {{ $porRevisar['mas_antiguo'] === 1 ? 'día' : 'días' }} esperando.
+                            @else
+                                Subidos hoy.
+                            @endif
+                            Hasta que los valides, el vecino sigue viendo su recibo como pendiente.
+                        </span>
+                    </div>
+                </div>
+
+                <div class="revisar-lista">
+                    @foreach($porRevisar['conceptos'] as $c)
+                        {{--
+                            La liga lleva los filtros puestos: al abrir el
+                            concepto ya se ve solo lo que hay que revisar, sin
+                            tener que seleccionarlos a mano cada vez.
+                        --}}
+                        <a href="{{ route('admin.pago.DetallePagos', ['id' => $c['pago_id']]) }}?estado=pendiente&comprobante=con"
+                           class="revisar-item">
+                            <span class="revisar-item-info">
+                                <span class="revisar-item-concepto">{{ $c['concepto'] }}</span>
+                                <span class="revisar-item-meta">
+                                    {{ $c['cuantos'] }} {{ $c['cuantos'] === 1 ? 'comprobante' : 'comprobantes' }}
+                                    · ${{ number_format($c['monto'], 2) }}
+                                    @if($c['espera'] >= 1)
+                                        · <span class="revisar-espera">{{ $c['espera'] }}
+                                            {{ $c['espera'] === 1 ? 'día' : 'días' }}</span>
+                                    @endif
+                                </span>
+                            </span>
+
+                            <span class="revisar-item-boton">
+                                Revisar
+                                <i class="arrow right icon"></i>
+                            </span>
+                        </a>
+                    @endforeach
+                </div>
+
+            </div>
+        @endif
+
         <div class="section-header">
             <div>
                 <h2 class="section-title">Acciones administrativas</h2>
@@ -602,6 +787,22 @@
                     </span>
                 </div>
             </a>
+
+            @if(auth()->user()->puedeGestionarPagos())
+            <a href="{{ route('admin.firma.index') }}" class="menu-card card-green" aria-label="Mi firma">
+                <div class="menu-card-body">
+                    <div class="menu-card-icon">
+                        <i class="pen fancy icon"></i>
+                    </div>
+                    <h3 class="menu-card-title">Mi Firma</h3>
+                    <p class="menu-card-description">Firma que llevan los recibos que descargan los vecinos.</p>
+                    <span class="menu-card-action">
+                        Administrar firma
+                        <i class="arrow right icon"></i>
+                    </span>
+                </div>
+            </a>
+            @endif
 
             <a href="{{ route('admin.estadoCuenta.index') }}" class="menu-card card-blue" aria-label="Estado de cuenta por vivienda">
                 <div class="menu-card-body">

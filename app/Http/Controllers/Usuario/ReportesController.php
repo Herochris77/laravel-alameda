@@ -70,6 +70,18 @@ class ReportesController extends Controller
     private const SQL_FECHA_EFECTIVA_SANCION = 'COALESCE(sanciones.fecha_pago, DATE(sanciones.updated_at))';
 
     /**
+     * Fecha con la que un gasto entra al mes.
+     *
+     * Misma regla que usa el reporte mensual: manda la fecha del movimiento
+     * bancario. Antes esta pantalla fechaba por `created_at`, el día en que
+     * se subió el PDF, y eso hacía que un gasto pagado el 30 apareciera en el
+     * mes siguiente si el comprobante se subía dos días después. Dos pantallas
+     * del mismo sistema diciendo meses distintos es justo lo que no puede
+     * pasar en un módulo de transparencia.
+     */
+    private const SQL_FECHA_EFECTIVA_GASTO = 'COALESCE(documentos.fecha_gasto, DATE(documentos.created_at))';
+
+    /**
      * Fecha efectiva de un registro ya cargado en memoria.
      */
     private function fechaEfectiva($modelo): Carbon
@@ -395,13 +407,13 @@ class ReportesController extends Controller
         $range = $this->getDateRange();
 
         $documentos = Documento::where('tipo', 'referencia')
-            ->whereBetween(
-                'created_at',
-                [$range['inicio'], $range['fin'].' 23:59:59']
+            ->whereRaw(
+                self::SQL_FECHA_EFECTIVA_GASTO.' BETWEEN ? AND ?',
+                [$range['inicio'], $range['fin']]
             )
             ->whereNotNull('cantidad')
             ->selectRaw(
-                'MONTH(created_at) as mes, SUM(cantidad) as total'
+                'MONTH('.self::SQL_FECHA_EFECTIVA_GASTO.') as mes, SUM(cantidad) as total'
             )
             ->groupBy('mes')
             ->orderBy('mes')
@@ -440,14 +452,86 @@ class ReportesController extends Controller
         ]);
     }
 
+    /**
+     * Desglose de los egresos de UN mes.
+     *
+     * Es lo que se abre al pulsar una barra de la gráfica. Antes había que
+     * bajar a la tabla y filtrar por fechas para responder "¿en qué se fue
+     * agosto?", y eso hacía que nadie lo consultara.
+     *
+     * Devuelve el reparto por categoría y el detalle renglón por renglón, cada
+     * uno con la liga a su comprobante. Los que no tienen archivo adjunto
+     * viajan marcados: en un módulo de transparencia, un gasto sin respaldo es
+     * justo lo que hay que poder ver.
+     */
+    public function egresosDelMes(Request $request)
+    {
+        $periodo = (string) $request->input('periodo', now()->format('Y-m'));
+
+        if (! preg_match('/^\d{4}-\d{2}$/', $periodo)) {
+            return response()->json(['error' => 'Periodo inválido.'], 422);
+        }
+
+        $inicio = Carbon::parse($periodo.'-01')->startOfMonth();
+        $fin = (clone $inicio)->endOfMonth();
+
+        $gastos = Documento::whereNotNull('cantidad')
+            ->whereRaw(
+                self::SQL_FECHA_EFECTIVA_GASTO.' BETWEEN ? AND ?',
+                [$inicio->toDateString(), $fin->toDateString()]
+            )
+            ->orderByRaw(self::SQL_FECHA_EFECTIVA_GASTO.' DESC')
+            ->get();
+
+        $etiquetas = [
+            'luz' => 'Luz', 'agua' => 'Agua', 'gas' => 'Gas',
+            'mantenimiento' => 'Mantenimiento', 'seguridad' => 'Seguridad',
+            'limpieza' => 'Limpieza', 'jardineria' => 'Jardinería',
+            'administrativo' => 'Administrativo', 'otro' => 'Otros',
+        ];
+
+        $total = round($gastos->sum(fn ($g) => (float) $g->cantidad), 2);
+
+        $porCategoria = $gastos
+            ->groupBy(fn ($g) => $g->categoria_gasto ?: 'otro')
+            ->map(fn ($grupo, $cat) => [
+                'categoria' => $etiquetas[$cat] ?? ucfirst((string) $cat),
+                'monto' => round($grupo->sum(fn ($g) => (float) $g->cantidad), 2),
+                'pct' => $total > 0
+                    ? round($grupo->sum(fn ($g) => (float) $g->cantidad) / $total * 100)
+                    : 0,
+            ])
+            ->sortByDesc('monto')
+            ->values();
+
+        return response()->json([
+            'periodo' => $periodo,
+            'periodo_texto' => $inicio->translatedFormat('F \d\e Y'),
+            'total' => $total,
+            'cuantos' => $gastos->count(),
+            'sin_comprobante' => $gastos->filter(fn ($g) => ! $g->doc_path)->count(),
+            'sin_fecha_real' => $gastos->filter(fn ($g) => ! $g->fechaEsReal())->count(),
+            'categorias' => $porCategoria,
+            'gastos' => $gastos->map(fn ($g) => [
+                'titulo' => $g->titulo ?: 'Movimiento sin descripción',
+                'categoria' => $etiquetas[$g->categoria_gasto ?: 'otro'] ?? 'Otros',
+                'monto' => round((float) $g->cantidad, 2),
+                'fecha' => optional($g->fechaEfectiva())->format('d/m/Y'),
+                'fecha_real' => $g->fechaEsReal(),
+                'proveedor' => $g->proveedor,
+                'comprobante' => $g->doc_path ? asset('storage/'.$g->doc_path) : null,
+            ])->values(),
+        ]);
+    }
+
     public function gastosPorCategoria()
     {
         $range = $this->getDateRange();
 
         $documentos = Documento::where('tipo', 'referencia')
-            ->whereBetween(
-                'created_at',
-                [$range['inicio'], $range['fin'].' 23:59:59']
+            ->whereRaw(
+                self::SQL_FECHA_EFECTIVA_GASTO.' BETWEEN ? AND ?',
+                [$range['inicio'], $range['fin']]
             )
             ->whereNotNull('cantidad')
             ->selectRaw(
@@ -1037,6 +1121,10 @@ class ReportesController extends Controller
                 $meses[$m->format('Y-m')] = [
                     'label' => $m->translatedFormat('M'),
 
+                    // El periodo viaja a la gráfica para que al pulsar una
+                    // barra se sepa qué mes pedir, sin adivinarlo del texto.
+                    'periodo' => $m->format('Y-m'),
+
                     'ingresos' => 0,
 
                     'egresos' => 0,
@@ -1089,11 +1177,10 @@ class ReportesController extends Controller
                     ->get()
                 as $g
             ) {
-                $k = Carbon::parse(
-                    $g->created_at
-                )->format('Y-m');
+                // Fecha del movimiento bancario, no la de subida del PDF.
+                $k = optional($g->fechaEfectiva())->format('Y-m');
 
-                if (isset($meses[$k])) {
+                if ($k && isset($meses[$k])) {
                     $meses[$k]['egresos'] += floatval(
                         $g->cantidad
                     );
@@ -1104,6 +1191,8 @@ class ReportesController extends Controller
                 function ($m) {
                     return [
                         'label' => $m['label'],
+
+                        'periodo' => $m['periodo'],
 
                         'ingresos' => round(
                             $m['ingresos'],

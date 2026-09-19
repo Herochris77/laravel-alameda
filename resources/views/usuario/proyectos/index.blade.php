@@ -1185,7 +1185,7 @@
 
                                         ${{ number_format(
                                             $p->costo,
-                                            0
+                                            2
                                         ) }}
 
                                     @else

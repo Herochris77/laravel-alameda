@@ -13,9 +13,22 @@
         .badge { padding: 2px 8px; border-radius: 4px; font-size: 11px; }
         .aprobado { background: #dcfce7; color: #166534; }
         .rechazado { background: #fee2e2; color: #991b1b; }
+
+        .membrete { text-align: center; margin-bottom: 14px; }
+        .membrete .condominio { font-size: 13px; font-weight: bold; letter-spacing: .04em; color: #0f172a; }
+        .membrete .direccion { font-size: 8.5px; color: #64748b; line-height: 1.4; }
     </style>
 </head>
 <body>
+    <div class="membrete">
+        @include('pdf.logo', ['alto' => 44])
+        <div class="condominio">CONDOMINIO ALAMEDA</div>
+        <div class="direccion">
+            Av. Los Arados No. 1, Fracc. Hacienda del Bosque<br>
+            Los Ángeles, Qro. C.P. 76902
+        </div>
+    </div>
+
     <h1>Acta de asamblea</h1>
     <div class="muted">{{ $asamblea->titulo }}</div>
     <div class="muted">

@@ -11,6 +11,137 @@
         </div>
     </div>
 
+    {{--
+        Consumo de la cuota del proveedor de correo. Lo que se cuenta son
+        MENSAJES, no destinatarios: un aviso con 44 copias ocultas es un solo
+        mensaje para el proveedor, y esa es la diferencia entre caber en el
+        plan básico y quedarse sin correo a media quincena.
+    --}}
+    <div class="cq-kpis">
+        <div class="cq-kpi">
+            <span class="cq-label">Mensajes hoy</span>
+            <span class="cq-valor">{{ $consumo['hoy'] }}</span>
+            <span class="cq-nota">
+                @if($consumo['destinatarios_hoy'] > 0)
+                    llegaron a {{ $consumo['destinatarios_hoy'] }} destinatario(s)
+                @else
+                    Sin envíos todavía
+                @endif
+            </span>
+        </div>
+
+        <div class="cq-kpi">
+            <span class="cq-label">Este mes</span>
+            <span class="cq-valor">{{ $consumo['mes'] }}</span>
+            <span class="cq-nota">Mensajes salidos desde el día 1</span>
+        </div>
+
+        <div class="cq-kpi">
+            <span class="cq-label">Día más alto (14 días)</span>
+            <span class="cq-valor">{{ $consumo['pico'] }}</span>
+            <span class="cq-nota">Tu peor día reciente</span>
+        </div>
+
+        <div class="cq-kpi {{ $consumo['errores_hoy'] > 0 ? 'mal' : '' }}">
+            <span class="cq-label">Fallidos hoy</span>
+            <span class="cq-valor">{{ $consumo['errores_hoy'] }}</span>
+            <span class="cq-nota">
+                @if($consumo['errores_hoy'] > 0)
+                    Puede ser la cuota del proveedor
+                @else
+                    Todo salió bien
+                @endif
+            </span>
+        </div>
+    </div>
+
+    @if(count($consumo['serie']) > 1)
+        <div class="card cq-barras-card">
+            <div class="card-body">
+                <div class="cq-barras-titulo">Mensajes por día (últimos 14 días)</div>
+                <div class="cq-barras">
+                    @foreach($consumo['serie'] as $d)
+                        <div class="cq-col" title="{{ $d['dia'] }}: {{ $d['total'] }} mensaje(s)">
+                            <div class="cq-barra" style="height: {{ max(4, $consumo['pico'] ? round($d['total'] / $consumo['pico'] * 100) : 4) }}%;"></div>
+                            <span class="cq-dia">{{ $d['dia'] }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <style>
+        .cq-kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .cq-kpi {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .cq-kpi.mal { border-color: #fca5a5; background: #fef2f2; }
+
+        .cq-label {
+            font-size: .71rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        .cq-valor { font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+
+        .cq-nota { font-size: .73rem; color: #94a3b8; line-height: 1.35; }
+
+        .cq-barras-card { margin-bottom: 16px; }
+
+        .cq-barras-titulo {
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #475569;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .cq-barras {
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            height: 90px;
+        }
+
+        .cq-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .cq-barra {
+            width: 100%;
+            max-width: 26px;
+            background: linear-gradient(180deg, #8b5cf6, #7c3aed);
+            border-radius: 5px 5px 0 0;
+            min-height: 4px;
+        }
+
+        .cq-dia { font-size: .64rem; color: #94a3b8; white-space: nowrap; }
+    </style>
+
     <div class="card">
         <div class="card-header">
             <h3 class="card-title"><i class="history icon"></i> Historial de Correos</h3>

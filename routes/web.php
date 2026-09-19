@@ -473,6 +473,84 @@ Route::get('/migrar/{token}', function ($token) {
         $pasos[] = "ℹ️  Tabla 'saldo_movimientos' ya existía. No se tocó.";
     }
 
+    // Control de recordatorios de cobro --------------------------------------
+    //
+    // Guarda el día en que se mandó el último aviso de un concepto, para que
+    // el cron —o el botón de ejecución manual, que se puede pulsar varias
+    // veces— no dispare el mismo correo dos veces a los 42 vecinos.
+    if (! $schema::hasColumn('pagos', 'ultimo_aviso')) {
+        $schema::table('pagos', function (\Illuminate\Database\Schema\Blueprint $t) {
+            $t->date('ultimo_aviso')->nullable();
+        });
+        $pasos[] = "✅ Columna 'pagos.ultimo_aviso' agregada (nullable, no toca ningún registro).";
+    } else {
+        $pasos[] = "ℹ️  Columna 'pagos.ultimo_aviso' ya existía. No se tocó.";
+    }
+
+    // Aceptación del aviso de privacidad -------------------------------------
+    //
+    // Para los datos patrimoniales —los comprobantes de pago— la ley pide
+    // consentimiento EXPRESO, no basta con publicar el aviso. Aquí queda el
+    // rastro: quién aceptó, cuándo y qué versión del documento.
+    //
+    // Se guarda la versión y no solo la fecha para poder responder "¿aceptó
+    // el aviso que estaba vigente entonces?" sin adivinar.
+    foreach ([
+        ['acepto_aviso_en', fn ($t) => $t->timestamp('acepto_aviso_en')->nullable()],
+        ['acepto_aviso_version', fn ($t) => $t->string('acepto_aviso_version', 20)->nullable()],
+    ] as [$columna, $definir]) {
+        if (! $schema::hasColumn('users', $columna)) {
+            $schema::table('users', function (\Illuminate\Database\Schema\Blueprint $t) use ($definir) {
+                $definir($t);
+            });
+            $pasos[] = "✅ Columna 'users.{$columna}' agregada (nullable, no toca ningún registro).";
+        } else {
+            $pasos[] = "ℹ️  Columna 'users.{$columna}' ya existía. No se tocó.";
+        }
+    }
+
+    $pasos[] = '⚠️  NADIE queda como que ya aceptó: la columna nace vacía. A todos les '
+        .'aparecerá la ventana de aceptación la próxima vez que entren. Es a propósito, '
+        .'porque dar por aceptado lo que nadie aceptó sería justo lo contrario de lo que '
+        .'se busca.';
+
+    // Pagos en efectivo y firma del recibo -----------------------------------
+    //
+    // `forma_pago` distingue el pago en efectivo, que no tiene comprobante que
+    // subir porque el dinero se entregó en mano. NULL significa transferencia,
+    // que es como se venían registrando todos.
+    //
+    // `validado_por` guarda quién aprobó el pago, para que el recibo del vecino
+    // lleve la firma de quien realmente lo validó y no la del tesorero en turno
+    // años después.
+    //
+    // `folio_recibo` es el consecutivo del recibo entregado en mano: es lo que
+    // permite rastrear un papel firmado hasta el registro del sistema.
+    foreach ([
+        ['forma_pago', fn ($t) => $t->string('forma_pago', 20)->nullable()],
+        ['validado_por', fn ($t) => $t->unsignedBigInteger('validado_por')->nullable()],
+        ['folio_recibo', fn ($t) => $t->string('folio_recibo', 30)->nullable()],
+    ] as [$columna, $definir]) {
+        if (! $schema::hasColumn('detallepagos', $columna)) {
+            $schema::table('detallepagos', function (\Illuminate\Database\Schema\Blueprint $t) use ($definir) {
+                $definir($t);
+            });
+            $pasos[] = "✅ Columna 'detallepagos.{$columna}' agregada (nullable, no toca ningún registro).";
+        } else {
+            $pasos[] = "ℹ️  Columna 'detallepagos.{$columna}' ya existía. No se tocó.";
+        }
+    }
+
+    // Firma digitalizada del tesorero, para los recibos que descarga el vecino.
+    if (! $schema::hasColumn('users', 'firma')) {
+        $schema::table('users', function (\Illuminate\Database\Schema\Blueprint $t) {
+            $t->string('firma')->nullable();
+        });
+        $pasos[] = "✅ Columna 'users.firma' agregada (nullable, no toca ningún registro).";
+    } else {
+        $pasos[] = "ℹ️  Columna 'users.firma' ya existía. No se tocó.";
+    }
+
     // Fecha real del egreso ---------------------------------------------------
     //
     // Los gastos se registran como documentos con monto, y hasta hoy el
@@ -484,10 +562,10 @@ Route::get('/migrar/{token}', function ($token) {
     // pareciera cuadrado sin estarlo. Lo que no se sabe se muestra como
     // "sin fecha bancaria" y se corrige a mano cuando el tesorero quiera.
     foreach ([
-        ['fecha_gasto', fn ($t) => $t->date('fecha_gasto')->nullable()->after('categoria_gasto')],
-        ['proveedor', fn ($t) => $t->string('proveedor', 150)->nullable()->after('fecha_gasto')],
-        ['forma_pago', fn ($t) => $t->string('forma_pago', 20)->nullable()->after('proveedor')],
-        ['servicio_id', fn ($t) => $t->unsignedBigInteger('servicio_id')->nullable()->after('forma_pago')],
+        ['fecha_gasto', fn ($t) => $t->date('fecha_gasto')->nullable()],
+        ['proveedor', fn ($t) => $t->string('proveedor', 150)->nullable()],
+        ['forma_pago', fn ($t) => $t->string('forma_pago', 20)->nullable()],
+        ['servicio_id', fn ($t) => $t->unsignedBigInteger('servicio_id')->nullable()],
     ] as [$columna, $definir]) {
         if (! $schema::hasColumn('documentos', $columna)) {
             $schema::table('documentos', function (\Illuminate\Database\Schema\Blueprint $t) use ($definir) {
@@ -515,7 +593,7 @@ Route::get('/migrar/{token}', function ($token) {
     // comportándose exactamente igual que hasta hoy.
     if (! $schema::hasColumn('pagos', 'aplica_saldo')) {
         $schema::table('pagos', function (\Illuminate\Database\Schema\Blueprint $t) {
-            $t->boolean('aplica_saldo')->default(1)->after('recargo_pct');
+            $t->boolean('aplica_saldo')->default(1);
         });
         $pasos[] = "✅ Columna 'pagos.aplica_saldo' agregada (default 1: no cambia el comportamiento de los conceptos existentes).";
     } else {
@@ -1229,6 +1307,35 @@ Route::get('/', function () {
 });
 
 /*
+ * Documentos legales.
+ *
+ * Son públicos a propósito: quien todavía no tiene cuenta —o quien no quiere
+ * darla de alta hasta saber qué se hace con sus datos— debe poder leerlos sin
+ * iniciar sesión. También permite entregarle la liga directa a un auditor.
+ */
+Route::view('/aviso-de-privacidad', 'legal.privacidad')->name('legal.privacidad');
+Route::view('/terminos-de-uso', 'legal.terminos')->name('legal.terminos');
+
+/*
+ * Guías de uso en PDF.
+ *
+ * Se generan al vuelo en vez de guardarse como archivo suelto: así una guía
+ * nunca queda describiendo un módulo que ya cambió. La del vecino es pública
+ * para poder compartirla por WhatsApp sin pedir que inicien sesión.
+ */
+Route::get('/guia-vecinos', [App\Http\Controllers\GuiaController::class, 'vecinos'])
+    ->name('guia.vecinos');
+
+Route::get('/guia-mesa-directiva', [App\Http\Controllers\GuiaController::class, 'mesa'])
+    ->middleware(['auth', 'rol:administrador,super-administrador'])
+    ->name('guia.mesa');
+
+// Registro de la aceptación. Va fuera del grupo 'aviso' por razones obvias:
+// es la única acción que alguien que no ha aceptado tiene que poder hacer.
+Route::post('/aceptar-aviso', [App\Http\Controllers\AvisoController::class, 'aceptar'])
+    ->middleware('auth')->name('legal.aceptar');
+
+/*
  * Enlace simbólico de storage, con diagnóstico.
  *
  * El caso real que se presentó: `public/storage` existía como CARPETA de
@@ -1478,7 +1585,14 @@ Route::get('/cronjob/notificaciones-diarias/{token}', function ($token, CronjobC
         abort(403, 'No autorizado');
     }
 
-    return $controller->enviarNotificacionesDiarias();
+    /*
+     * El cron de cPanel lo llama con ?json=1 y recibe el JSON de siempre.
+     * Abierto en el navegador devuelve un resumen legible: un JSON con ceros
+     * no dice si el sistema falló o si hoy no había nada que mandar.
+     */
+    return $controller->enviarNotificacionesDiarias(
+        comoJson: request()->boolean('json') || request()->expectsJson()
+    );
 })
     ->name('cronjob.notificaciones')
     ->withoutMiddleware(['web', 'auth', 'verified']);
@@ -1510,7 +1624,10 @@ Route::delete('/notificaciones/eliminar-todas', function () {
     return response()->json(['mensaje' => 'Todas las notificaciones han sido eliminadas.']);
 })->middleware('auth');
 
-Route::middleware('auth')->group(function () {
+// El middleware 'aviso' bloquea toda operación de escritura mientras el
+// usuario no haya aceptado el aviso de privacidad. Consultar sigue abierto:
+// tiene que poder leer el documento antes de decidir.
+Route::middleware(['auth', 'aviso'])->group(function () {
     Route::get('/inicio', [InicioController::class, 'index'])->name('inicio')->middleware('rol:administrador,super-administrador,usuario');
 
     // Administrador
@@ -1596,8 +1713,20 @@ Route::middleware('auth')->group(function () {
                 });
             });
 
+        // Firma digitalizada de quien valida los pagos. Es un dato personal
+        // del tesorero y sale impresa en recibos, así que nadie más la sube.
+        Route::controller(App\Http\Controllers\Administrador\FirmaController::class)
+            ->prefix('firma')->name('firma.')->middleware('tesoreria')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/guardar', 'guardar')->name('guardar');
+                Route::delete('/eliminar', 'eliminar')->name('eliminar');
+            });
+
         Route::controller(PagoController::class)->prefix('pago')->name('pago.')->group(function () {
             Route::get('/detalle-pagos/{id}', 'DetallePagos')->name('DetallePagos');
+
+            // Recibo para imprimir y firmar a mano. Sale SIN firma a propósito.
+            Route::get('/recibo/{id}', 'reciboPdf')->name('reciboPdf');
             Route::get('/obtenerdetalle-pagos', 'obtenerDetallepagos')->name('obtenerDetallepagos');
 
             // Movimientos de dinero: solo el Tesorero (y el super-administrador).
@@ -1798,6 +1927,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/percepciones-mes', 'percepcionesPorMes')->name('percepcionesMes');
             Route::get('/gastos-mes', 'gastosPorMes')->name('gastosMes');
             Route::get('/gastos-categoria', 'gastosPorCategoria')->name('gastosCategoria');
+
+            // Desglose de un mes: lo que se abre al pulsar una barra.
+            Route::get('/egresos-mes', 'egresosDelMes')->name('egresosMes');
             Route::get('/pagos-concepto', 'pagosPorConcepto')->name('pagosConcepto');
             Route::get('/documentos-recientes', 'documentosRecientes')->name('documentosRecientes');
             Route::get('/multas-mes', 'multasPorMes')->name('multasMes');

@@ -316,6 +316,21 @@
             color: #764ba2;
             text-decoration: underline;
         }
+
+        .auth-legal {
+            margin-top: 10px !important;
+            font-size: 0.8rem !important;
+        }
+
+        .auth-legal a {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .auth-legal span {
+            color: #d1d5db;
+            margin: 0 6px;
+        }
         
         .alert-box {
             padding: 12px 14px;
@@ -540,6 +555,18 @@
             
             <div class="auth-footer">
                 <p>¿No tienes cuenta? <a href="{{ route('register') }}">Regístrate aquí</a></p>
+
+                {{--
+                    El aviso tiene que estar ANTES de entrar, no escondido
+                    dentro del sistema: quien va a registrarse necesita poder
+                    leer qué se hace con sus datos sin tener que dar de alta
+                    una cuenta primero.
+                --}}
+                <p class="auth-legal">
+                    <a href="{{ route('legal.privacidad') }}">Aviso de Privacidad</a>
+                    <span>·</span>
+                    <a href="{{ route('legal.terminos') }}">Términos de Uso</a>
+                </p>
             </div>
         </div>
     </div>

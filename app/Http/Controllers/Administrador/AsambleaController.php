@@ -326,10 +326,7 @@ class AsambleaController extends Controller
 
         $quorum = $this->svc->quorum($asamblea);
 
-        $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $dompdf = new Dompdf($options);
-        $dompdf->setPaper('A4', 'portrait');
+        $dompdf = \App\Services\PdfService::crear('A4', 'portrait');
         $dompdf->loadHtml(view('asamblea.acta', compact('asamblea', 'puntos', 'quorum'))->render());
         $dompdf->render();
 

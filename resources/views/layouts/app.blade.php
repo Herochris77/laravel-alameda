@@ -627,6 +627,48 @@
     <main class="page-container">
         {{ $slot }}
     </main>
+
+    {{--
+        Ventana de aceptación del aviso. Va en el layout para que aparezca en
+        CUALQUIER pantalla: muchos vecinos tienen la sesión guardada y nunca
+        vuelven a pasar por el login.
+    --}}
+    @include('legal.modal-aceptacion')
+
+    {{--
+        Pie legal en todas las pantallas del sistema. Va aquí y no solo en el
+        inicio para que el vecino pueda consultar el aviso desde donde esté,
+        sin tener que salir a buscarlo.
+    --}}
+    <footer class="pie-legal">
+        <a href="{{ route('legal.privacidad') }}">Aviso de Privacidad</a>
+        <span>·</span>
+        <a href="{{ route('legal.terminos') }}">Términos de Uso</a>
+        <span>·</span>
+        <span class="pie-legal-marca">Condominio Alameda</span>
+    </footer>
+
+    <style>
+        .pie-legal {
+            padding: 18px 20px 26px;
+            text-align: center;
+            font-size: .8rem;
+            color: #94a3b8;
+        }
+
+        .pie-legal a {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .pie-legal a:hover { color: #667eea; text-decoration: underline; }
+
+        .pie-legal span { color: #cbd5e1; margin: 0 5px; }
+
+        .pie-legal-marca { color: #94a3b8 !important; margin-left: 5px !important; }
+
+        @media print { .pie-legal { display: none; } }
+    </style>
 </body>
 
 <script>

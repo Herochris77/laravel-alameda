@@ -10,6 +10,7 @@
         .kpi .sub { font-size:12px; margin-top:4px; }
         .panel { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:18px; margin-bottom:16px; }
         .panel h3 { margin:0 0 14px; font-size:16px; }
+        .panel-sub { font-weight:400; font-size:13px; color:#64748b; }
         .dbars { display:flex; align-items:flex-end; gap:12px; height:150px; }
         .dbar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
         .dbar { width:100%; background:#99f6e4; border-radius:6px 6px 0 0; }
@@ -35,11 +36,25 @@
             <div class="panel"><h3>Estado de las casas</h3><div id="estado-casas"></div></div>
         </div>
 
+        {{--
+            Quiénes deben, con nombre y monto. Va aquí y NO en el módulo de
+            transparencia: esa pantalla la ven todos los vecinos y el Aviso de
+            Privacidad dice que los adeudos por vivienda los ve solo la mesa.
+        --}}
+        <div class="panel">
+            <h3>Casas con adeudo <span id="deudores-resumen" class="panel-sub"></span></h3>
+            <div id="deudores"></div>
+        </div>
+
         <div class="panel"><h3>Pendientes del comité</h3><div id="pendientes"></div></div>
     </div>
 
     <script>
-        const fmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 });
+        // Cifras completas, con centavos: son montos de dinero, no estimados.
+        const fmt = new Intl.NumberFormat('es-MX', {
+            style: 'currency', currency: 'MXN',
+            minimumFractionDigits: 2, maximumFractionDigits: 2
+        });
 
         function cargar() {
             $.get('{{ route("admin.dashboard.datos") }}', function (r) {
@@ -66,6 +81,50 @@
                 const h = Math.round((m.total / max) * 100);
                 return `<div class="dbar-col"><div class="dbar ${i === meses.length - 1 ? 'last' : ''}" style="height:${Math.max(h,3)}%;" title="${fmt.format(m.total)}"></div><span style="font-size:12px; color:#64748b;">${m.label}</span></div>`;
             }).join(''));
+
+            // Casas con adeudo
+            const deu = r.deudores || { total: 0, monto: 0, lista: [] };
+
+            $('#deudores-resumen').text(
+                deu.total ? `· ${deu.total} casa(s) · ${fmt.format(deu.monto)}` : ''
+            );
+
+            $('#deudores').html(
+                deu.lista.length
+                    ? deu.lista.map(v => {
+                        // El atraso distingue un despiste del mes de un rezago
+                        // serio; es lo que decide a quién llamar primero.
+                        const alerta = v.dias > 60 ? '#b91c1c' : (v.dias > 30 ? '#d97706' : '#64748b');
+                        const atraso = v.dias > 0
+                            ? `<span style="color:${alerta}; font-size:12px;">${v.dias} día(s) de atraso</span>`
+                            : '<span style="color:#64748b; font-size:12px;">por vencer</span>';
+
+                        return `
+                            <a href="{{ url('/administrador/estado-cuenta/pdf') }}/${v.id}" target="_blank"
+                               style="display:flex; align-items:center; justify-content:space-between; gap:10px;
+                                      padding:9px 2px; border-bottom:1px solid #f1f5f9; text-decoration:none; color:inherit;">
+                                <span style="min-width:0;">
+                                    <span style="font-weight:600; font-size:13px;">Casa ${v.casa}</span>
+                                    <span style="color:#64748b; font-size:13px;"> · ${v.nombre}</span>
+                                    <br>${atraso}
+                                </span>
+                                <span style="white-space:nowrap; font-weight:700; color:#b91c1c;">
+                                    ${fmt.format(v.pendiente)}
+                                </span>
+                            </a>`;
+                    }).join('') +
+                    (deu.total > deu.lista.length
+                        ? `<div style="padding-top:9px; font-size:13px;">
+                               <a href="{{ route('admin.estadoCuenta.index') }}" style="color:#6366f1;">
+                                   Ver las ${deu.total} casas con adeudo
+                               </a></div>`
+                        : `<div style="padding-top:9px; font-size:13px;">
+                               <a href="{{ route('admin.estadoCuenta.index') }}" style="color:#6366f1;">
+                                   Ir a Estado de Cuenta
+                               </a></div>`)
+                    : '<div style="padding:18px 2px; color:#10b981; font-size:13px;">'
+                      + '<i class="check circle icon"></i> Todas las casas al corriente.</div>'
+            );
 
             // Estado casas
             const t = casas.total || 1;

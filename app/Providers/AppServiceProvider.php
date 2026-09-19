@@ -26,5 +26,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Route::aliasMiddleware('rol', RolMiddleware::class);
         Route::aliasMiddleware('tesoreria', TesoreriaMiddleware::class);
+        Route::aliasMiddleware('aviso', \App\Http\Middleware\AvisoAceptadoMiddleware::class);
     }
 }

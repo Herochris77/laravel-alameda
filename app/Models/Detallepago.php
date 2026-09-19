@@ -19,9 +19,44 @@ class Detallepago extends Model
         'fecha_pago',
         'comentario_rechazo',
         'estado',
+        'forma_pago',
+        'validado_por',
+        'folio_recibo',
         'updated_at',
         'deleted_by',
     ];
+
+    /**
+     * Formas en que puede entrar el dinero.
+     *
+     * El efectivo se separa porque no deja comprobante que subir: el respaldo
+     * es el recibo firmado que la tesorería entrega en mano.
+     */
+    public const FORMAS_PAGO = [
+        'transferencia' => 'Transferencia',
+        'efectivo' => 'Efectivo',
+        'deposito' => 'Depósito en ventanilla',
+    ];
+
+    public function esEfectivo(): bool
+    {
+        return $this->forma_pago === 'efectivo';
+    }
+
+    public function formaPagoTexto(): string
+    {
+        // Los pagos anteriores a esta columna no la tienen; todos fueron
+        // por transferencia, que era la única vía disponible.
+        return self::FORMAS_PAGO[$this->forma_pago ?? 'transferencia'] ?? 'Transferencia';
+    }
+
+    /**
+     * Quién validó el pago. Es de quien lleva la firma el recibo.
+     */
+    public function validador()
+    {
+        return $this->belongsTo(User::class, 'validado_por')->withTrashed();
+    }
 
     protected $casts = [
         'fecha_pago' => 'date',

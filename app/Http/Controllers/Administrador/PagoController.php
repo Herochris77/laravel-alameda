@@ -94,6 +94,18 @@ class PagoController extends Controller
             $saldos = app(\App\Services\SaldoService::class);
             $liquidadosConSaldo = 0;
 
+            /*
+             * El aviso de recibo nuevo es IDÉNTICO para todos: mismo concepto,
+             * mismo monto, misma fecha. Antes salía un mensaje SMTP por vecino
+             * —44 por recibo—, que en un plan de correo básico se come la
+             * cuota diaria de una sola publicación. Se acumulan aquí y al
+             * final salen en un solo envío con copia oculta.
+             *
+             * Los que se cubren con saldo a favor sí llevan correo aparte:
+             * ese mensaje incluye el saldo restante de cada quien.
+             */
+            $destinatariosGenerales = [];
+
             foreach ($usuarios as $usuario) {
                 $pago = Detallepago::create([
                     'pago_id' => $pagoHeader->id,
@@ -151,10 +163,21 @@ class PagoController extends Controller
                     '<i class="money bill wave icon"></i>'
                 ));
 
+                $destinatariosGenerales[] = $usuario->correo;
+            }
+
+            // Un solo mensaje con copia oculta para todos los demás.
+            if (! empty($destinatariosGenerales)) {
                 try {
-                    $this->sendmail->enviarCorreoPersonal($usuario->correo, $subjectmail, $titulomail, $mensajemail);
+                    \App\Services\MailService::enviar(
+                        $destinatariosGenerales,
+                        subject: $subjectmail,
+                        titulo: $titulomail,
+                        mensaje: $mensajemail,
+                        origen: 'pago.nuevo-recibo'
+                    );
                 } catch (\Exception $mailEx) {
-                    Log::warning("❌ Error al enviar correo a {$usuario->correo}: ".$mailEx->getMessage());
+                    Log::warning('❌ Error al enviar el aviso de recibo nuevo: '.$mailEx->getMessage());
                 }
             }
 
@@ -364,6 +387,64 @@ class PagoController extends Controller
         ]);
     }
 
+    /**
+     * Siguiente folio de recibo en efectivo, del año en curso.
+     *
+     * Formato EF-2026-0001. Se reinicia cada año, que es como se numeran los
+     * talonarios en papel y facilita el archivo muerto.
+     */
+    private function siguienteFolioEfectivo(): string
+    {
+        $anio = now()->format('Y');
+        $prefijo = "EF-{$anio}-";
+
+        $ultimo = Detallepago::withTrashed()
+            ->where('folio_recibo', 'like', $prefijo.'%')
+            ->orderByDesc('folio_recibo')
+            ->value('folio_recibo');
+
+        $consecutivo = $ultimo
+            ? ((int) substr($ultimo, strlen($prefijo))) + 1
+            : 1;
+
+        return $prefijo.str_pad((string) $consecutivo, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Recibo en PDF desde tesorería, SIN firma.
+     *
+     * Es el que se imprime para entregar en mano, sobre todo en los pagos en
+     * efectivo. Sale con la línea en blanco a propósito: lo firma el tesorero
+     * de su puño, que es lo que le da valor al papel que recibe el vecino.
+     *
+     * El recibo que el vecino descarga desde su sesión es el otro, y ese sí
+     * lleva la firma digitalizada.
+     */
+    public function reciboPdf($id)
+    {
+        try {
+            $detalle = Detallepago::with(['pago', 'user', 'validador'])
+                ->where('estado', 'pagado')
+                ->findOrFail($id);
+
+            Carbon::setLocale('es');
+
+            $pdf = app(\App\Services\ReciboService::class)->generar($detalle, firmar: false);
+
+            return response($pdf, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="recibo-'
+                    .($detalle->folio_recibo ?: $detalle->id).'.pdf"',
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            abort(404, 'Solo se puede generar el recibo de un pago ya validado.');
+        } catch (\Exception $e) {
+            Log::error('Error al generar el recibo desde tesorería: '.$e->getMessage());
+
+            abort(500, 'No se pudo generar el recibo.');
+        }
+    }
+
     public function obtenerPagos(Request $request)
     {
         if ($request->ajax()) {
@@ -513,23 +594,32 @@ class PagoController extends Controller
 
                 $etiqueta = '<a class="ui green label">$'.number_format($c->cantidad_pago, 2).'</a>';
 
-                // Se desglosa solo cuando hay algo que explicar: un recargo por
-                // mora, dinero de más que se vuelve saldo, o un faltante.
+                /*
+                 * El desglose va ENTRE PARÉNTESIS y nombrando cada parte.
+                 *
+                 * Antes decía "$715.00 +$65.00 recargo", que se lee como una
+                 * suma: parecía que el vecino debía $780. El monto grande ya
+                 * incluye el recargo; lo que va después lo explica, no lo
+                 * agrega.
+                 *
+                 * El total tiene que seguir siendo el primer número del
+                 * texto: de ahí lo toma el modal de edición.
+                 */
                 if ($d['recargo'] > 0) {
-                    $etiqueta .= ' <span class="ui orange mini label" title="Cuota $'
-                        .number_format($d['cuota'], 2).' + recargo por mora $'
-                        .number_format($d['recargo'], 2).'">+$'
-                        .number_format($d['recargo'], 2).' recargo</span>';
+                    $etiqueta .= ' <span class="ui orange mini label" title="El monto ya incluye el recargo por mora">(cuota $'
+                        .number_format($d['cuota'], 2).' + recargo $'
+                        .number_format($d['recargo'], 2).')</span>';
                 }
 
                 if ($d['excedente'] > 0) {
-                    $etiqueta .= ' <span class="ui teal mini label" title="Pagó de más; se abona a su saldo a favor">+$'
-                        .number_format($d['excedente'], 2).' a favor</span>';
+                    $etiqueta .= ' <span class="ui teal mini label" title="Pagó de más; la diferencia se abona a su saldo a favor">(incluye $'
+                        .number_format($d['excedente'], 2).' que pasa a su saldo)</span>';
                 }
 
                 if ($d['faltante'] > 0) {
-                    $etiqueta .= ' <span class="ui red mini label" title="Le falta respecto a lo que debía pagar">faltan $'
-                        .number_format($d['faltante'], 2).'</span>';
+                    $etiqueta .= ' <span class="ui red mini label" title="Le falta respecto a lo que debía pagar">(faltan $'
+                        .number_format($d['faltante'], 2).' de $'
+                        .number_format($d['esperado'], 2).')</span>';
                 }
 
                 return $etiqueta;
@@ -604,6 +694,7 @@ class PagoController extends Controller
                 'estado' => 'required|in:pendiente,pagado,rechazado',
                 'cantidad_pago' => 'nullable|numeric|min:0',
                 'fecha_pago' => 'nullable|date',
+                'forma_pago' => 'nullable|in:'.implode(',', array_keys(Detallepago::FORMAS_PAGO)),
                 'comentario_rechazo' => $esRechazoSolicitado
                     ? 'required|string|max:500'
                     : 'nullable|string|max:500',
@@ -629,6 +720,27 @@ class PagoController extends Controller
             // El tesorero puede corregir la fecha real del movimiento.
             if ($request->filled('fecha_pago')) {
                 $data['fecha_pago'] = $request->fecha_pago;
+            }
+
+            // Columnas que llegan con /migrar. Se escriben solo si existen,
+            // para que subir los archivos antes de migrar no rompa la
+            // validación de pagos, que es la operación más usada del sistema.
+            if (Schema::hasColumn('detallepagos', 'forma_pago')) {
+                if ($request->filled('forma_pago')) {
+                    $data['forma_pago'] = $request->forma_pago;
+                }
+
+                if ($request->estado === 'pagado') {
+                    // Queda registrado quién validó: es de quien llevará la
+                    // firma el recibo que descargue el vecino.
+                    $data['validado_por'] = Auth::user()->id;
+
+                    // El efectivo necesita folio porque su único respaldo es
+                    // el papel firmado que se entrega en mano.
+                    if ($request->forma_pago === 'efectivo' && ! $pago->folio_recibo) {
+                        $data['folio_recibo'] = $this->siguienteFolioEfectivo();
+                    }
+                }
             }
 
             $pago->update($data);

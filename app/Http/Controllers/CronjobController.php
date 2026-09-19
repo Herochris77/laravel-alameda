@@ -16,7 +16,10 @@ use Illuminate\Support\Facades\Schema;
 
 class CronjobController extends Controller
 {
-    public function enviarNotificacionesDiarias(): JsonResponse
+    /**
+     * @param  bool  $comoJson  false para abrirlo en el navegador y leerlo.
+     */
+    public function enviarNotificacionesDiarias(bool $comoJson = true)
     {
         $resultados = [
             'pagos' => ['enviados' => 0, 'errores' => 0],
@@ -40,12 +43,77 @@ class CronjobController extends Controller
             'servicios_recordados' => $resultados['servicios']['enviados'],
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Notificaciones diarias procesadas',
-            'resultados' => $resultados,
-            'ejecutado_en' => now()->toDateTimeString(),
-        ]);
+        if ($comoJson) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Notificaciones diarias procesadas',
+                'resultados' => $resultados,
+                'ejecutado_en' => now()->toDateTimeString(),
+            ]);
+        }
+
+        return $this->resumenLegible($resultados);
+    }
+
+    /**
+     * Resultado en HTML, para cuando se ejecuta a mano desde el navegador.
+     *
+     * Un JSON con ceros no dice si el sistema falló o si simplemente hoy no
+     * había nada que mandar. Aquí se explica el porqué de cada cero, que es
+     * justo la duda que deja el botón.
+     */
+    private function resumenLegible(array $resultados)
+    {
+        $etiquetas = [
+            'pagos' => ['Recordatorios de pago', 'Hoy no vence ni vence mañana ningún recibo, o ya se avisó hoy.'],
+            'reservaciones' => ['Reservaciones de mañana', 'Nadie tiene reservación para mañana.'],
+            'estacionamientos' => ['Estacionamientos ocupados', 'No hay cajones ocupados desde ayer.'],
+            'servicios' => ['Servicios por vencer', 'Ningún servicio entra hoy en su ventana de aviso.'],
+        ];
+
+        $filas = '';
+        $totalEnviados = 0;
+        $totalErrores = 0;
+
+        foreach ($resultados as $clave => $r) {
+            [$titulo, $porQueCero] = $etiquetas[$clave] ?? [$clave, ''];
+
+            $totalEnviados += $r['enviados'];
+            $totalErrores += $r['errores'];
+
+            $detalle = $r['enviados'] > 0
+                ? '<strong style="color:#047857;">'.$r['enviados'].' aviso(s) enviados</strong>'
+                : '<span style="color:#64748b;">Nada que enviar. '.$porQueCero.'</span>';
+
+            $err = $r['errores'] > 0
+                ? '<div style="color:#b91c1c;margin-top:3px;">'.$r['errores'].' error(es). Revisa el log.</div>'
+                : '';
+
+            $filas .= '<tr><td style="padding:9px 12px;border-bottom:1px solid #eef2f7;">'
+                .'<strong>'.$titulo.'</strong><div style="margin-top:2px;">'.$detalle.$err.'</div></td></tr>';
+        }
+
+        $encabezado = $totalEnviados > 0
+            ? '<div style="font-size:1.05rem;color:#047857;">Se enviaron '.$totalEnviados.' aviso(s).</div>'
+            : '<div style="font-size:1.05rem;color:#334155;">No había nada que enviar hoy.</div>';
+
+        $html = '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">'
+            .'<title>Notificaciones diarias</title></head>'
+            .'<body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#f8fafc;margin:0;padding:28px;">'
+            .'<div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;">'
+            .'<div style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:18px 22px;">'
+            .'<div style="font-weight:700;">Notificaciones diarias</div>'
+            .'<div style="font-size:.84rem;opacity:.9;">'.now()->translatedFormat('j \d\e F \d\e Y, H:i').'</div></div>'
+            .'<div style="padding:16px 22px 6px;">'.$encabezado.'</div>'
+            .'<table style="width:100%;border-collapse:collapse;font-size:.88rem;color:#334155;">'.$filas.'</table>'
+            .'<div style="padding:14px 22px;background:#f8fafc;font-size:.8rem;color:#64748b;border-top:1px solid #eef2f7;">'
+            .'Los recordatorios de pago salen <strong>el día antes del vencimiento y el mismo día del vencimiento</strong>, '
+            .'solo a quien no ha subido comprobante. Un concepto no se avisa dos veces el mismo día, '
+            .'aunque ejecutes esto varias veces.'
+            .($totalErrores > 0 ? '<div style="color:#b91c1c;margin-top:6px;">Hubo errores: revisa storage/logs/laravel.log</div>' : '')
+            .'</div></div></body></html>';
+
+        return response($html);
     }
 
     private function notificarPagosProximos(array &$resultados): void
@@ -55,48 +123,64 @@ class CronjobController extends Controller
             ->whereNull('path_pago')
             ->get();
 
+        /*
+         * El correo de "tu pago vence mañana" es el mismo para todos los que
+         * deben el mismo concepto: cambia solo el saludo. Se agrupan por
+         * concepto y sale un mensaje con copia oculta por concepto, en vez de
+         * uno por vecino. La notificación en la plataforma sí sigue siendo
+         * individual, porque ahí no hay cuota que cuidar.
+         */
+        $porConcepto = [];
+
         foreach ($pagosSinComprobante as $detalle) {
             if (! $detalle->user || ! $detalle->pago) {
                 continue;
             }
 
             $vencimiento = Carbon::parse($detalle->pago->vencimiento);
-            $manana = Carbon::tomorrow()->startOfDay();
 
-            if ($vencimiento->isSameDay($manana)) {
+            /*
+             * Se avisa DOS veces: el día antes y el día del vencimiento.
+             *
+             * Antes solo salía la víspera. El día límite —que es cuando la
+             * gente de verdad se acuerda de pagar— no llegaba nada, y quien
+             * no hubiera visto el correo del día anterior se enteraba con el
+             * recargo encima.
+             */
+            $esVispera = $vencimiento->isSameDay(Carbon::tomorrow());
+            $esElDia = $vencimiento->isSameDay(Carbon::today());
+
+            if ($esVispera || $esElDia) {
                 $usuario = $detalle->user;
 
                 if ($usuario->emails != 1) {
                     continue;
                 }
 
-                $correo = $usuario->correo;
-                $asunto = '⚠️ URGENTE: Tu pago vence mañana - Alameda';
-                $titulo = '¡Pago pendiente sin comprobante!';
-                $mensaje = "Hola {$usuario->nombre}, te informamos que tienes un pago pendiente que vence <strong>mañana</strong> y aún no has subido tu comprobante de pago.<br><br>
-                           <strong>Concepto:</strong> {$detalle->pago->concepto}<br>
-                           <strong>Monto:</strong> $".number_format($detalle->pago->cantidad, 2)."<br>
-                           <strong>Fecha de vencimiento:</strong> {$vencimiento->translatedFormat('j \\d\\e F \\d\\e Y')}<br><br>
-                           <strong>⚠️ IMPORTANTE:</strong> Es necesario que subas tu comprobante de pago lo antes posible.";
+                $cuando = $esElDia ? 'hoy' : 'mañana';
 
                 try {
                     $usuario->notify(new NotificacionGenerica(
-                        '⚠️ Pago sin comprobante',
-                        "Tu pago de <strong>{$detalle->pago->concepto}</strong> vence mañana y no has subido comprobante.",
-                        'Sube tu comprobante de pago para evitar sanciones.',
+                        $esElDia ? '⚠️ Hoy vence tu pago' : '⚠️ Tu pago vence mañana',
+                        "Tu pago de <strong>{$detalle->pago->concepto}</strong> vence {$cuando} y no has subido comprobante.",
+                        'Sube tu comprobante para evitar el recargo.',
                         'usuario/pago',
                         'usuario/pago',
                         null,
                         '<i class="exclamation triangle icon"></i>'
                     ));
 
-                    MailService::enviar(
-                        $correo,
-                        subject: $asunto,
-                        titulo: $titulo,
-                        mensaje: $mensaje,
-                        origen: 'cronjob.pagos'
-                    );
+                    // El correo se junta y sale abajo, agrupado por concepto.
+                    $clave = $detalle->pago->id;
+
+                    $porConcepto[$clave] ??= [
+                        'pago' => $detalle->pago,
+                        'vencimiento' => $vencimiento,
+                        'es_el_dia' => $esElDia,
+                        'correos' => [],
+                    ];
+
+                    $porConcepto[$clave]['correos'][] = $usuario->correo;
 
                     $resultados['pagos']['enviados']++;
                 } catch (\Exception $e) {
@@ -105,6 +189,74 @@ class CronjobController extends Controller
                 }
             }
         }
+
+        foreach ($porConcepto as $grupo) {
+
+            /*
+             * Un solo aviso por concepto y por día. El cron corre una vez,
+             * pero el botón de ejecución manual se puede pulsar varias veces
+             * y no hay por qué mandarle el mismo correo dos veces a los 42
+             * vecinos, ni gastar la cuota del proveedor en eso.
+             */
+            if ($this->yaSeAvisoHoy($grupo['pago'])) {
+                continue;
+            }
+
+            $esElDia = $grupo['es_el_dia'];
+
+            $recargo = (float) ($grupo['pago']->recargo_pct ?? 0) > 0
+                ? '<br><br>Si pagas después de esa fecha se aplica un recargo del '
+                    .rtrim(rtrim(number_format((float) $grupo['pago']->recargo_pct, 2), '0'), '.').'%.'
+                : '';
+
+            $mensaje = ($esElDia
+                    ? '<strong>Hoy es el último día</strong> para cubrir este pago y aún no has subido tu comprobante.'
+                    : 'Tienes un pago pendiente que vence <strong>mañana</strong> y aún no has subido tu comprobante.')
+                .'<br><br>
+                   <strong>Concepto:</strong> '.e($grupo['pago']->concepto).'<br>
+                   <strong>Monto:</strong> $'.number_format($grupo['pago']->cantidad, 2).'<br>
+                   <strong>Fecha límite:</strong> '.$grupo['vencimiento']->translatedFormat('j \d\e F \d\e Y')
+                .$recargo.'<br><br>
+                   Si ya pagaste, solo falta subir el comprobante desde la plataforma.
+                   Recuerda capturar la <strong>fecha real de tu transferencia</strong>: es la que
+                   cuenta, no el día en que lo subes.';
+
+            try {
+                MailService::enviar(
+                    $grupo['correos'],
+                    subject: $esElDia
+                        ? '⚠️ HOY vence tu pago - Alameda'
+                        : '⚠️ Tu pago vence mañana - Alameda',
+                    titulo: $esElDia
+                        ? 'Hoy es el último día'
+                        : 'Tu pago vence mañana',
+                    mensaje: $mensaje,
+                    origen: 'cronjob.pagos'
+                );
+
+                $grupo['pago']->update(['ultimo_aviso' => Carbon::today()->toDateString()]);
+            } catch (\Exception $e) {
+                Log::error('Error al enviar el recordatorio de pagos por vencer: '.$e->getMessage());
+                $resultados['pagos']['errores']++;
+            }
+        }
+    }
+
+    /**
+     * ¿Ya salió hoy el aviso de este concepto?
+     *
+     * Si la columna no existe todavía —producción antes de correr /migrar—
+     * se responde que no: vale más un correo repetido que quedarse sin
+     * mandar el recordatorio.
+     */
+    private function yaSeAvisoHoy($pago): bool
+    {
+        if (! Schema::hasColumn('pagos', 'ultimo_aviso')) {
+            return false;
+        }
+
+        return $pago->ultimo_aviso
+            && Carbon::parse($pago->ultimo_aviso)->isSameDay(Carbon::today());
     }
 
     private function notificarReservacionesProximas(Carbon $fechaInicio, Carbon $fechaFin, array &$resultados): void

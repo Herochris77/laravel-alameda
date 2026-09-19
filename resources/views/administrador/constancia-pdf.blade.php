@@ -76,6 +76,7 @@
 <body>
 
     <div class="encabezado">
+        @include('pdf.logo', ['alto' => 58])
         <div class="condominio">CONDOMINIO ALAMEDA</div>
         <div class="direccion">
             Av. Los Arados No. 1, Fracc. Hacienda del Bosque<br>
