@@ -7,7 +7,7 @@
             </div>
             <div>
                 <h1 class="page-title">Reporte mensual</h1>
-                <p class="page-subtitle">Ingresos y egresos del mes, en el formato que se entrega a la mesa directiva.</p>
+                <p class="page-subtitle">Ingresos y egresos del mes, en el formato que se entrega a la mesa directiva provisional.</p>
             </div>
         </div>
     </div>
@@ -27,13 +27,41 @@
                     </select>
                 </div>
 
+                @php
+                    $compro = collect($datos['egresos'])->pluck('comprobante.estado');
+                    $conImagen = $compro->filter(fn ($e) => $e === 'imagen')->count();
+                    $sinImagen = $compro->count() - $conImagen;
+                @endphp
+
                 <a href="{{ route('admin.reporteMensual.pdf', ['periodo' => $periodo]) }}"
                    class="btn btn-primary rm-btn-pdf">
                     <i class="file pdf outline icon"></i>
                     Descargar PDF
                 </a>
 
+                <a href="{{ route('admin.reporteMensual.pdf', ['periodo' => $periodo, 'comprobantes' => 0]) }}"
+                   class="btn btn-secondary rm-btn-pdf">
+                    <i class="file alternate outline icon"></i>
+                    Solo las cifras
+                </a>
+
             </form>
+
+            <div class="rm-comprobantes">
+                @if($compro->isEmpty())
+                    Este mes no tiene egresos capturados, así que el PDF sale sin anexo.
+                @else
+                    <strong>Anexo de comprobantes:</strong>
+                    <strong>{{ $conImagen }} de {{ $compro->count() }}</strong>
+                    egreso(s) del mes se anexan como imagen al final del PDF.
+                    @if($sinImagen > 0)
+                        Los otros <strong>{{ $sinImagen }}</strong> solo se nombran, para
+                        consultarse en Documentos: son archivos PDF, están ausentes, o el
+                        servidor no puede incrustarlos.
+                    @endif
+                    Con <em>Solo las cifras</em> obtienes el reporte sin el anexo.
+                @endif
+            </div>
         </div>
     </div>
 
@@ -166,7 +194,7 @@
                         <label class="form-label">Notas (opcional)</label>
                         <textarea name="notas" rows="2" maxlength="500"
                                   class="form-input"
-                                  placeholder="Aclaraciones para la mesa directiva">{{ $datos['cierre']->notas ?? '' }}</textarea>
+                                  placeholder="Aclaraciones para la mesa directiva provisional">{{ $datos['cierre']->notas ?? '' }}</textarea>
                     </div>
 
                     <div id="rm-comparativo" class="rm-comparativo" style="display:none;"></div>
@@ -206,6 +234,7 @@
         .rm-campo { flex: 1; min-width: 200px; }
 
         .rm-btn-pdf { white-space: nowrap; }
+        .rm-comprobantes { margin-top: 12px; font-size: .86rem; color: #475569; line-height: 1.5; }
 
         .rm-columnas {
             display: grid;

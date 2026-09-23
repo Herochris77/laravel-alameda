@@ -1582,25 +1582,8 @@
                     </a>
 
 
-                    <a
-                        href="{{ route('usuario.vehiculo.index') }}"
-                        class="module-card"
-                        data-search="vehiculos vehiculo auto coche carro placas"
-                    >
-                        <div class="module-icon">
-                            <i class="car icon"></i>
-                        </div>
-
-                        <div class="module-content">
-                            <div class="module-title">
-                                Vehículos
-                            </div>
-                        </div>
-
-                        <div class="module-arrow">
-                            <i class="angle right icon"></i>
-                        </div>
-                    </a>
+                    {{-- Modulo de vehiculos retirado: guardaba placas y
+                         fotografias visibles para todos los vecinos. --}}
 
 
                     <a
@@ -1731,7 +1714,7 @@
                     </div>
 
                     <h2 class="section-title">
-                        Mesa directiva
+                        Mesa directiva provisional
                     </h2>
 
                     <div class="section-description">
@@ -1852,7 +1835,7 @@
 
                 <div class="board-empty">
                     <i class="users icon"></i>
-                    No hay integrantes de mesa directiva disponibles
+                    No hay integrantes de mesa directiva provisional disponibles
                     por el momento.
                 </div>
 

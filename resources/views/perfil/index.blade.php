@@ -2009,6 +2009,56 @@
                                 </label>
 
 
+                                {{--
+                                    DIRECTORIO VECINAL
+
+                                    Va aparte del formulario de preferencias y
+                                    se guarda solo al cambiarlo: es una
+                                    decisión sobre la propia exposición y no
+                                    debería depender de que el vecino recuerde
+                                    pulsar "guardar" al final.
+                                --}}
+                                @php($visibleDirectorio = $user->visible_directorio ?? 1)
+
+                                <label
+                                    class="setting-card perfil-checkbox-card {{ $visibleDirectorio ? 'checked' : '' }}"
+                                    id="card-directorio"
+                                >
+
+                                    <input
+                                        type="checkbox"
+                                        id="toggle-directorio"
+                                        {{ $visibleDirectorio ? 'checked' : '' }}
+                                    >
+
+                                    <div class="setting-content">
+
+                                        <div class="setting-icon">
+                                            <i class="address book outline icon"></i>
+                                        </div>
+
+                                        <div>
+
+                                            <span class="setting-title">
+                                                Aparecer en el directorio vecinal
+                                            </span>
+
+                                            <span class="setting-description">
+                                                Si lo activas, los demás vecinos ven tu
+                                                nombre, casa, teléfono y fotografía. Si lo
+                                                apagas, dejas de aparecer de inmediato y
+                                                nadie más puede consultarlos.
+                                            </span>
+
+                                        </div>
+
+                                        <span class="switch" aria-hidden="true"></span>
+
+                                    </div>
+
+                                </label>
+
+
                                 {{-- PUSH --}}
                                 <label
                                     class="
@@ -3989,6 +4039,47 @@
                     );
 
             })();
+
+
+            /*
+             * DIRECTORIO VECINAL
+             *
+             * Se guarda al instante, sin botón: es una decisión sobre la
+             * propia exposición y no debe quedar a medias porque alguien
+             * olvidó pulsar "guardar".
+             *
+             * Al apagarlo se confirma, para que quede claro que los demás
+             * vecinos dejan de verlo de inmediato.
+             */
+            $('#toggle-directorio').on('change', function () {
+                const visible = this.checked;
+                const $card = $('#card-directorio');
+                const $input = $(this);
+
+                $card.toggleClass('checked', visible);
+
+                $.ajax({
+                    url: "{{ route('usuario.perfil.actualizarDirectorio') }}",
+                    method: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        visible: visible ? 1 : 0
+                    },
+                    success: function (res) {
+                        alertify.alert(res.header, res.message);
+                    },
+                    error: function (xhr) {
+                        // Se revierte el interruptor: mostrarlo apagado
+                        // cuando el cambio no se guardó sería mentirle.
+                        $input.prop('checked', !visible);
+                        $card.toggleClass('checked', !visible);
+
+                        const r = xhr.responseJSON || {};
+                        alertify.alert(r.header || 'Error',
+                            r.message || 'No se pudo guardar el cambio. Intenta de nuevo.');
+                    }
+                });
+            });
 
         });
 

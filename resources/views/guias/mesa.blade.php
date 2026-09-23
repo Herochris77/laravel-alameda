@@ -1,5 +1,5 @@
 {{--
-    Guía de la mesa directiva.
+    Guía de la mesa directiva provisional.
 
     Pensada para entregarse junto con la tesorería: quien llega nuevo debería
     poder operar el sistema leyendo esto, sin tener que preguntarle a quien
@@ -20,7 +20,7 @@
     <div class="portada-condominio">CONDOMINIO ALAMEDA</div>
     <div class="portada-linea"></div>
 
-    <div class="portada-titulo">Guía de la<br>Mesa Directiva</div>
+    <div class="portada-titulo">Guía de la<br>Mesa Directiva Provisional</div>
     <div class="portada-sub">Operación de la plataforma y entrega de la tesorería</div>
 
     <div class="portada-pie">
@@ -37,7 +37,7 @@
     <tr>
         <td>@include('pdf.logo', ['alto' => 26])</td>
         <td class="membrete-nombre">CONDOMINIO ALAMEDA</td>
-        <td class="membrete-doc">Guía de la Mesa Directiva</td>
+        <td class="membrete-doc">Guía de la Mesa Directiva Provisional</td>
     </tr>
 </table>
 
@@ -62,6 +62,7 @@
         <tr><td class="num">16</td><td>Correos: cuidar la cuota</td></tr>
         <tr><td class="num">17</td><td>Mantenimiento del sistema</td></tr>
         <tr><td class="num">18</td><td>Al entregar la tesorería</td></tr>
+        <tr><td class="num">19</td><td>Datos personales: lo que la mesa debe cuidar</td></tr>
     </table>
 </div>
 
@@ -77,10 +78,10 @@
     </tr>
     <tr>
         <td><strong>Vecino</strong></td>
-        <td>Consulta y gestiona lo suyo: sus pagos, su vehículo, sus reservaciones.</td>
+        <td>Consulta y gestiona lo suyo: sus pagos, sus mascotas, sus reservaciones.</td>
     </tr>
     <tr>
-        <td><strong>Mesa directiva</strong></td>
+        <td><strong>Mesa directiva provisional</strong></td>
         <td>Entra a todos los módulos administrativos: comunicados, documentos,
             asambleas, encuestas, sanciones, proyectos, usuarios, reportes.</td>
     </tr>
@@ -518,7 +519,7 @@
 
 <ul>
     <li>Alta de vecinos y reenvío del correo de verificación.</li>
-    <li>Cambiar a alguien entre vecino y mesa directiva.</li>
+    <li>Cambiar a alguien entre vecino y mesa directiva provisional.</li>
     <li><strong>Asignar cargo:</strong> Tesorero, Presidente, Secretario, Vocal.</li>
     <li>Bloquear y desbloquear el acceso.</li>
     <li>Marcar si una vivienda entra o no en los cobros.</li>
@@ -643,11 +644,77 @@
     use en recibos nuevos que tú ya no validaste.
 </div>
 
+{{-- ================= 19 ================= --}}
+<h2><span class="h2-num">19</span> Datos personales: lo que la mesa debe cuidar</h2>
+
+<p>
+    La plataforma guarda datos personales de los vecinos. Quien administra esos datos
+    responde por ellos, y esa responsabilidad no se transfiere con un texto ni con una
+    firma. Lo que sí se puede hacer es manejarlos bien. Estas son las reglas de la casa:
+</p>
+
+<table class="tabla">
+    <tr>
+        <th width="34%">Regla</th>
+        <th>Por qué</th>
+    </tr>
+    <tr>
+        <td>Solo se pide lo que se usa</td>
+        <td>Si un dato no sirve para cobrar, avisar o convivir, no se pide. Por eso se
+            retiró el módulo de vehículos: las placas no hacían falta para administrar
+            el condominio.</td>
+    </tr>
+    <tr>
+        <td>La lista de deudores no se publica</td>
+        <td>Vive en el panel de la mesa y en ningún otro lado. El módulo de
+            transparencia muestra montos y conceptos, nunca nombres.</td>
+    </tr>
+    <tr>
+        <td>Nada de capturas en el grupo</td>
+        <td>Una captura del panel con nombres y adeudos, mandada a un grupo de
+            WhatsApp, es una difusión de datos personales. No importa que el grupo sea
+            del condominio.</td>
+    </tr>
+    <tr>
+        <td>El directorio es voluntario</td>
+        <td>Cada vecino decide si aparece. Si alguien se salió, no se le vuelve a
+            activar «para que se pueda contactar»: es su decisión.</td>
+    </tr>
+    <tr>
+        <td>La desvinculación no se discute</td>
+        <td>Si un vecino pide retirar sus datos, el sistema lo hace solo y al momento.
+            La mesa no autoriza ni condiciona esa salida, ni siquiera si el vecino debe
+            dinero: el adeudo se conserva ligado a la casa.</td>
+    </tr>
+    <tr>
+        <td>Los accesos se dan de baja</td>
+        <td>Cuando alguien deja la mesa, se le quita el rol el mismo día y se borra su
+            firma. Un ex integrante con acceso administrativo es el escenario que hay
+            que evitar.</td>
+    </tr>
+</table>
+
+<div class="ojo">
+    <strong>Usar los datos de la plataforma para un asunto personal es la línea que no se
+    cruza.</strong> Los datos se te confían por el cargo, no son tuyos. Sacar el nombre
+    completo, el teléfono o el domicilio de un vecino para un pleito, un trámite o una
+    demanda ajena al condominio es un uso indebido y la responsabilidad recae en quien
+    lo hizo.
+</div>
+
+<div class="tip">
+    Ante una solicitud de datos de un tercero —una autoridad, un abogado, una
+    aseguradora— no se entrega nada por iniciativa propia. Se pide el requerimiento por
+    escrito y se consulta antes de responder.
+</div>
+
 <div class="cierre">
-    Condominio Alameda · Guía de la Mesa Directiva ·
+    Condominio Alameda · Guía de la Mesa Directiva Provisional ·
     {{ $generado->translatedFormat('F \d\e Y') }}<br>
     Dudas sobre la plataforma: <strong>{{ config('privacidad.correo') }}</strong>
 </div>
+
+@include('pdf.pie', ['fecha' => $generado, 'fijo' => false])
 
 </body>
 </html>

@@ -41,7 +41,7 @@ class SaldoService
      *
      * Todo lo cobrado antes pertenece a la gestión anterior y ya está
      * entregado y cuadrado: reclasificarlo como saldo a favor cambiaría
-     * cifras que la mesa directiva ya dio por buenas.
+     * cifras que la mesa directiva provisional ya dio por buenas.
      *
      * Se define con SALDOS_DESDE en el .env (formato Y-m-d). Sin esa
      * variable el módulo opera sobre todo el histórico.

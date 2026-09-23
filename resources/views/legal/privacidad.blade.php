@@ -62,7 +62,7 @@
 
     <p>
         Los datos se obtienen de tres formas: los que tú capturas al registrarte o al
-        usar la plataforma, los que la mesa directiva registra por su función
+        usar la plataforma, los que la mesa directiva provisional registra por su función
         administrativa, y los que el sistema genera solo al operar.
     </p>
 
@@ -98,12 +98,6 @@
                     <td>Tú (el comprobante) y la Tesorería (la validación).</td>
                 </tr>
                 <tr>
-                    <td><strong>Vehículos</strong></td>
-                    <td>Marca, modelo, año, color, <strong>placas</strong>, tipo,
-                        observaciones y fotografía del vehículo.</td>
-                    <td>Tú.</td>
-                </tr>
-                <tr>
                     <td><strong>Mascotas</strong></td>
                     <td>Nombre, especie, edad, género, características, esquema de vacunas,
                         si está esterilizada, si es amistosa, y fotografía.</td>
@@ -120,13 +114,13 @@
                     <td>Asistencia a asambleas, cartas poder, <strong>el sentido de tu voto
                         en cada punto</strong> (queda asociado a tu número de casa) y tus
                         respuestas a encuestas (quedan asociadas a tu usuario).</td>
-                    <td>Tú y la mesa directiva.</td>
+                    <td>Tú y la mesa directiva provisional.</td>
                 </tr>
                 <tr>
                     <td><strong>Convivencia y sanciones</strong></td>
                     <td>Motivo de la sanción, comentarios, <strong>fotografía de la
                         evidencia</strong>, monto, estado y comprobante de pago.</td>
-                    <td>Mesa directiva.</td>
+                    <td>Mesa directiva provisional.</td>
                 </tr>
                 <tr>
                     <td><strong>Inquilinos</strong></td>
@@ -136,8 +130,8 @@
                 </tr>
                 <tr>
                     <td><strong>Expediente de la vivienda</strong></td>
-                    <td>Notas administrativas que la mesa directiva registra sobre una casa.</td>
-                    <td>Mesa directiva.</td>
+                    <td>Notas administrativas que la mesa directiva provisional registra sobre una casa.</td>
+                    <td>Mesa directiva provisional.</td>
                 </tr>
                 <tr>
                     <td><strong>Técnicos, generados solos</strong></td>
@@ -186,8 +180,8 @@
             corriente, tu constancia de no adeudo.</li>
         <li>Elaborar los reportes mensuales de ingresos y egresos que la mesa
             directiva rinde a la asamblea.</li>
-        <li>Administrar el registro de vehículos, mascotas, estacionamiento y
-            reservación de áreas comunes.</li>
+        <li>Administrar el registro de mascotas, estacionamiento y reservación de
+            áreas comunes.</li>
         <li>Convocar asambleas, registrar asistencia y contabilizar votaciones.</li>
         <li>Levantar y dar seguimiento a sanciones conforme al reglamento interno.</li>
         <li>Enviarte avisos operativos: recibo nuevo, vencimiento próximo, resultado
@@ -203,7 +197,9 @@
     <ul>
         <li><strong>Aparecer en el directorio vecinal.</strong> Tu nombre, número de
             casa, celular y fotografía de perfil son visibles para los demás vecinos
-            registrados.</li>
+            registrados. <strong>Lo controlas tú:</strong> en <em>Mi Perfil</em> hay un
+            interruptor para dejar de aparecer, y surte efecto de inmediato. Hoy está
+            activo por omisión, y por eso te lo decimos aquí de forma expresa.</li>
         <li><strong>Correos informativos no esenciales</strong>, como la publicación de
             documentos generales.</li>
         <li><strong>Notificaciones al celular</strong> mediante notificaciones push del
@@ -230,18 +226,13 @@
             <tbody>
                 <tr>
                     <td>Tu nombre, casa, celular y fotografía de perfil</td>
-                    <td><strong>Todos los vecinos registrados</strong>, a través del
-                        directorio vecinal.</td>
-                </tr>
-                <tr>
-                    <td>Los vehículos registrados, incluidas placas y fotografía</td>
-                    <td><strong>Todos los vecinos registrados</strong>. El listado es
-                        común porque sirve para identificar vehículos dentro del
-                        condominio.</td>
+                    <td><strong>Los vecinos registrados, solo si tú lo permites.</strong>
+                        Aparece en el directorio vecinal mientras tengas activa esa opción
+                        en <em>Mi Perfil</em>. Al desactivarla desapareces de inmediato.</td>
                 </tr>
                 <tr>
                     <td>Tus recibos, comprobantes, montos, adeudos y saldo a favor</td>
-                    <td><strong>Solo tú</strong> y la mesa directiva. Ningún otro vecino
+                    <td><strong>Solo tú</strong> y la mesa directiva provisional. Ningún otro vecino
                         tiene acceso a tu estado de cuenta individual.</td>
                 </tr>
                 <tr>
@@ -253,15 +244,15 @@
                 </tr>
                 <tr>
                     <td>Tus mascotas</td>
-                    <td>Tú y la mesa directiva.</td>
+                    <td>Tú y la mesa directiva provisional.</td>
                 </tr>
                 <tr>
                     <td>Tus sanciones</td>
-                    <td>Tú y la mesa directiva.</td>
+                    <td>Tú y la mesa directiva provisional.</td>
                 </tr>
                 <tr>
                     <td>El sentido de tu voto en asamblea</td>
-                    <td>La mesa directiva. <strong>La votación no es secreta:</strong> el
+                    <td>La mesa directiva provisional. <strong>La votación no es secreta:</strong> el
                         voto queda ligado a tu número de casa, igual que en una votación
                         a mano alzada.</td>
                 </tr>
@@ -299,7 +290,7 @@
     <p>
         Fuera de eso, tus datos solo se entregarían a una autoridad competente que
         los requiriera por escrito y con fundamento legal, o a la asamblea cuando
-        ejerza su facultad de revisar las cuentas de la mesa directiva, caso en el
+        ejerza su facultad de revisar las cuentas de la mesa directiva provisional, caso en el
         cual se entrega la información económica que corresponda.
     </p>
 
@@ -313,8 +304,8 @@
         <li><strong>La información económica</strong> —recibos, comprobantes, reportes
             mensuales— se conserva aunque dejes de ser residente, porque forma parte
             de la contabilidad del condominio y de la rendición de cuentas de cada
-            mesa directiva ante la asamblea.</li>
-        <li><strong>Los datos que no son económicos</strong> —vehículos, mascotas,
+            mesa directiva provisional ante la asamblea.</li>
+        <li><strong>Los datos que no son económicos</strong> —mascotas,
             reservaciones, fotografía de perfil— se eliminan cuando lo solicitas o
             cuando dejan de ser necesarios.</li>
     </ul>
@@ -323,10 +314,10 @@
 
     <ul>
         <li>El acceso es con usuario y contraseña. Las contraseñas se guardan
-            <strong>cifradas con bcrypt</strong>: ni la mesa directiva ni el
+            <strong>cifradas con bcrypt</strong>: ni la mesa directiva provisional ni el
             administrador pueden verlas.</li>
         <li>La comunicación con el sitio viaja cifrada mediante HTTPS.</li>
-        <li>El sistema separa roles: vecino, mesa directiva y administrador. Las
+        <li>El sistema separa roles: vecino, mesa directiva provisional y administrador. Las
             operaciones que mueven dinero están reservadas a la Tesorería.</li>
         <li>Las acciones administrativas quedan registradas con el usuario que las
             realizó.</li>
@@ -371,7 +362,7 @@
         <strong>Un límite honesto:</strong> la cancelación no aplica a la información
         económica que respalda la contabilidad del condominio. Un recibo pagado, un
         comprobante validado o un reporte mensual ya entregado a la asamblea no
-        pueden borrarse, porque son el soporte de cuentas que la mesa directiva debe
+        pueden borrarse, porque son el soporte de cuentas que la mesa directiva provisional debe
         poder acreditar. Tampoco procede cuando exista un adeudo pendiente.
     </div>
 
@@ -382,6 +373,53 @@
         tratar tus datos, con las mismas limitaciones del punto anterior. La
         solicitud se hace por el mismo correo y con los mismos requisitos.
     </p>
+
+    <h3>Desvinculación inmediata, sin trámite</h3>
+
+    <p>
+        No hace falta que escribas ni que esperes respuesta. En la ventana que aparece
+        al entrar hay un botón:
+        <strong>"No acepto seguir usando la plataforma y deseo desvincular mis datos
+        personales"</strong>. Al confirmarlo, en ese momento:
+    </p>
+
+    <div class="lg-tabla-wrap">
+        <table class="lg-tabla">
+            <thead>
+                <tr>
+                    <th>Se elimina</th>
+                    <th>Se conserva</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        Tu nombre, correo y teléfono<br>
+                        Tu fotografía de perfil<br>
+                        Tus mascotas registradas<br>
+                        Tus vehículos registrados<br>
+                        <strong>Las capturas de tus transferencias</strong><br>
+                        Tus notificaciones y avisos al celular<br>
+                        Tus reservaciones y solicitudes
+                    </td>
+                    <td>
+                        El monto, la fecha y el estado de tus recibos,
+                        identificados únicamente como
+                        <strong>"Casa {{ '{número}' }}"</strong>.<br><br>
+                        Es lo mínimo que permite que las cuentas del condominio sigan
+                        cuadrando ante la asamblea, y ya no te identifica por nombre.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="lg-ojo">
+        <strong>Es permanente y cierra tu acceso.</strong> No podrás volver a entrar a
+        la plataforma con esa cuenta, y las imágenes borradas no se pueden recuperar.
+        Si más adelante quieres volver a usarla, la mesa tendría que darte de alta de
+        nuevo.
+    </div>
 
     <p>
         Ten presente que revocar el consentimiento sobre datos necesarios implica
@@ -400,12 +438,21 @@
             en el navegador y puedes retirar el permiso cuando quieras.</li>
         <li><strong>Fotografía de perfil.</strong> Es opcional: puedes no subirla o
             eliminarla.</li>
-        <li><strong>Vehículos y mascotas.</strong> Solo se registran si tú los das de
-            alta.</li>
-        <li><strong>Directorio vecinal.</strong> Si no quieres que tu celular o tu
-            fotografía sean visibles para los demás vecinos, escríbenos al correo de
-            contacto y se retiran.</li>
+        <li><strong>Mascotas.</strong> Solo se registran si tú las das de alta.</li>
+        <li><strong>Directorio vecinal.</strong> En <em>Mi Perfil</em> hay un interruptor
+            para dejar de aparecer. Al apagarlo, los demás vecinos dejan de ver tu
+            nombre, casa, teléfono y fotografía de inmediato. No hace falta pedirlo por
+            correo ni esperar autorización.</li>
+        <li><strong>Retirar todos tus datos.</strong> Ver el punto 9.</li>
     </ul>
+
+    <div class="lg-nota">
+        <strong>Cambios de esta versión (2.0).</strong> Se retiró por completo el módulo
+        de vehículos y se eliminaron las placas y fotografías que contenía; el directorio
+        vecinal pasó a ser desactivable por cada quien; y se agregó la desvinculación
+        inmediata de datos personales. Los tres cambios reducen la información personal
+        que la plataforma guarda y amplían lo que cada quien puede decidir sobre la suya.
+    </div>
 
     <h2 id="menores">11. Datos de menores de edad</h2>
 

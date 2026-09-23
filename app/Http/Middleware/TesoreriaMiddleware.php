@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
  *
  * Se aplica a crear recibos, validar pagos, eliminarlos y asignar usuarios a
  * un concepto. Consultar la cobranza y descargar el reporte siguen abiertos a
- * toda la mesa directiva: el objetivo es separar quién decide sobre el dinero,
+ * toda la mesa directiva provisional: el objetivo es separar quién decide sobre el dinero,
  * no esconderle la información al resto.
  *
  * La regla vive en User::puedeGestionarPagos(), que además respeta el periodo
@@ -31,7 +31,7 @@ class TesoreriaMiddleware
             return $next($request);
         }
 
-        $mensaje = 'Esta acción es exclusiva del Tesorero de la mesa directiva. '
+        $mensaje = 'Esta acción es exclusiva del Tesorero de la mesa directiva provisional. '
             .'Puedes consultar la cobranza y descargar el reporte, pero el registro '
             .'y la validación de pagos los realiza quien tiene ese cargo.';
 

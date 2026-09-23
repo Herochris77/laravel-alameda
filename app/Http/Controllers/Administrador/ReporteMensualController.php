@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 /**
  * Reporte mensual de ingresos y egresos.
  *
- * Reproduce el documento que la mesa directiva entrega cada mes. Los ingresos
+ * Reproduce el documento que la mesa directiva provisional entrega cada mes. Los ingresos
  * y egresos salen del sistema; lo único que se captura es el saldo del banco y,
  * cuando lo hay, el efectivo al cierre, porque eso no vive en la plataforma.
  *
@@ -85,26 +85,57 @@ class ReporteMensualController extends Controller
 
     /**
      * Genera el PDF con el formato del reporte de papel.
+     *
+     * Detrás de las firmas van los comprobantes de cada egreso del mes, uno
+     * por hoja. Se pueden omitir con ?comprobantes=0 cuando solo se quiere la
+     * carátula de cifras.
      */
     public function pdf(Request $request)
     {
         $periodo = $request->input('periodo', now()->format('Y-m'));
+        $incluirComprobantes = $request->boolean('comprobantes', true);
 
         Carbon::setLocale('es');
 
         $datos = $this->servicio->datos($periodo);
 
+        try {
+            $salida = $this->armarPdf($datos, $incluirComprobantes);
+        } catch (\Throwable $e) {
+            // Una imagen que dompdf no digiere tumba el documento COMPLETO, no
+            // solo esa hoja. Antes que dejar al tesorero sin reporte, se vuelve
+            // a generar sin el anexo y se deja constancia de por qué.
+            Log::error('El reporte mensual falló con los comprobantes anexos', [
+                'periodo' => $periodo,
+                'error' => $e->getMessage(),
+            ]);
+
+            if (! $incluirComprobantes) {
+                throw $e;
+            }
+
+            $salida = $this->armarPdf($datos, false);
+        }
+
+        return response($salida, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="reporte-ingresos-egresos-'.$periodo.'.pdf"',
+        ]);
+    }
+
+    private function armarPdf(array $datos, bool $incluirComprobantes): string
+    {
         $dompdf = \App\Services\PdfService::crear('LETTER', 'portrait');
 
         $dompdf->loadHtml(
-            view('administrador.reporte-mensual-pdf', compact('datos'))->render()
+            view('administrador.reporte-mensual-pdf', [
+                'datos' => $datos,
+                'incluirComprobantes' => $incluirComprobantes,
+            ])->render()
         );
 
         $dompdf->render();
 
-        return response($dompdf->output(), 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="reporte-ingresos-egresos-'.$periodo.'.pdf"',
-        ]);
+        return $dompdf->output();
     }
 }

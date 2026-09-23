@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * Reporte mensual de ingresos y egresos.
  *
- * Reproduce el formato que la mesa directiva venía entregando en papel, con
+ * Reproduce el formato que la mesa directiva provisional venía entregando en papel, con
  * las mismas líneas: cuota del mes, cuotas adelantadas, penalización por pago
  * tardío, multas y derramas o proyectos, más los egresos del periodo.
  *
@@ -178,12 +178,106 @@ class ReporteMensualService
                 'fecha' => optional($d->fechaEfectiva())->format('d/m/Y'),
                 'fecha_real' => $d->fechaEsReal(),
                 'proveedor' => $d->proveedor,
+                'comprobante' => $this->comprobante($d),
             ])
             ->all();
     }
 
     /**
-     * Quiénes firman, tomado de los cargos de la mesa directiva.
+     * El archivo que respalda un egreso, listo para el anexo del PDF.
+     *
+     * Devuelve SIEMPRE un arreglo, aunque el comprobante no se pueda mostrar:
+     * el anexo tiene que poder decir "este gasto trae un PDF" o "falta el
+     * archivo" en vez de omitir el renglón y dar a entender que no había nada.
+     *
+     * Los tres casos que no se incrustan:
+     *
+     *   - PDF. dompdf no sabe meter un PDF dentro de otro. El archivo sigue
+     *     en el módulo de Documentos; el anexo lo nombra.
+     *   - PNG en un servidor sin la extensión GD. No es que la imagen salga
+     *     mal: dompdf lanza una excepción y se cae el documento ENTERO. Por
+     *     eso se descarta antes, no se intenta.
+     *   - El archivo ya no está en el disco.
+     *
+     * El tamaño se calcula aquí y se manda en pixeles exactos. Dejárselo a
+     * `max-height` no sirve: dompdf lo ignora en las imágenes y un ticket
+     * vertical se desborda de la hoja.
+     */
+    private function comprobante(Documento $d): array
+    {
+        $relativa = trim((string) $d->doc_path);
+        $base = [
+            'nombre' => $relativa !== '' ? basename($relativa) : '',
+            'extension' => strtolower(pathinfo($relativa, PATHINFO_EXTENSION)),
+            'ruta' => null,
+            'ancho' => null,
+            'alto' => null,
+        ];
+
+        if ($relativa === '') {
+            return array_merge($base, ['estado' => 'falta', 'nota' => 'El egreso se capturó sin archivo de respaldo.']);
+        }
+
+        $ruta = storage_path('app/public/'.ltrim($relativa, '/'));
+
+        if (! is_file($ruta)) {
+            return array_merge($base, ['estado' => 'falta', 'nota' => 'El archivo ya no está en el servidor.']);
+        }
+
+        $base['ruta'] = $ruta;
+
+        if ($base['extension'] === 'pdf') {
+            return array_merge($base, [
+                'estado' => 'pdf',
+                'nota' => 'El comprobante es un archivo PDF. Se consulta y se descarga desde el módulo de Documentos.',
+            ]);
+        }
+
+        if (! PdfService::puedeIncrustar($ruta)) {
+            return array_merge($base, [
+                'estado' => 'no_soportado',
+                'nota' => 'Este servidor no puede incrustar esta imagen en el PDF. El archivo está completo en el módulo de Documentos.',
+            ]);
+        }
+
+        [$ancho, $alto] = $this->medidasParaLaHoja($ruta);
+
+        // array_merge y no "+": con el operador de union, las claves que
+        // $base ya trae en null ganan, y la imagen terminaba sin medidas.
+        return array_merge($base, ['estado' => 'imagen', 'nota' => null, 'ancho' => $ancho, 'alto' => $alto]);
+    }
+
+    /**
+     * Escala la imagen para que quepa completa en una hoja carta.
+     *
+     * Área útil con los márgenes de la plantilla, menos el espacio del
+     * encabezado del anexo.
+     *
+     * Casi todos los comprobantes son capturas de celular de unos 400 px de
+     * ancho, que a tamaño natural ocupan media hoja y quedan chicas para
+     * leerse impresas. Por eso se permite agrandar hasta el doble: se gana
+     * legibilidad en papel sin llegar al punto en que la captura se deshace.
+     */
+    private function medidasParaLaHoja(string $ruta): array
+    {
+        $anchoMaximo = 744;
+        $altoMaximo = 880;
+
+        $info = @getimagesize($ruta);
+
+        if ($info === false || empty($info[0]) || empty($info[1])) {
+            return [$anchoMaximo, null];
+        }
+
+        [$ancho, $alto] = $info;
+
+        $escala = min($anchoMaximo / $ancho, $altoMaximo / $alto, 2);
+
+        return [(int) round($ancho * $escala), (int) round($alto * $escala)];
+    }
+
+    /**
+     * Quiénes firman, tomado de los cargos de la mesa directiva provisional.
      *
      * Si un cargo no está asignado el renglón queda en blanco para firmarse
      * a mano, que es preferible a poner un nombre equivocado.

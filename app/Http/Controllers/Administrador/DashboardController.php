@@ -91,7 +91,7 @@ class DashboardController extends Controller
     /**
      * Quién debe y cuánto, con nombre y casa.
      *
-     * Va SOLO en el tablero de la mesa directiva. En el módulo de
+     * Va SOLO en el tablero de la mesa directiva provisional. En el módulo de
      * transparencia, que ven todos los vecinos, se queda el agregado sin
      * nombres: el Aviso de Privacidad dice que los adeudos por vivienda los
      * ve únicamente la mesa, y publicar la lista lo incumpliría.

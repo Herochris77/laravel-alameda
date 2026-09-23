@@ -9,7 +9,6 @@ use App\Models\ExpedienteNota;
 use App\Models\Mascota;
 use App\Models\Sancion;
 use App\Models\User;
-use App\Models\Vehiculo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -92,7 +91,6 @@ class ExpedienteController extends Controller
             ];
         });
 
-        $vehiculos = Vehiculo::whereIn('user_id', $ids)->get();
         $mascotas = Mascota::whereIn('user_id', $ids)->get();
         $sanciones = Sancion::whereIn('user_id', $ids)->orderByDesc('created_at')->get();
         $cajones = Estacionamiento::whereIn('user_id', $ids)->where('estado', 'ocupado')->get();
@@ -125,7 +123,7 @@ class ExpedienteController extends Controller
 
         return view('administrador.expediente.ficha', compact(
             'casa', 'personas', 'dueno', 'recibos', 'adeudo',
-            'vehiculos', 'mascotas', 'sanciones', 'cajones', 'notas', 'actividad'
+            'mascotas', 'sanciones', 'cajones', 'notas', 'actividad'
         ));
     }
 

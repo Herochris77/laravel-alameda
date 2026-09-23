@@ -1,7 +1,7 @@
 {{--
     Reporte mensual de ingresos y egresos.
 
-    Sigue el formato que la mesa directiva venía entregando en papel, para que
+    Sigue el formato que la mesa directiva provisional venía entregando en papel, para que
     pueda archivarse junto a los de meses anteriores sin que se note el cambio
     de herramienta.
 --}}
@@ -93,6 +93,40 @@
         .firma-rol { font-size: 8.5px; color: #666; margin-bottom: 2px; }
 
         .pie { margin-top: 16px; font-size: 8px; color: #888; text-align: center; }
+
+        /* --- Anexo de comprobantes --- */
+        .anexo-hoja { page-break-before: always; }
+
+        .anexo-titulo {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .anexo-ficha {
+            border: 1px solid #9bb0c4;
+            background: #f2f6fa;
+            padding: 6px 8px;
+            margin-bottom: 8px;
+            font-size: 9px;
+        }
+
+        .anexo-ficha .concepto { font-weight: bold; font-size: 10px; }
+        .anexo-ficha .datos { color: #445; margin-top: 2px; }
+
+        .anexo-imagen { text-align: center; }
+
+        .anexo-ausente {
+            border: 1px dashed #b9a06a;
+            background: #fdf8ec;
+            padding: 10px 12px;
+            font-size: 9px;
+            color: #6b5a30;
+        }
+
+        .anexo-ausente .archivo { font-family: DejaVu Sans Mono, monospace; font-size: 8px; color: #7a6a44; }
     </style>
 </head>
 <body>
@@ -212,13 +246,28 @@
         </div>
     @endif
 
+    @php
+        $conComprobante = collect($datos['egresos'])->filter(fn ($e) => ($e['comprobante']['estado'] ?? '') === 'imagen');
+        $sinComprobante = collect($datos['egresos'])->filter(fn ($e) => ($e['comprobante']['estado'] ?? '') !== 'imagen');
+    @endphp
+
     <div class="anexos">
         <strong>Se anexan documentos de respaldo:</strong>
-        <ol>
-            <li>Carátula de estado de cuenta</li>
-            <li>Recibos, remisiones, facturas</li>
-            <li>Comprobantes de pago</li>
-        </ol>
+        @if(($incluirComprobantes ?? true) && $conComprobante->count() > 0)
+            <ol>
+                <li>Carátula de estado de cuenta</li>
+                <li>{{ $conComprobante->count() }} comprobante(s) de egreso, al final de este documento</li>
+                @if($sinComprobante->count() > 0)
+                    <li>{{ $sinComprobante->count() }} comprobante(s) que se consultan en el módulo de Documentos</li>
+                @endif
+            </ol>
+        @else
+            <ol>
+                <li>Carátula de estado de cuenta</li>
+                <li>Recibos, remisiones, facturas</li>
+                <li>Comprobantes de pago</li>
+            </ol>
+        @endif
     </div>
 
     <table class="firmas">
@@ -235,9 +284,57 @@
         </tr>
     </table>
 
-    <div class="pie">
-        Generado el {{ now()->translatedFormat('d \d\e F \d\e Y, H:i') }}
-    </div>
+    @include('pdf.pie')
+
+    {{--
+        Anexo: los comprobantes de cada egreso, uno por hoja.
+
+        Va después de las firmas a propósito: el reporte que se firma son las
+        cifras, y los comprobantes son el respaldo que se engrapa detrás, igual
+        que en el documento de papel.
+
+        Cada egreso aparece SIEMPRE, traiga imagen o no. Un gasto que se salta
+        en silencio parecería un gasto sin comprobar.
+    --}}
+    @if(($incluirComprobantes ?? true) && count($datos['egresos']) > 0)
+
+        @foreach($datos['egresos'] as $egreso)
+            @php $c = $egreso['comprobante']; @endphp
+
+            <div class="anexo-hoja">
+                <div class="anexo-titulo">
+                    Anexo {{ $loop->iteration }} de {{ $loop->count }} · Comprobante de egreso
+                </div>
+
+                <div class="anexo-ficha">
+                    <div class="concepto">{{ $egreso['concepto'] }}</div>
+                    <div class="datos">
+                        $ {{ number_format($egreso['monto'], 2) }}
+                        · {{ $egreso['fecha'] ?? 'Sin fecha' }}@unless($egreso['fecha_real']) (aproximada)@endunless
+                        · {{ ucfirst($egreso['categoria']) }}
+                        @if($egreso['proveedor']) · {{ $egreso['proveedor'] }} @endif
+                    </div>
+                </div>
+
+                @if($c['estado'] === 'imagen')
+                    <div class="anexo-imagen">
+                        <img src="{{ $c['ruta'] }}"
+                             width="{{ $c['ancho'] }}"
+                             @if($c['alto']) height="{{ $c['alto'] }}" @endif
+                             alt="Comprobante">
+                    </div>
+                @else
+                    <div class="anexo-ausente">
+                        {{ $c['nota'] }}
+                        @if($c['nombre'])
+                            <div class="archivo">Archivo: {{ $c['nombre'] }}</div>
+                        @endif
+                    </div>
+                @endif
+            </div>
+        @endforeach
+
+    @endif
 
 </body>
 </html>

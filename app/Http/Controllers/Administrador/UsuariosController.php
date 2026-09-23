@@ -60,10 +60,10 @@ class UsuariosController extends Controller
                     }
 
                     // El cargo va junto al rol: es lo que define quién mueve el
-                    // dinero dentro de la mesa directiva.
+                    // dinero dentro de la mesa directiva provisional.
                     if ($c->cargo && isset(User::CARGOS[$c->cargo])) {
                         $color = $c->cargo === 'tesorero' ? 'teal' : 'grey';
-                        $base .= ' <div class="ui '.$color.' horizontal label" title="Cargo en la mesa directiva">'
+                        $base .= ' <div class="ui '.$color.' horizontal label" title="Cargo en la mesa directiva provisional">'
                             .'<i class="briefcase icon"></i> '.User::CARGOS[$c->cargo].'</div>';
                     }
 
@@ -419,7 +419,7 @@ class UsuariosController extends Controller
     }
 
     /**
-     * Asigna o quita el cargo dentro de la mesa directiva.
+     * Asigna o quita el cargo dentro de la mesa directiva provisional.
      *
      * El cargo es independiente del rol: define quién mueve el dinero. Solo
      * el Tesorero puede crear recibos y validar pagos; mientras nadie tenga
@@ -439,7 +439,7 @@ class UsuariosController extends Controller
                 return response()->json([
                     'header' => '❌ No aplica',
                     'success' => false,
-                    'message' => 'Los cargos son para integrantes de la mesa directiva. Primero haz administrador a este usuario.',
+                    'message' => 'Los cargos son para integrantes de la mesa directiva provisional. Primero haz administrador a este usuario.',
                 ], 422);
             }
 
@@ -538,7 +538,7 @@ class UsuariosController extends Controller
 
             $usuario->update([
                 'rol' => 'usuario',
-                // El cargo pertenece a la mesa directiva: al salir de ella no
+                // El cargo pertenece a la mesa directiva provisional: al salir de ella no
                 // tiene sentido conservarlo.
                 'cargo' => null,
             ]);

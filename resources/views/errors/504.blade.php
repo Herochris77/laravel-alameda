@@ -45,7 +45,7 @@
 
         <!-- Mensaje -->
         <h2 class="ui red header message">Cuenta Suspendida</h2>
-        <p class="message">La administración suspendió tu cuenta, por favor contacta con alguien de la mesa directiva para cualquier aclaración</p>
+        <p class="message">La administración suspendió tu cuenta, por favor contacta con alguien de la mesa directiva provisional para cualquier aclaración</p>
     </div>
 </body>
 

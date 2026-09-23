@@ -53,7 +53,7 @@
         <tr><td class="num">7</td><td>Multas</td></tr>
         <tr><td class="num">8</td><td>Reservar áreas comunes</td></tr>
         <tr><td class="num">9</td><td>Estacionamiento</td></tr>
-        <tr><td class="num">10</td><td>Vehículos y mascotas</td></tr>
+        <tr><td class="num">10</td><td>Mascotas</td></tr>
         <tr><td class="num">11</td><td>Comunicados y documentos</td></tr>
         <tr><td class="num">12</td><td>Encuestas y asambleas</td></tr>
         <tr><td class="num">13</td><td>Transparencia: a dónde va el dinero</td></tr>
@@ -118,7 +118,7 @@
                 <div class="tarjeta-concepto">Cuota de mantenimiento octubre</div>
                 <div class="tarjeta-meta">Vence el 18 de octubre · <span class="etq am">Pendiente</span></div>
             </td>
-            <td width="80" class="tarjeta-monto">$1,300.00</td>
+            <td width="80" class="tarjeta-monto">$650.00</td>
         </tr></table>
     </div>
 
@@ -138,7 +138,7 @@
                 <div class="tarjeta-concepto">Cuota de mantenimiento septiembre</div>
                 <div class="tarjeta-meta">Pagado el 14 de septiembre · <span class="etq ve">Aprobado</span></div>
             </td>
-            <td width="80" class="tarjeta-monto">$1,300.00</td>
+            <td width="80" class="tarjeta-monto">$650.00</td>
         </tr></table>
     </div>
 </div>
@@ -261,7 +261,7 @@
     <div class="tarjeta pagado">
         <div class="tarjeta-concepto">Recibo cubierto con tu saldo a favor</div>
         <div class="tarjeta-meta">
-            Se cargó el recibo <strong>Cuota de mantenimiento octubre</strong> por $1,300.00
+            Se cargó el recibo <strong>Cuota de mantenimiento octubre</strong> por $650.00
             y se liquidó automáticamente con tu saldo. No tienes que hacer nada.<br>
             Saldo restante: <strong>$650.00</strong>
         </div>
@@ -340,20 +340,14 @@
 </div>
 
 {{-- ================= 10 ================= --}}
-<h2><span class="h2-num">10</span> Vehículos y mascotas</h2>
-
-<h3>Vehículos</h3>
-<p>
-    Registra marca, modelo, año, color y placas. Sirve para identificar vehículos dentro
-    del condominio y para que la vigilancia sepa cuáles son de casa.
-</p>
+<h2><span class="h2-num">10</span> Mascotas</h2>
 
 <div class="nota">
-    <strong>Ten presente:</strong> el listado de vehículos lo pueden ver todos los vecinos
-    registrados. Es a propósito, para poder identificar un coche cuando hace falta.
+    <strong>El registro de vehículos se retiró.</strong> Las placas y las fotografías de
+    los coches que estaban cargados se eliminaron del sistema. No hacían falta para la
+    administración del condominio y sí exponían información de más.
 </div>
 
-<h3>Mascotas</h3>
 <p>
     Registra nombre, especie, edad, características, esquema de vacunas y si es amistosa.
     Ayuda muchísimo cuando una mascota se sale: con la foto y la descripción aparece
@@ -364,7 +358,7 @@
 <h2><span class="h2-num">11</span> Comunicados y documentos</h2>
 
 <ul>
-    <li><strong>Comunicados:</strong> los avisos de la mesa directiva. Te llegan también
+    <li><strong>Comunicados:</strong> los avisos de la mesa directiva provisional. Te llegan también
         por correo y como notificación.</li>
     <li><strong>Documentos:</strong> reglamento interno, actas, reportes mensuales y
         cualquier archivo que la mesa publique. Están siempre disponibles para
@@ -422,15 +416,20 @@
 <h2><span class="h2-num">14</span> Directorio vecinal</h2>
 
 <p>
-    Un directorio con el nombre, la casa, el teléfono y la foto de los vecinos registrados,
-    para poder contactarse entre nosotros.
+    Un directorio con el nombre, la casa, el teléfono y la foto de los vecinos que
+    eligieron aparecer, para poder contactarse entre nosotros.
 </p>
+
+<div class="nota">
+    <strong>Tú decides si apareces.</strong> En <strong>Perfil</strong> hay un interruptor
+    «Aparecer en el directorio». Si lo apagas, los demás vecinos dejan de ver tu nombre,
+    tu casa, tu teléfono y tu foto de inmediato. No tienes que pedirlo ni justificarlo.
+</div>
 
 <div class="ojo">
     <strong>Esa información se comparte para la convivencia del condominio y para nada
     más.</strong> No se vale copiarla en listas, difundirla fuera, usarla con fines
-    comerciales ni publicar capturas en redes o grupos de mensajería. Si prefieres que tu
-    teléfono o tu foto no aparezcan, escríbenos y se retiran.
+    comerciales ni publicar capturas en redes o grupos de mensajería.
 </div>
 
 {{-- ================= 15 ================= --}}
@@ -470,7 +469,22 @@
         <td>Avisos directos en el teléfono. Se activan solo si tú lo autorizas en el
             navegador, y hay un botón para probarlas.</td>
     </tr>
+    <tr>
+        <td>Aparecer en el directorio</td>
+        <td>Decide si los demás vecinos pueden ver tu nombre, tu casa, tu teléfono y tu
+            foto. Al apagarlo desapareces del directorio en ese momento. Tus pagos y tus
+            recibos no cambian.</td>
+    </tr>
 </table>
+
+<div class="nota">
+    <strong>Si ya no quieres usar la plataforma.</strong> En la pantalla del aviso de
+    privacidad está la opción «No acepto seguir usando la plataforma y deseo desvincular
+    mis datos personales». Al confirmarla se borran tu foto, tus mascotas y los
+    comprobantes que subiste, y tu nombre se cambia por el de tu casa. Los montos y
+    fechas de los pagos se conservan porque son la contabilidad del condominio, pero ya
+    no van ligados a tu nombre. Es inmediato y no se puede deshacer.
+</div>
 
 {{-- ================= 17 ================= --}}
 <h2><span class="h2-num">17</span> Dudas frecuentes</h2>
@@ -502,7 +516,7 @@
 
 <h3>¿Quién ve mi información de pagos?</h3>
 <p>
-    Solo tú y la mesa directiva. Ningún otro vecino puede ver tu estado de cuenta, tus
+    Solo tú y la mesa directiva provisional. Ningún otro vecino puede ver tu estado de cuenta, tus
     recibos ni tus adeudos.
 </p>
 
@@ -521,6 +535,8 @@
     Condominio Alameda · Guía del Vecino ·
     {{ $generado->translatedFormat('F \d\e Y') }}
 </div>
+
+@include('pdf.pie', ['fecha' => $generado, 'fijo' => false])
 
 </body>
 </html>

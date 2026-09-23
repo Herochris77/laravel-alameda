@@ -21,22 +21,52 @@
             <div class="aviso-cabecera">
                 <div class="aviso-icono"><i class="shield alternate icon"></i></div>
                 <div>
-                    <h2 id="aviso-titulo">Antes de continuar</h2>
-                    <p>Necesitamos tu visto bueno para seguir usando la plataforma</p>
+                    <h2 id="aviso-titulo">Actualizamos el Aviso de Privacidad</h2>
+                    <p>Cambió lo que se guarda y lo que puedes decidir sobre tus datos</p>
                 </div>
             </div>
 
             <div class="aviso-cuerpo">
                 <p>
-                    Hola <strong>{{ auth()->user()->nombre }}</strong>. La plataforma del
-                    condominio ahora cuenta con un <strong>Aviso de Privacidad</strong> que
-                    explica qué datos tuyos se guardan, para qué se usan y quién puede verlos.
+                    Hola <strong>{{ auth()->user()->nombre }}</strong>. Se actualizó el
+                    Aviso de Privacidad: <strong>cambiaron tres cosas</strong> sobre la
+                    información que la plataforma guarda y muestra. Te pedimos leerlas
+                    y decidir.
                 </p>
 
+                <div class="aviso-cambios">
+                    <div class="aviso-cambio">
+                        <i class="car icon"></i>
+                        <span>
+                            <strong>Se retiró el módulo de vehículos.</strong>
+                            Las placas y fotografías de los autos se eliminaron del sistema.
+                        </span>
+                    </div>
+
+                    <div class="aviso-cambio">
+                        <i class="address book outline icon"></i>
+                        <span>
+                            <strong>Puedes salir del directorio vecinal.</strong>
+                            Hoy tu nombre, casa, teléfono y foto son visibles para los demás
+                            vecinos. Desde <em>Mi Perfil</em> puedes desactivarlo cuando
+                            quieras, y dejas de aparecer de inmediato.
+                        </span>
+                    </div>
+
+                    <div class="aviso-cambio">
+                        <i class="users icon"></i>
+                        <span>
+                            <strong>La mesa se nombra como provisional.</strong>
+                            Mientras no esté legalmente constituida, así aparece en todos los
+                            documentos.
+                        </span>
+                    </div>
+                </div>
+
                 <p>
-                    Te pedimos leerlo y aceptarlo. Es un requisito legal, sobre todo por los
-                    <strong>comprobantes de pago</strong> que subes, que son datos financieros
-                    y necesitan tu autorización expresa.
+                    Te pedimos leer el aviso y aceptarlo. Es un requisito legal, sobre todo
+                    por los <strong>comprobantes de pago</strong> que subes, que son datos
+                    financieros y necesitan tu autorización expresa.
                 </p>
 
                 <div class="aviso-enlaces">
@@ -74,14 +104,24 @@
                     </button>
 
                     <button type="button" class="aviso-salir" id="aviso-btn-salir">
-                        Prefiero no aceptar ahora, cerrar sesión
+                        Decidir después, cerrar sesión
+                    </button>
+
+                    {{--
+                        La tercera opción: no aceptar y pedir que se retiren los
+                        datos. Va separada y en rojo porque no tiene vuelta
+                        atrás, y con su propia confirmación.
+                    --}}
+                    <button type="button" class="aviso-baja" id="aviso-btn-baja">
+                        No acepto seguir usando la plataforma y deseo desvincular
+                        mis datos personales
                     </button>
                 </div>
 
                 <p class="aviso-pie">
-                    Si no estás de acuerdo, escríbenos a
-                    <strong>{{ config('privacidad.correo') }}</strong> y vemos tu caso. Ten en
-                    cuenta que los recibos y comprobantes ya registrados se conservan porque
+                    ¿Dudas antes de decidir? Escríbenos a
+                    <strong>{{ config('privacidad.correo') }}</strong>. Ten en cuenta que los
+                    recibos y sus montos se conservan aunque retires tus datos, porque
                     respaldan las cuentas del condominio ante la asamblea.
                 </p>
             </div>
@@ -218,6 +258,50 @@
 
         .aviso-salir:hover { color: #ef4444; }
 
+        .aviso-cambios {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            margin: 14px 0 16px;
+        }
+
+        .aviso-cambio {
+            display: flex;
+            gap: 11px;
+            align-items: flex-start;
+            padding: 11px 13px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: .86rem;
+            line-height: 1.5;
+            color: #475569;
+        }
+
+        .aviso-cambio > i {
+            font-size: 1.05rem;
+            color: #667eea;
+            margin: 0;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .aviso-cambio strong { color: #0f172a; }
+
+        .aviso-baja {
+            background: none;
+            border: none;
+            color: #b91c1c;
+            font-size: .8rem;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 6px 4px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .aviso-baja:hover { color: #7f1d1d; }
+
         .aviso-pie {
             margin: 16px 0 0;
             padding-top: 14px;
@@ -285,6 +369,66 @@
                         btnAceptar.disabled = false;
                         btnAceptar.innerHTML = '<i class="check icon"></i> Acepto y continúo';
                         alert(e.message || 'No se pudo registrar tu aceptación. Inténtalo de nuevo.');
+                    });
+            });
+
+            /*
+             * No acepto y quiero que retiren mis datos.
+             *
+             * Dos confirmaciones y escribir una palabra: no tiene vuelta atrás
+             * y borra archivos. Vale más un paso de más que un arrepentimiento
+             * sin remedio.
+             */
+            document.getElementById('aviso-btn-baja').addEventListener('click', function () {
+                const paso1 = confirm(
+                    'Vas a pedir que se retiren tus datos personales.\n\n' +
+                    'SE ELIMINAN de forma permanente:\n' +
+                    '  · Tu nombre, correo y teléfono\n' +
+                    '  · Tu fotografía de perfil\n' +
+                    '  · Tus mascotas y vehículos registrados\n' +
+                    '  · Los comprobantes de pago que subiste\n' +
+                    '  · Tus notificaciones\n\n' +
+                    'SE CONSERVAN, porque respaldan las cuentas del condominio:\n' +
+                    '  · Tus recibos con su monto, fecha y estado,\n' +
+                    '    identificados solo como "Casa {{ auth()->user()->casa }}"\n\n' +
+                    'Tu cuenta quedará sin acceso a la plataforma.\n\n' +
+                    '¿Continuar?'
+                );
+
+                if (!paso1) return;
+
+                const palabra = prompt(
+                    'Esta acción NO se puede deshacer.\n\n' +
+                    'Escribe DESVINCULAR para confirmar:'
+                );
+
+                if (!palabra || palabra.trim().toUpperCase() !== 'DESVINCULAR') {
+                    alert('No se hizo ningún cambio.');
+                    return;
+                }
+
+                this.disabled = true;
+                this.textContent = 'Retirando tus datos...';
+
+                fetch("{{ route('legal.desvincular') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(r => r.json())
+                    .then(function (res) {
+                        alert(res.message);
+
+                        if (res.success) {
+                            document.body.style.overflow = '';
+                            window.location = "{{ url('/') }}";
+                        }
+                    })
+                    .catch(function () {
+                        alert('No se pudieron retirar tus datos. No se hizo ningún cambio. ' +
+                              'Escríbenos a {{ config('privacidad.correo') }}.');
                     });
             });
 

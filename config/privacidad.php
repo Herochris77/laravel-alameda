@@ -14,7 +14,30 @@
 
 return [
 
-    'responsable' => env('PRIVACIDAD_RESPONSABLE', 'Mesa Directiva del Condominio Alameda'),
+    'responsable' => env('PRIVACIDAD_RESPONSABLE', 'Mesa Directiva Provisional del Condominio Alameda'),
+
+    /*
+     * Cómo se nombra al órgano en TODA la plataforma.
+     *
+     * Es "Provisional" porque el condominio está en régimen condominal pero
+     * la mesa no se ha constituido legalmente. Decirle "Mesa Directiva" a
+     * secas le atribuye una formalidad que hoy no tiene, y eso es justo lo
+     * que puede reclamarse.
+     *
+     * Vive en config para que el día que se constituya baste con cambiarlo
+     * aquí y no haya que perseguir el texto por 24 archivos.
+     */
+    'mesa' => env('PRIVACIDAD_MESA', 'Mesa Directiva Provisional'),
+
+    /*
+     * Dominio para los correos de las cuentas desvinculadas.
+     *
+     * NUNCA un dominio ajeno como gmail.com: "casa19@gmail.com" puede existir
+     * y pertenecerle a un desconocido, y cualquier correo del condominio le
+     * llegaría a esa persona. Con el dominio propio, el buzón no existe y el
+     * mensaje simplemente no sale a ningún lado.
+     */
+    'dominio_desvinculado' => env('PRIVACIDAD_DOMINIO_BAJA', 'alameda-condominio.com.mx'),
 
     'domicilio' => env('PRIVACIDAD_DOMICILIO', 'Av. Los Arados No. 1, Fracc. Hacienda del Bosque, Los Ángeles, Querétaro, C.P. 76902'),
 
@@ -49,6 +72,6 @@ return [
      * un módulo que recabe otra cosa—. Al subirlo, a todos les vuelve a
      * aparecer la ventana.
      */
-    'version_aviso' => env('PRIVACIDAD_VERSION', '1.0'),
+    'version_aviso' => env('PRIVACIDAD_VERSION', '2.0'),
 
 ];

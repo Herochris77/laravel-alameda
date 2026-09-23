@@ -795,7 +795,7 @@
                         <i class="file alternate icon"></i>
                     </div>
                     <h3 class="menu-card-title">Reporte Mensual</h3>
-                    <p class="menu-card-description">Ingresos y egresos del mes en PDF, para entregar a la mesa directiva.</p>
+                    <p class="menu-card-description">Ingresos y egresos del mes en PDF, para entregar a la mesa directiva provisional.</p>
                     <span class="menu-card-action">
                         Generar reporte
                         <i class="arrow right icon"></i>

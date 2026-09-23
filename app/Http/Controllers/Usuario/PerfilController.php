@@ -250,6 +250,47 @@ class PerfilController extends Controller
         ]);
     }
 
+    /**
+     * Aparecer o no en el directorio vecinal.
+     *
+     * Lo controla el propio vecino. Es la respuesta al reclamo de que su
+     * nombre completo y su fotografía estaban a la vista de todos sin haber
+     * elegido estarlo.
+     */
+    public function actualizarDirectorio(Request $request)
+    {
+        try {
+            $request->validate(['visible' => 'required|boolean']);
+
+            if (! \Illuminate\Support\Facades\Schema::hasColumn('users', 'visible_directorio')) {
+                return response()->json([
+                    'success' => false,
+                    'header' => '⚠️ Falta migrar',
+                    'message' => 'Esta opción se habilita al correr /migrar.',
+                ], 409);
+            }
+
+            $usuario = auth()->user();
+            $usuario->update(['visible_directorio' => $request->boolean('visible')]);
+
+            return response()->json([
+                'success' => true,
+                'header' => $request->boolean('visible') ? 'Apareces en el directorio' : 'Ya no apareces en el directorio',
+                'message' => $request->boolean('visible')
+                    ? 'Tu nombre, casa, teléfono y fotografía vuelven a ser visibles para los demás vecinos.'
+                    : 'Los demás vecinos ya no pueden ver tus datos en el directorio. El cambio es inmediato.',
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error al cambiar visibilidad del directorio: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'header' => '❌ Error',
+                'message' => 'No se pudo guardar el cambio.',
+            ], 500);
+        }
+    }
+
     public function actualizarPago(Request $request)
     {
         $request->validate([

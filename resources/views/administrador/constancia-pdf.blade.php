@@ -137,20 +137,17 @@
             <td>
                 <div class="linea">{{ $datos['firmas']['tesorero'] ?? '' }}</div>
                 <div>Tesorería</div>
-                <div class="cargo">Mesa Directiva</div>
+                <div class="cargo">Mesa Directiva Provisional</div>
             </td>
             <td>
                 <div class="linea">{{ $datos['firmas']['presidente'] ?? '' }}</div>
                 <div>Presidencia</div>
-                <div class="cargo">Mesa Directiva</div>
+                <div class="cargo">Mesa Directiva Provisional</div>
             </td>
         </tr>
     </table>
 
-    <div class="pie">
-        Documento generado por la plataforma del Condominio Alameda el
-        {{ $datos['generado']->translatedFormat('j \d\e F \d\e Y \a \l\a\s H:i') }}.
-    </div>
+    @include('pdf.pie', ['fecha' => $datos['generado']])
 
 </body>
 </html>

@@ -273,11 +273,10 @@
         @endif
     </div>
 
-    <div class="pie">
-        Documento generado por la plataforma del Condominio Alameda el
-        {{ $datos['generado']->translatedFormat('j \d\e F \d\e Y \a \l\a\s H:i') }}.
-        Para aclaraciones, dirígete a la Tesorería de la mesa directiva.
-    </div>
+    @include('pdf.pie', [
+        'fecha' => $datos['generado'],
+        'nota' => 'Para aclaraciones, dirígete a la Tesorería de la mesa directiva provisional.',
+    ])
 
 </body>
 </html>

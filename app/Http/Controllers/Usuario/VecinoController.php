@@ -5,12 +5,27 @@ namespace App\Http\Controllers\Usuario;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class VecinoController extends Controller
 {
     public function index(Request $request)
     {
         $query = User::query();
+
+        /*
+         * Solo aparece quien no se haya salido del directorio.
+         *
+         * El vecino lo controla desde su perfil. Nace en visible para que
+         * nadie desaparezca sin haberlo pedido, pero salirse es de un clic y
+         * surte efecto de inmediato.
+         *
+         * Quien pidió que se retiraran sus datos tampoco aparece: la
+         * desvinculación apaga esta bandera.
+         */
+        if (Schema::hasColumn('users', 'visible_directorio')) {
+            $query->where('visible_directorio', 1);
+        }
 
         if ($request->filled('filtro')) {
             $filtro = $request->filtro;

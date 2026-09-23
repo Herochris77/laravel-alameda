@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 /**
  * Servicios y pagos recurrentes de la tesorería.
  *
- * Consultarlos queda abierto a toda la mesa directiva; darlos de alta,
+ * Consultarlos queda abierto a toda la mesa directiva provisional; darlos de alta,
  * editarlos y registrar sus pagos es de tesorería, igual que el resto de las
  * operaciones con dinero.
  */

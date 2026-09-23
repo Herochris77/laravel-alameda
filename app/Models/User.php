@@ -30,6 +30,8 @@ class User extends Authenticatable
         'firma',
         'acepto_aviso_en',
         'acepto_aviso_version',
+        'visible_directorio',
+        'desvinculado_en',
     ];
 
     protected $hidden = [
@@ -43,6 +45,8 @@ class User extends Authenticatable
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',
+            'desvinculado_en' => 'datetime',
+            'visible_directorio' => 'boolean',
         ];
     }
 

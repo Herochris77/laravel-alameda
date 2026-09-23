@@ -17,6 +17,48 @@ use Illuminate\Support\Facades\Schema;
  */
 class AvisoController extends Controller
 {
+    /**
+     * El vecino decide NO aceptar y pide que se retiren sus datos.
+     *
+     * No borra la cuenta: la anonimiza y elimina todo lo que no sostiene una
+     * cifra —foto, mascotas, vehículos, comprobantes, notificaciones—. El
+     * historial de pagos se conserva porque respalda las cuentas del
+     * condominio ante la asamblea, y así se le dice en el aviso.
+     *
+     * Después de esto la sesión se cierra: ya no hay cuenta que usar.
+     */
+    public function desvincular(Request $request)
+    {
+        try {
+            $usuario = Auth::user();
+
+            $reporte = app(\App\Services\DesvinculacionService::class)->ejecutar($usuario);
+
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return response()->json([
+                'success' => true,
+                'header' => 'Tus datos fueron retirados',
+                'message' => 'Se eliminaron tu nombre, correo, teléfono, fotografía, '
+                    .'mascotas, vehículos y los comprobantes que habías subido. '
+                    .'Tu cuenta quedó registrada solo como "Casa '.$reporte['casa'].'" '
+                    .'para que el historial de pagos del condominio siga cuadrando.',
+                'reporte' => $reporte,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error al desvincular datos: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'header' => '❌ No se pudo completar',
+                'message' => 'No se pudieron retirar tus datos. No se hizo ningún cambio. '
+                    .'Escríbenos a '.config('privacidad.correo').' y lo resolvemos a mano.',
+            ], 500);
+        }
+    }
+
     public function aceptar(Request $request)
     {
         try {

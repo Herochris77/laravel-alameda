@@ -12,7 +12,6 @@ use App\Http\Controllers\Administrador\PagoController;
 use App\Http\Controllers\Administrador\SancionController;
 use App\Http\Controllers\Administrador\SolicitudController as AdminSolicitudController;
 use App\Http\Controllers\Administrador\UsuariosController;
-use App\Http\Controllers\Administrador\VehiculoController;
 use App\Http\Controllers\CronjobController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\SolicitudController;
@@ -473,6 +472,34 @@ Route::get('/migrar/{token}', function ($token) {
         $pasos[] = "ℹ️  Tabla 'saldo_movimientos' ya existía. No se tocó.";
     }
 
+    // Control del vecino sobre su propia exposición --------------------------
+    //
+    // `visible_directorio` nace en 1 para que nadie desaparezca del directorio
+    // de un día para otro sin haberlo pedido; lo que cambia es que ahora puede
+    // salirse cuando quiera, desde su perfil.
+    //
+    // `desvinculado_en` marca a quien decidió no aceptar el aviso y pidió que
+    // sus datos personales se retiren. No se borra la cuenta: se anonimiza y
+    // se conserva el historial de pagos, que respalda las cuentas del
+    // condominio.
+    if (! $schema::hasColumn('users', 'visible_directorio')) {
+        $schema::table('users', function (\Illuminate\Database\Schema\Blueprint $t) {
+            $t->boolean('visible_directorio')->default(1);
+        });
+        $pasos[] = "✅ Columna 'users.visible_directorio' agregada (default 1: nadie desaparece del directorio sin pedirlo).";
+    } else {
+        $pasos[] = "ℹ️  Columna 'users.visible_directorio' ya existía. No se tocó.";
+    }
+
+    if (! $schema::hasColumn('users', 'desvinculado_en')) {
+        $schema::table('users', function (\Illuminate\Database\Schema\Blueprint $t) {
+            $t->timestamp('desvinculado_en')->nullable();
+        });
+        $pasos[] = "✅ Columna 'users.desvinculado_en' agregada (nullable, no toca ningún registro).";
+    } else {
+        $pasos[] = "ℹ️  Columna 'users.desvinculado_en' ya existía. No se tocó.";
+    }
+
     // Control de recordatorios de cobro --------------------------------------
     //
     // Guarda el día en que se mandó el último aviso de un concepto, para que
@@ -651,6 +678,160 @@ Route::get('/migrar/{token}', function ($token) {
     }
 
     return response('<pre>'.e(implode("\n", $pasos))."\n\nListo. No se modificó ni eliminó ningún dato existente.</pre>");
+});
+
+/*
+ * Retiro del módulo de vehículos.
+ *
+ * Borra los registros y las fotografías de los autos. Es IRREVERSIBLE y no se
+ * dispara sola: por omisión solo muestra qué se eliminaría, y hay que
+ * confirmar explícitamente.
+ *
+ *   Ver qué se borraría : /purgar-vehiculos/TOKEN
+ *   Borrar de verdad    : /purgar-vehiculos/TOKEN?aplicar=CONFIRMAR
+ */
+Route::get('/purgar-vehiculos/{token}', function ($token) {
+    if (! tokenMantenimientoValido($token)) {
+        abort(403, 'No autorizado');
+    }
+
+    if (! \Illuminate\Support\Facades\Schema::hasTable('vehiculos')) {
+        return response('<pre>La tabla vehiculos no existe. No hay nada que borrar.</pre>');
+    }
+
+    $aplicar = request('aplicar') === 'CONFIRMAR';
+    $disco = \Illuminate\Support\Facades\Storage::disk('public');
+
+    $vehiculos = \Illuminate\Support\Facades\DB::table('vehiculos')
+        ->leftJoin('users', 'users.id', '=', 'vehiculos.user_id')
+        ->get(['vehiculos.id', 'vehiculos.placas', 'vehiculos.marca', 'vehiculos.modelo',
+            'vehiculos.foto', 'users.casa', 'users.nombre']);
+
+    $lineas = [];
+    $lineas[] = $aplicar ? '=== BORRADO APLICADO ===' : '=== VISTA PREVIA (no se ha borrado nada) ===';
+    $lineas[] = '';
+    $lineas[] = 'Registros de vehículos: '.$vehiculos->count();
+    $lineas[] = '';
+
+    $archivos = 0;
+    $borrados = 0;
+
+    foreach ($vehiculos as $v) {
+        $tieneFoto = $v->foto && $disco->exists('vehiculos/'.$v->foto);
+
+        $lineas[] = sprintf('  casa %-5s %-26s %-12s %s',
+            $v->casa ?? '?',
+            mb_substr(($v->marca ?? '').' '.($v->modelo ?? ''), 0, 25),
+            $v->placas ?? 'sin placas',
+            $tieneFoto ? '[con fotografía]' : '[sin fotografía]');
+
+        if ($tieneFoto) {
+            $archivos++;
+
+            if ($aplicar) {
+                $disco->delete('vehiculos/'.$v->foto);
+            }
+        }
+    }
+
+    if ($aplicar) {
+        $borrados = \Illuminate\Support\Facades\DB::table('vehiculos')->delete();
+
+        // Fotos huérfanas que quedaron de registros ya eliminados antes.
+        foreach ($disco->files('vehiculos') as $archivo) {
+            $disco->delete($archivo);
+            $archivos++;
+        }
+    }
+
+    $lineas[] = '';
+    $lineas[] = 'Fotografías: '.$archivos;
+    $lineas[] = '';
+
+    if ($aplicar) {
+        $lineas[] = "✅ Se eliminaron {$borrados} registro(s) y {$archivos} fotografía(s).";
+        $lineas[] = '';
+        $lineas[] = 'No se tocó ninguna otra tabla. Los pagos, usuarios y documentos';
+        $lineas[] = 'quedaron exactamente como estaban.';
+    } else {
+        $lineas[] = 'Esto es SOLO una vista previa. Para borrarlo de verdad, agrega al final';
+        $lineas[] = 'de la dirección:  ?aplicar=CONFIRMAR';
+        $lineas[] = '';
+        $lineas[] = 'No se puede deshacer. Respalda la base antes si quieres vuelta atrás.';
+    }
+
+    return response('<pre>'.e(implode("\n", $lineas)).'</pre>');
+});
+
+/*
+ * Limpieza de avisos viejos que nombran a un vecino.
+ *
+ * El módulo de estacionamiento dejó de mandar estos avisos hace tiempo, pero
+ * los que se mandaron entonces siguen en el centro de notificaciones de todos:
+ * cada uno dice "el cajón X está ahora ocupado por <nombre completo> #<casa>".
+ * Es el nombre de un vecino a la vista de los demás, sin que aporte nada hoy.
+ *
+ * Solo toca notificaciones. Ni un pago, ni un usuario, ni un documento.
+ *
+ *   Ver qué se borraría : /purgar-avisos-viejos/TOKEN
+ *   Borrar de verdad    : /purgar-avisos-viejos/TOKEN?aplicar=CONFIRMAR
+ */
+Route::get('/purgar-avisos-viejos/{token}', function ($token) {
+    if (! tokenMantenimientoValido($token)) {
+        abort(403, 'No autorizado');
+    }
+
+    $aplicar = request('aplicar') === 'CONFIRMAR';
+    $db = \Illuminate\Support\Facades\DB::class;
+
+    // Los textos que nombran a alguien. Se buscan literales para no barrer de
+    // más: un aviso de pago o de comunicado no entra aquí.
+    $patrones = [
+        '%ocupado por%',
+        '%lo ocupaba%',
+        '%ya está en uso por%',
+    ];
+
+    $consulta = fn () => $db::table('notifications')->where(function ($q) use ($patrones) {
+        foreach ($patrones as $p) {
+            $q->orWhere('data', 'like', $p);
+        }
+    });
+
+    $total = $db::table('notifications')->count();
+    $afectadas = $consulta()->count();
+    $destinatarios = $consulta()->distinct()->count('notifiable_id');
+
+    $lineas = [];
+    $lineas[] = $aplicar ? '=== BORRADO APLICADO ===' : '=== VISTA PREVIA (no se ha borrado nada) ===';
+    $lineas[] = '';
+    $lineas[] = 'Notificaciones en total      : '.$total;
+    $lineas[] = 'Que nombran a un vecino      : '.$afectadas;
+    $lineas[] = 'Vecinos que las están viendo : '.$destinatarios;
+    $lineas[] = '';
+    $lineas[] = 'Ejemplos:';
+
+    foreach ($consulta()->limit(5)->get(['data']) as $n) {
+        $d = json_decode($n->data, true);
+        $lineas[] = '  · '.mb_substr($d['mensaje'] ?? $n->data, 0, 90);
+    }
+
+    $lineas[] = '';
+
+    if ($aplicar) {
+        $borradas = $consulta()->delete();
+        $lineas[] = "✅ Se eliminaron {$borradas} notificación(es).";
+        $lineas[] = '';
+        $lineas[] = 'Quedan '.$db::table('notifications')->count().' notificaciones.';
+        $lineas[] = 'No se tocó ninguna otra tabla.';
+    } else {
+        $lineas[] = 'Esto es SOLO una vista previa. Para borrarlo de verdad, agrega al final';
+        $lineas[] = 'de la dirección:  ?aplicar=CONFIRMAR';
+        $lineas[] = '';
+        $lineas[] = 'Se borran únicamente notificaciones. Nada de pagos ni de usuarios.';
+    }
+
+    return response('<pre>'.e(implode("\n", $lineas)).'</pre>');
 });
 
 /*
@@ -1335,6 +1516,11 @@ Route::get('/guia-mesa-directiva', [App\Http\Controllers\GuiaController::class, 
 Route::post('/aceptar-aviso', [App\Http\Controllers\AvisoController::class, 'aceptar'])
     ->middleware('auth')->name('legal.aceptar');
 
+// La otra salida: no aceptar y pedir que se retiren los datos personales.
+// Va fuera del grupo 'aviso' por lo mismo que la anterior.
+Route::post('/desvincular-datos', [App\Http\Controllers\AvisoController::class, 'desvincular'])
+    ->middleware('auth')->name('legal.desvincular');
+
 /*
  * Enlace simbólico de storage, con diagnóstico.
  *
@@ -1779,11 +1965,16 @@ Route::middleware(['auth', 'aviso'])->group(function () {
             Route::post('/regresar-pago/{id}', 'regresarPagoDueno')->name('regresarPagoDueno');
         });
         // Vehículos
-        Route::controller(VehiculoController::class)->prefix('vehiculo')->name('vehiculo.')->group(function () {
-            Route::get('/', 'index')->name('index');
-            Route::get('/obtener', 'obtenerVehiculos')->name('obtener');
-            Route::delete('/eliminar/{id}', 'eliminarVehiculo')->name('eliminar');
-        });
+        /*
+         * MODULO DE VEHICULOS RETIRADO.
+         *
+         * Guardaba placas y fotografias visibles para TODOS los vecinos, y
+         * eso es exposicion innecesaria: el condominio puede operar sin ese
+         * dato. Las rutas se quitan para que no queden accesibles ni por URL
+         * directa.
+         *
+         * Los registros y las fotos se eliminan con /purgar-vehiculos.
+         */
         // Panel / dashboard del comité
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/datos', [DashboardController::class, 'datos'])->name('dashboard.datos');
@@ -1864,6 +2055,9 @@ Route::middleware(['auth', 'aviso'])->group(function () {
             Route::post('/aprobarInquilino/{id}', 'aprobarInquilino')->name('aprobarInquilino');
             Route::delete('/eliminarInquilino/{id}', 'eliminarInquilino')->name('eliminarInquilino');
             Route::post('/actualizarPago', 'actualizarPago')->name('actualizarPago');
+
+            // Aparecer o no en el directorio vecinal.
+            Route::post('/directorio', 'actualizarDirectorio')->name('actualizarDirectorio');
             Route::get('/solicitudes', [SolicitudController::class, 'indexDueno'])->name('solicitudes');
         });
 
@@ -1939,12 +2133,6 @@ Route::middleware(['auth', 'aviso'])->group(function () {
         Route::controller(App\Http\Controllers\Usuario\DocumentosController::class)->prefix('documentos')->name('documentos.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/obtener', 'obtenerDocumentos')->name('obtener');
-        });
-        Route::controller(App\Http\Controllers\Usuario\VehiculoController::class)->prefix('vehiculo')->name('vehiculo.')->group(function () {
-            Route::get('/', 'index')->name('index');
-            Route::post('/guardar', 'guardar')->name('guardar');
-            Route::post('/actualizar/{id}', 'actualizar')->name('actualizar');
-            Route::delete('/eliminar/{id}', 'eliminar')->name('eliminar');
         });
         Route::controller(EncuestaController::class)->prefix('encuesta')->name('encuesta.')->group(function () {
             Route::get('/', 'index')->name('index');

@@ -28,7 +28,7 @@
                         <div class="fr-linea"></div>
                         <div class="fr-cargo">
                             {{ auth()->user()->nombre }}<br>
-                            <span>Tesorería · Mesa Directiva</span>
+                            <span>Tesorería · Mesa Directiva Provisional</span>
                         </div>
                     </div>
 

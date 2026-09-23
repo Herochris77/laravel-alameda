@@ -86,8 +86,6 @@
         <p class="muted">No se registró minuta para esta asamblea.</p>
     @endif
 
-    <p class="muted" style="margin-top:24px;">
-        Generada el {{ now()->format('d/m/Y H:i') }} · Sistema Alameda.
-    </p>
+    @include('pdf.pie')
 </body>
 </html>

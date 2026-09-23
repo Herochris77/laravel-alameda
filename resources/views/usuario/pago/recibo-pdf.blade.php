@@ -986,7 +986,7 @@
                         </div>
 
                         <div class="firma-cargo">
-                            {{ $firmanteCargo ?? 'Tesorería · Mesa Directiva' }}
+                            {{ $firmanteCargo ?? 'Tesorería · Mesa Directiva Provisional' }}
                         </div>
 
                     </td>
@@ -1008,7 +1008,7 @@
 
             <br>
 
-            Fue generado automáticamente por el sistema
+            Fue generado por la plataforma del Condominio Alameda
             con la información registrada por la administración.
 
             <br>

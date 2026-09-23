@@ -94,12 +94,12 @@ class ReciboService
     private function cargoDe(?User $u): string
     {
         if (! $u) {
-            return 'Tesorería · Mesa Directiva';
+            return 'Tesorería · Mesa Directiva Provisional';
         }
 
-        $cargo = User::CARGOS[$u->cargo] ?? 'Mesa Directiva';
+        $cargo = User::CARGOS[$u->cargo] ?? 'Mesa Directiva Provisional';
 
-        return $cargo.' · Mesa Directiva';
+        return $cargo.' · Mesa Directiva Provisional';
     }
 
     /**

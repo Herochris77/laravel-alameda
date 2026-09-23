@@ -1033,11 +1033,11 @@
         }
     </style>
 
-    {{-- Cargo en la mesa directiva --}}
+    {{-- Cargo en la mesa directiva provisional --}}
     <div class="ui modal" id="modal-cargo">
         <div class="header">
             <i class="briefcase icon"></i>
-            Cargo en la mesa directiva
+            Cargo en la mesa directiva provisional
         </div>
 
         <div class="content">
@@ -1066,7 +1066,7 @@
                 pero no mueven dinero.
                 <br><br>
                 Mientras <strong>nadie</strong> tenga el cargo de Tesorero, el módulo de pagos
-                sigue abierto a toda la mesa directiva, como hasta ahora.
+                sigue abierto a toda la mesa directiva provisional, como hasta ahora.
             </div>
         </div>
 
@@ -1363,7 +1363,7 @@
                 : '';
 
             /*
-             * Cargo en la mesa directiva. Solo tiene sentido para quien es
+             * Cargo en la mesa directiva provisional. Solo tiene sentido para quien es
              * parte de ella; a un vecino no se le ofrece.
              */
             const botonCargo = extra.puedeTenerCargo
@@ -1372,7 +1372,7 @@
                         data-id="${escapeHtml(id)}"
                         data-nombre="${escapeHtml(extra.nombre || '')}"
                         data-cargo="${escapeHtml(extra.cargo || '')}"
-                        title="Define quién maneja el dinero de la mesa directiva">
+                        title="Define quién maneja el dinero de la mesa directiva provisional">
                         <i class="briefcase icon"></i>
                         ${extra.cargo ? 'Cargo: ' + nombreDeCargo(extra.cargo) : 'Asignar cargo'}
                     </button>
@@ -1779,7 +1779,7 @@
         });
 
         /*
-         * Cargo en la mesa directiva.
+         * Cargo en la mesa directiva provisional.
          *
          * Define quién puede mover dinero: solo el Tesorero registra recibos
          * y valida pagos. Mientras nadie tenga ese cargo, el módulo sigue

@@ -97,15 +97,14 @@
                     @endforelse
                 </div>
 
+                {{-- Los vehículos ya no se listan: el módulo se retiró. --}}
                 <div class="ex-card">
-                    <h3><i class="car icon"></i> Vehículos y mascotas</h3>
-                    @forelse($vehiculos as $v)
-                        <div class="row"><div><i class="car icon" style="color:#64748b;"></i> {{ $v->placas ?: 's/placa' }} · {{ trim($v->marca.' '.$v->modelo) ?: 'vehículo' }}</div><span class="muted">{{ $v->color }}</span></div>
-                    @empty @endforelse
+                    <h3><i class="paw icon"></i> Mascotas</h3>
                     @forelse($mascotas as $m)
                         <div class="row"><div><i class="paw icon" style="color:#64748b;"></i> {{ $m->nombre }} · {{ $m->tipo }}</div></div>
-                    @empty @endforelse
-                    @if($vehiculos->isEmpty() && $mascotas->isEmpty())<p class="muted">Sin vehículos ni mascotas.</p>@endif
+                    @empty
+                        <p class="muted">Sin mascotas registradas.</p>
+                    @endforelse
                 </div>
 
                 <div class="ex-card">

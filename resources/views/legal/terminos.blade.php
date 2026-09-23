@@ -28,6 +28,7 @@
             <li><a href="#conducta">Uso debido de la información de otros</a></li>
             <li><a href="#disponibilidad">Disponibilidad del servicio</a></li>
             <li><a href="#cambios">Cambios y suspensión</a></li>
+            <li><a href="#baja">Retirar tus datos de la plataforma</a></li>
         </ol>
     </div>
 
@@ -57,13 +58,13 @@
 
     <p>
         Pueden tener cuenta los propietarios e inquilinos de las viviendas del
-        condominio, así como los integrantes de la mesa directiva en funciones. El
-        alta y la baja de cuentas las administra la mesa directiva.
+        condominio, así como los integrantes de la mesa directiva provisional en funciones. El
+        alta y la baja de cuentas las administra la mesa directiva provisional.
     </p>
 
     <p>
         Los niveles de acceso son tres: <strong>vecino</strong>, que consulta y
-        gestiona lo propio; <strong>mesa directiva</strong>, que administra los módulos
+        gestiona lo propio; <strong>mesa directiva provisional</strong>, que administra los módulos
         del condominio; y <strong>administrador del sistema</strong>, que atiende la
         operación técnica. Dentro de la mesa, las operaciones que mueven dinero están
         reservadas a quien tiene el cargo de Tesorería.
@@ -78,7 +79,7 @@
             llegan los avisos de vencimiento y el resultado de la validación de tus
             pagos.</li>
         <li>Si sospechas que alguien más entró a tu cuenta, cambia la contraseña y
-            avisa a la mesa directiva.</li>
+            avisa a la mesa directiva provisional.</li>
         <li>La información que registras debe ser veraz. Datos falsos en un
             comprobante o en un registro pueden derivar en las consecuencias que
             prevea el reglamento interno.</li>
@@ -107,8 +108,10 @@
     <h2 id="contenido">5. Lo que subes</h2>
 
     <p>
-        Eres responsable de los archivos e información que cargas: comprobantes,
-        fotografías de vehículos, mascotas y perfil.
+        Eres responsable de los archivos e información que cargas: comprobantes de
+        pago, fotografías de mascotas y tu fotografía de perfil. Ninguno de estos
+        archivos es obligatorio salvo el comprobante, que es lo único que permite
+        validar tu pago.
     </p>
 
     <ul>
@@ -117,16 +120,17 @@
             Para validar un pago basta con el monto, la fecha, el destinatario y el
             folio. No hace falta tu número de cuenta completo ni tu saldo.</li>
         <li>No subas fotografías en las que aparezcan terceros sin su consentimiento.</li>
-        <li>La mesa directiva puede retirar contenido que sea ofensivo, ajeno a los
+        <li>La mesa directiva provisional puede retirar contenido que sea ofensivo, ajeno a los
             fines del condominio o que exponga datos de otras personas.</li>
     </ul>
 
     <h2 id="conducta">6. Uso debido de la información de otros</h2>
 
     <p>
-        Dentro de la plataforma tendrás acceso a información de tus vecinos: el
-        directorio con nombre, casa, celular y fotografía, y el registro de vehículos
-        con sus placas.
+        Dentro de la plataforma puedes ver el directorio vecinal: nombre, casa,
+        celular y fotografía de quienes eligieron aparecer en él. Cada vecino decide
+        si aparece o no desde <em>Mi Perfil</em>, y puede salirse en cualquier momento
+        sin dar explicaciones.
     </p>
 
     <p><strong>Esa información se te comparte para la convivencia del condominio, y para nada más.</strong> En particular, no está permitido:</p>
@@ -142,7 +146,7 @@
     <p>
         El uso indebido de datos personales de otras personas puede tener
         consecuencias legales para quien lo comete, independientemente de las medidas
-        que adopte la mesa directiva.
+        que adopte la mesa directiva provisional.
     </p>
 
     <h2 id="disponibilidad">7. Disponibilidad del servicio</h2>
@@ -150,7 +154,7 @@
     <p>
         La plataforma se ofrece tal como está. Se procura que esté disponible de
         forma continua, pero puede haber interrupciones por mantenimiento, fallas del
-        proveedor de alojamiento o causas ajenas a la mesa directiva.
+        proveedor de alojamiento o causas ajenas a la mesa directiva provisional.
     </p>
 
     <p>
@@ -168,9 +172,40 @@
     </p>
 
     <p>
-        La mesa directiva puede suspender una cuenta que incumpla estos términos,
+        La mesa directiva provisional puede suspender una cuenta que incumpla estos términos,
         que haga un uso indebido de la información de otros vecinos o cuando la
         persona deje de residir en el condominio.
+    </p>
+
+    <p>
+        Cuando la actualización toque tus datos o tus derechos, el sistema te vuelve a
+        mostrar el aviso para que lo aceptes de nuevo. No se te da por enterado en
+        silencio.
+    </p>
+
+    <h2 id="baja">9. Retirar tus datos de la plataforma</h2>
+
+    <p>
+        Puedes dejar de usar la plataforma cuando quieras. En la pantalla de aceptación
+        del aviso está la opción
+        <strong>«No acepto seguir usando la plataforma y deseo desvincular mis datos personales»</strong>.
+        Al confirmarla, y sin que nadie tenga que autorizarlo:
+    </p>
+
+    <ul>
+        <li>Se borran tu fotografía de perfil, las fotografías de tus mascotas y los
+            comprobantes de pago que subiste.</li>
+        <li>Tu nombre se sustituye por el de la vivienda («Casa 19»), tu correo por uno
+            interno y tu celular se elimina.</li>
+        <li>Se apaga el envío de correos y tu acceso queda deshabilitado.</li>
+        <li>Se conservan los montos, fechas y conceptos de los pagos, porque son la
+            contabilidad del condominio y responden ante la asamblea. Ya no quedan
+            ligados a tu nombre, sino al número de casa.</li>
+    </ul>
+
+    <p>
+        La acción es <strong>inmediata e irreversible</strong>. Para volver a usar la
+        plataforma haría falta un alta nueva.
     </p>
 
     <div class="lg-nota">
