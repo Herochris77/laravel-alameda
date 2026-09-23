@@ -136,6 +136,21 @@
             margin-top: 2px;
         }
 
+        /* El cron falla en silencio; esto lo hace visible. */
+        .cron-alerta {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #fef2f2;
+            color: #b91c1c;
+            padding: 3px 9px;
+            border-radius: 99px;
+            font-size: .78rem;
+            font-weight: 700;
+        }
+
+        .cron-alerta i { margin: 0; }
+
         /* =====================================================
            COMPROBANTES POR REVISAR
            ===================================================== */
@@ -846,20 +861,77 @@
                 </div>
             </a>
             @if(auth()->user()->rol == 'super-administrador')
-            <a href="{{ route('cronjob.notificaciones', ['token' => env('CRON_TOKEN', 'admin123')]) }}" class="menu-card card-purple" aria-label="Ejecutar cronjob" target="_blank">
+            {{--
+                Este botón manda correos de verdad a los vecinos. Se pide
+                confirmación antes de dispararlo: el cron normalmente corre
+                solo, y pulsarlo por curiosidad les llega a la bandeja.
+            --}}
+            <a href="{{ route('cronjob.notificaciones', ['token' => env('CRON_TOKEN', 'admin123')]) }}" class="menu-card card-purple" id="btn-cronjob" aria-label="Ejecutar cronjob" target="_blank">
                 <div class="menu-card-body">
                     <div class="menu-card-icon">
                         <i class="clock icon"></i>
                     </div>
                     <h3 class="menu-card-title">Cronjob</h3>
-                    <p class="menu-card-description">Ejecuta notificaciones diarias (pagos, reservas, estacionamientos).</p>
+                    <p class="menu-card-description">
+                        @if($cron)
+                            Última ejecución: {{ $cron['cuando'] }}
+                            @if($cron['origen'] === 'manual') (manual) @endif
+                        @else
+                            Ejecuta notificaciones diarias (pagos, reservas, estacionamientos).
+                        @endif
+                    </p>
                     <span class="menu-card-action">
-                        Ejecutar
-                        <i class="external alternate icon"></i>
+                        @if($cron && $cron['atrasado'])
+                            <span class="cron-alerta">
+                                <i class="exclamation triangle icon"></i>
+                                Sin correr hace {{ $cron['horas'] }} h
+                            </span>
+                        @else
+                            Ejecutar
+                            <i class="external alternate icon"></i>
+                        @endif
                     </span>
                 </div>
             </a>
             @endif
         </div>
     </div>
+
+    <script>
+        $(function () {
+            /*
+             * Confirmación antes de disparar el cron a mano.
+             *
+             * No es una acción de consulta: manda correos y notificaciones a
+             * los vecinos. El cron corre solo todos los días, así que pulsar
+             * esto es la excepción, no la rutina.
+             */
+            $('#btn-cronjob').on('click', function (e) {
+                e.preventDefault();
+
+                const destino = this.href;
+
+                @if($cron)
+                    const ultima = 'La última ejecución fue el {{ $cron['cuando'] }}.';
+                @else
+                    const ultima = 'No hay registro de una ejecución previa.';
+                @endif
+
+                alertify.confirm(
+                    'Ejecutar las notificaciones diarias',
+                    'Esto <strong>manda correos y notificaciones reales</strong> a los vecinos: ' +
+                    'recordatorios de pago por vencer, reservaciones de mañana, estacionamientos ' +
+                    'ocupados y servicios por vencer.<br><br>' +
+                    ultima + '<br><br>' +
+                    'Normalmente corre solo cada día. Un concepto no se avisa dos veces el mismo ' +
+                    'día, así que si ya salió hoy no se repetirá.<br><br>' +
+                    '¿Ejecutar ahora?',
+                    function () {
+                        window.open(destino, '_blank');
+                    },
+                    function () {}
+                ).set({ labels: { ok: 'Sí, ejecutar', cancel: 'Cancelar' } });
+            });
+        });
+    </script>
 </x-app-layout>

@@ -87,6 +87,21 @@
                         <input type="text" id="filtro-celular" placeholder="Celular">
                     </div>
                 </div>
+
+                {{--
+                    Filtro del aviso de privacidad: sirve para perseguir a
+                    quienes faltan por aceptarlo, que es la lista que importa
+                    mientras se junta el consentimiento de todos.
+                --}}
+                <div class="filter-field">
+                    <label class="form-label">Aviso de privacidad</label>
+                    <select id="filtro-aviso" class="form-input">
+                        <option value="">Todos</option>
+                        <option value="no">Falta que acepten</option>
+                        <option value="si">Ya aceptaron</option>
+                        <option value="viejo">Aceptaron una versión anterior</option>
+                    </select>
+                </div>
             </div>
 
             <div class="usuarios-actions-toolbar">
@@ -562,6 +577,23 @@
         .usuario-badge.tipo {
             background: #f1f5f9;
             color: #475569;
+        }
+
+        /* Aviso de privacidad: verde aceptado, ámbar pendiente,
+           morado si aceptó una versión que ya cambió. */
+        .usuario-badge.aviso-si {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .usuario-badge.aviso-no {
+            background: #fffbeb;
+            color: #b45309;
+        }
+
+        .usuario-badge.aviso-viejo {
+            background: #f5f3ff;
+            color: #6d28d9;
         }
 
         .usuario-badge.activo {
@@ -1059,7 +1091,7 @@
         $(document).ready(function() {
             cargarUsuarios();
 
-            $('#filtro-general, #filtro-casa, #filtro-tipo, #filtro-nombre, #filtro-correo, #filtro-celular').on('keyup input change', debounce(function() {
+            $('#filtro-general, #filtro-casa, #filtro-tipo, #filtro-nombre, #filtro-correo, #filtro-celular, #filtro-aviso').on('keyup input change', debounce(function() {
                 filtrarUsuarios();
             }, 250));
 
@@ -1142,6 +1174,37 @@
                 return;
             }
 
+            /*
+             * Estado del aviso de privacidad.
+             *
+             * Es el respaldo del consentimiento expreso: para una auditoría
+             * hay que poder decir quién aceptó, cuándo y qué versión. Si el
+             * dato no viene (base sin migrar) no se pinta nada.
+             */
+            function insigniaAviso(aviso) {
+                if (!aviso) return '';
+
+                if (!aviso.acepto) {
+                    return `<span class="usuario-badge aviso-no" title="Todavía no acepta el Aviso de Privacidad">
+                                <i class="hourglass half icon"></i> Aviso pendiente
+                            </span>`;
+                }
+
+                // Aceptó, pero el aviso cambió de versión desde entonces: su
+                // consentimiento no ampara el documento vigente.
+                if (!aviso.vigente) {
+                    return `<span class="usuario-badge aviso-viejo"
+                                  title="Aceptó la versión ${escapeHtml(aviso.version || '')} el ${escapeHtml(aviso.fecha || '')}; el aviso cambió desde entonces">
+                                <i class="redo icon"></i> Aviso desactualizado
+                            </span>`;
+                }
+
+                return `<span class="usuario-badge aviso-si"
+                              title="Aceptó el ${escapeHtml(aviso.fecha || '')} · versión ${escapeHtml(aviso.version || '')}">
+                            <i class="check circle icon"></i> Aviso aceptado
+                        </span>`;
+            }
+
             const totalPaginas = Math.ceil(usuariosFiltrados.length / usuariosPorPagina);
             const inicio = (paginaActualUsuarios - 1) * usuariosPorPagina;
             const fin = inicio + usuariosPorPagina;
@@ -1194,6 +1257,8 @@
                                         <i class="${estadoInfo.icono} icon"></i>
                                         ${escapeHtml(estadoInfo.texto)}
                                     </span>
+
+                                    ${insigniaAviso(usuario.aviso)}
                                 </div>
                             </div>
                         </div>
@@ -1474,6 +1539,7 @@
             const nombreFiltro = normalizarTexto($('#filtro-nombre').val());
             const correoFiltro = normalizarTexto($('#filtro-correo').val());
             const celularFiltro = normalizarTexto($('#filtro-celular').val());
+            const avisoFiltro = $('#filtro-aviso').val();
 
             const filtrados = usuariosOriginales.filter(function(usuario) {
                 const rol = extraerTexto(usuario.rol || '');
@@ -1497,12 +1563,26 @@
                 const coincideCorreo = normalizarTexto(correo).includes(correoFiltro);
                 const coincideCelular = normalizarTexto(celular).includes(celularFiltro);
 
+                // Aviso de privacidad. Sin el dato (base sin migrar) no se
+                // filtra nada, para no esconder usuarios por una columna que
+                // todavía no existe.
+                let coincideAviso = true;
+
+                if (avisoFiltro && usuario.aviso) {
+                    const a = usuario.aviso;
+
+                    if (avisoFiltro === 'no') coincideAviso = !a.acepto;
+                    if (avisoFiltro === 'si') coincideAviso = a.acepto && a.vigente;
+                    if (avisoFiltro === 'viejo') coincideAviso = a.acepto && !a.vigente;
+                }
+
                 return coincideGeneral &&
                     coincideCasa &&
                     coincideTipo &&
                     coincideNombre &&
                     coincideCorreo &&
-                    coincideCelular;
+                    coincideCelular &&
+                    coincideAviso;
             });
 
             renderizarUsuarios(ordenarUsuariosPorCasa(filtrados, ordenCasaUsuarios));
@@ -1515,6 +1595,7 @@
             $('#filtro-nombre').val('');
             $('#filtro-correo').val('');
             $('#filtro-celular').val('');
+            $('#filtro-aviso').val('');
 
             ordenCasaUsuarios = 'asc';
             renderizarUsuarios(ordenarUsuariosPorCasa(usuariosOriginales, ordenCasaUsuarios));

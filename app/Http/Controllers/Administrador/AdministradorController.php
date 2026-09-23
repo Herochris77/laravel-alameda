@@ -14,7 +14,42 @@ class AdministradorController extends Controller
     {
         return view('administrador.index', [
             'porRevisar' => $this->porRevisar(),
+            'cron' => $this->estadoCron(),
         ]);
+    }
+
+    /**
+     * Última vez que corrió el cron de notificaciones.
+     *
+     * El cron falla en silencio: si la URL queda mal en cPanel o la ruta del
+     * log no existe, no pasa nada visible hasta que un vecino reclama que no
+     * le llegó el aviso de vencimiento. Esto lo deja a la vista.
+     */
+    private function estadoCron(): ?array
+    {
+        try {
+            $sello = \Illuminate\Support\Facades\Cache::get('cron.ultima_ejecucion');
+
+            if (! $sello) {
+                return null;
+            }
+
+            $cuando = Carbon::parse($sello['cuando']);
+
+            return [
+                'cuando' => $cuando->translatedFormat('j \d\e F, H:i'),
+                'horas' => (int) $cuando->diffInHours(Carbon::now()),
+                // Más de 36 horas significa que se saltó al menos un ciclo
+                // diario. Ahí ya no es un retraso, es que dejó de correr.
+                'atrasado' => $cuando->diffInHours(Carbon::now()) > 36,
+                'enviados' => $sello['enviados'] ?? 0,
+                'origen' => $sello['origen'] ?? 'automatico',
+            ];
+        } catch (\Throwable $e) {
+            Log::error('inicio.estadoCron: '.$e->getMessage());
+
+            return null;
+        }
     }
 
     /**

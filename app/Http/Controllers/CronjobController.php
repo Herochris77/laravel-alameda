@@ -11,6 +11,7 @@ use App\Notifications\NotificacionGenerica;
 use App\Services\MailService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
@@ -35,6 +36,25 @@ class CronjobController extends Controller
         $this->notificarReservacionesProximas($manana, $mananaFin, $resultados);
         $this->notificarEstacionamientosOcupados($resultados);
         $this->notificarServiciosPorVencer($resultados);
+
+        /*
+         * Sello de la última ejecución.
+         *
+         * El cron falla en silencio: si la URL queda mal, si la ruta del log
+         * no existe o si cPanel no lo dispara, nadie se entera hasta que un
+         * vecino reclama que no le llegó el aviso. Esto deja el rastro a la
+         * vista en el panel, sin tener que abrir el servidor.
+         */
+        try {
+            Cache::forever('cron.ultima_ejecucion', [
+                'cuando' => now()->toDateTimeString(),
+                'enviados' => array_sum(array_column($resultados, 'enviados')),
+                'errores' => array_sum(array_column($resultados, 'errores')),
+                'origen' => $comoJson ? 'automatico' : 'manual',
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo guardar el sello del cron: '.$e->getMessage());
+        }
 
         Log::info('Cronjob notificaciones diarias ejecutado', [
             'pagos_notificados' => $resultados['pagos']['enviados'],

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\MailService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class UsuariosController extends Controller
 {
@@ -18,7 +19,7 @@ class UsuariosController extends Controller
     public function obtenerUsuarios(Request $request)
     {
         if ($request->ajax()) {
-            $usuarios = User::withTrashed()->select([
+            $columnas = [
                 'id',
                 'nombre',
                 'correo',
@@ -31,8 +32,19 @@ class UsuariosController extends Controller
                 'estado',
                 'celular',
                 'pago',
-                'deleted_at'
-            ]);
+                'deleted_at',
+            ];
+
+            // Van condicionales porque pueden no existir si todavía no se
+            // corre /migrar. Y van en el select porque, si no, llegan null
+            // aunque estén en la base: es el mismo descuido que ya pasó con
+            // 'cargo'.
+            if (Schema::hasColumn('users', 'acepto_aviso_en')) {
+                $columnas[] = 'acepto_aviso_en';
+                $columnas[] = 'acepto_aviso_version';
+            }
+
+            $usuarios = User::withTrashed()->select($columnas);
     
             return datatables()->of($usuarios)
     
@@ -223,6 +235,35 @@ class UsuariosController extends Controller
                 // Campos explícitos para el frontend: la vista arma sus propias
                 // tarjetas y no reutiliza los botones que manda el backend, así
                 // que necesita el cargo como dato, no dentro de una etiqueta.
+                /*
+                 * Aceptación del aviso de privacidad.
+                 *
+                 * Es el dato que respalda el consentimiento expreso: para una
+                 * auditoría hay que poder decir quién aceptó, cuándo y qué
+                 * versión del documento. Aquí se ve de un vistazo a quién le
+                 * falta.
+                 */
+                ->addColumn('aviso', function ($c) {
+                    if (! Schema::hasColumn('users', 'acepto_aviso_en')) {
+                        return null;
+                    }
+
+                    if (! $c->acepto_aviso_en) {
+                        return ['acepto' => false, 'fecha' => null, 'version' => null, 'vigente' => false];
+                    }
+
+                    $vigente = (string) $c->acepto_aviso_version
+                        === (string) config('privacidad.version_aviso', '1.0');
+
+                    return [
+                        'acepto' => true,
+                        'fecha' => \Carbon\Carbon::parse($c->acepto_aviso_en)->format('d/m/Y H:i'),
+                        'version' => $c->acepto_aviso_version,
+                        // Si el aviso cambió de versión, la aceptación anterior
+                        // ya no ampara el documento vigente.
+                        'vigente' => $vigente,
+                    ];
+                })
                 ->addColumn('cargo_actual', fn ($c) => $c->cargo ?? '')
                 ->addColumn('puede_tener_cargo', fn ($c) => in_array($c->rol, ['administrador', 'super-administrador'], true))
                 ->rawColumns(['rol', 'acciones', 'estado', 'pago'])
