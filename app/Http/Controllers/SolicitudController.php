@@ -63,8 +63,8 @@ class SolicitudController extends Controller
             $dueno->correo,
             subject: 'Nueva solicitud de '.$inquilino->nombre,
             titulo: 'Solicitud de permiso',
-            mensaje: 'El inquilino <strong>'.$inquilino->nombre.'</strong> (casa '.$inquilino->casa.') ha realizado una solicitud:<br><br>
-                <strong>'.$solicitud->titulo.'</strong><br><br>
+            mensaje: 'El inquilino <strong>'.e($inquilino->nombre).'</strong> (casa '.e($inquilino->casa).') ha realizado una solicitud:<br><br>
+                <strong>'.e($solicitud->titulo).'</strong><br><br>
                 '.nl2br(e($solicitud->mensaje)).'<br><br>
                 <a href="'.url('/perfil/solicitudes').'" style="display:inline-block;padding:12px 28px;background:#667eea;color:#fff;text-decoration:none;border-radius:8px;">Ver solicitud</a>',
             origen: 'solicitud'
@@ -119,7 +119,7 @@ class SolicitudController extends Controller
             $solicitud->inquilino->correo,
             subject: 'Tu solicitud fue '.$estadoTexto,
             titulo: 'Respuesta a tu solicitud',
-            mensaje: 'El dueño <strong>'.$dueno->nombre.'</strong> ha '.$estadoTexto.' tu solicitud "<strong>'.$solicitud->titulo.'</strong>".<br><br>
+            mensaje: 'El dueño <strong>'.e($dueno->nombre).'</strong> ha '.$estadoTexto.' tu solicitud "<strong>'.e($solicitud->titulo).'</strong>".<br><br>
                 <a href="'.url('/usuario/solicitudes').'" style="display:inline-block;padding:12px 28px;background:#667eea;color:#fff;text-decoration:none;border-radius:8px;">Ver mis solicitudes</a>',
             origen: 'solicitud'
         );
@@ -150,7 +150,7 @@ class SolicitudController extends Controller
             $dueno->correo,
             subject: 'Solicitud eliminada por '.$inquilino->nombre,
             titulo: 'Solicitud de permiso eliminada',
-            mensaje: 'El inquilino <strong>'.$inquilino->nombre.'</strong> (casa '.$inquilino->casa.') ha eliminado la solicitud "<strong>'.$solicitud->titulo.'</strong>".<br><br>
+            mensaje: 'El inquilino <strong>'.e($inquilino->nombre).'</strong> (casa '.e($inquilino->casa).') ha eliminado la solicitud "<strong>'.e($solicitud->titulo).'</strong>".<br><br>
                 <a href="'.url('/perfil/solicitudes').'" style="display:inline-block;padding:12px 28px;background:#667eea;color:#fff;text-decoration:none;border-radius:8px;">Ver solicitudes</a>',
             origen: 'solicitud'
         );

@@ -94,7 +94,8 @@ class CorreoController extends Controller
                 'destinatarios' => $correo->destinatarios,
                 'asunto' => $correo->asunto,
                 'titulo' => $correo->titulo,
-                'mensaje' => $correo->mensaje,
+                // El visor lo pinta con .html(): se sanea tambien lo ya guardado.
+                'mensaje' => \App\Support\HtmlSeguro::limpiar($correo->mensaje),
                 'origen' => $correo->origen,
                 'estado' => $correo->estado,
                 'created_at' => $correo->created_at->format('d/m/Y H:i'),
@@ -102,7 +103,7 @@ class CorreoController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al obtener el correo: '.$e->getMessage(),
+                'message' => \App\Support\Errores::mensaje($e, 'Error al obtener el correo'),
             ]);
         }
     }
@@ -122,7 +123,7 @@ class CorreoController extends Controller
             return response()->json([
                 'header' => '❌ Error',
                 'success' => false,
-                'message' => 'Error al eliminar el correo: '.$e->getMessage(),
+                'message' => \App\Support\Errores::mensaje($e, 'Error al eliminar el correo'),
             ]);
         }
     }
@@ -151,7 +152,7 @@ class CorreoController extends Controller
             return response()->json([
                 'header' => '❌ Error',
                 'success' => false,
-                'message' => 'Error al eliminar los registros: '.$e->getMessage(),
+                'message' => \App\Support\Errores::mensaje($e, 'Error al eliminar los registros'),
             ]);
         }
     }

@@ -2,33 +2,32 @@
 
     <style>
         .encuestas-page {
-            --primary: #8b5cf6;
-            --primary-dark: #7c3aed;
-            --primary-deep: #6d28d9;
-            --primary-soft: #f5f3ff;
+            --primary: var(--brand-500);
+            --primary-dark: var(--brand-700);
+            --primary-deep: var(--brand-700);
+            --primary-soft: var(--brand-50);
 
-            --success: #10b981;
-            --success-dark: #059669;
+            --success: var(--brand-500);
+            --success-dark: var(--brand-600);
 
-            --danger: #ef4444;
-            --warning: #f59e0b;
+            --warning: var(--oro-700);
 
-            --text: #0f172a;
-            --text-secondary: #334155;
-            --muted: #64748b;
-            --soft: #94a3b8;
+            --text: var(--ink);
+            --text-secondary: var(--ink);
+            --muted: var(--ink-3);
+            --soft: var(--ink-4);
 
             --surface: #ffffff;
-            --surface-soft: #f8fafc;
-            --surface-muted: #f1f5f9;
+            --surface-soft: var(--crema-50);
+            --surface-muted: var(--crema-100);
 
-            --border: #e2e8f0;
+            --border: var(--arena);
 
             --shadow-sm:
-                0 5px 18px rgba(15, 23, 42, .05);
+                0 5px 18px rgba(20,32,26, .05);
 
             --shadow-md:
-                0 12px 30px rgba(15, 23, 42, .09);
+                0 12px 30px rgba(20,32,26, .09);
 
             width: 100%;
             padding-bottom: 32px;
@@ -275,7 +274,7 @@
                 );
 
             box-shadow:
-                0 7px 17px rgba(139,92,246,.20);
+                0 7px 17px rgba(23,137,92,.20);
         }
 
         .tab-count {
@@ -385,15 +384,13 @@
                 0 auto 10px;
 
             border:
-                3px solid #ede9fe;
+                3px solid var(--brand-100);
 
             border-top-color:
                 var(--primary);
 
             border-radius: 999px;
 
-            animation:
-                surveySpin .7s linear infinite;
         }
 
         .survey-loading-title {
@@ -414,12 +411,7 @@
             font-size: .66rem;
         }
 
-        @keyframes surveySpin {
-            to {
-                transform:
-                    rotate(360deg);
-            }
-        }
+        
 
 
         /* =====================================================
@@ -467,11 +459,10 @@
         @media (hover:hover) and (pointer:fine) {
 
             .encuesta-card:hover {
-                transform:
-                    translateY(-2px);
+                
 
                 border-color:
-                    rgba(139,92,246,.28);
+                    rgba(23,137,92,.28);
 
                 box-shadow:
                     var(--shadow-md);
@@ -592,7 +583,7 @@
 
         .estado-badge.cerrada {
             background:
-                rgba(239,68,68,.22);
+                rgba(192,67,44,.22);
         }
 
         .estado-badge.vencida {
@@ -636,7 +627,7 @@
             padding: 9px 10px;
 
             border:
-                1px solid #ede9fe;
+                1px solid var(--brand-100);
 
             border-radius: 11px;
 
@@ -644,7 +635,7 @@
                 var(--muted);
 
             background:
-                #faf9ff;
+                var(--crema-50);
 
             font-size: .68rem;
 
@@ -735,7 +726,7 @@
 
         .opcion-item:hover {
             border-color:
-                rgba(139,92,246,.45);
+                rgba(23,137,92,.45);
 
             background:
                 #fcfaff;
@@ -749,7 +740,7 @@
                 var(--primary-soft);
 
             box-shadow:
-                0 0 0 2px rgba(139,92,246,.05);
+                0 0 0 2px rgba(23,137,92,.05);
         }
 
         .opcion-item.votada {
@@ -760,14 +751,14 @@
             cursor: default;
 
             border-color:
-                #e8edf3;
+                var(--crema-100);
 
             background: #fff;
         }
 
         .opcion-item.votada:hover {
             border-color:
-                #e8edf3;
+                var(--crema-100);
 
             background: #fff;
         }
@@ -784,7 +775,7 @@
             justify-content: center;
 
             border:
-                2px solid #cbd5e1;
+                2px solid var(--arena-2);
 
             background: #fff;
 
@@ -1016,7 +1007,7 @@
             padding: 12px 17px;
 
             border-top:
-                1px solid #eef2f7;
+                1px solid var(--crema-100);
 
             background:
                 var(--surface-soft);
@@ -1090,8 +1081,7 @@
         }
 
         .btn-votar:active {
-            transform:
-                scale(.98);
+            
         }
 
         .btn-votar:disabled {
@@ -1111,9 +1101,9 @@
 
             border-radius: 10px;
 
-            color: #166534;
+            color: var(--brand-800);
 
-            background: #dcfce7;
+            background: var(--ok-bg);
 
             font-size: .65rem;
 
@@ -1153,8 +1143,8 @@
             background:
                 linear-gradient(
                     135deg,
-                    #fafaff,
-                    #f8fafc
+                    var(--crema-50),
+                    var(--crema-50)
                 );
         }
 
@@ -1201,7 +1191,7 @@
             padding: 8px 9px;
 
             border:
-                1px solid #ede9fe;
+                1px solid var(--brand-100);
 
             border-radius: 10px;
 
@@ -1209,7 +1199,7 @@
                 var(--muted);
 
             background:
-                #faf9ff;
+                var(--crema-50);
 
             font-size: .65rem;
 
@@ -1516,7 +1506,7 @@
             border-radius: 11px;
 
             background:
-                #faf9ff;
+                var(--crema-50);
         }
 
         .mi-orden-title {
@@ -1697,8 +1687,6 @@
 
             border-radius: 999px;
 
-            animation:
-                surveySpin .7s linear infinite;
         }
 
 
@@ -2193,9 +2181,9 @@
          LIBRERÍAS EXISTENTES
     ========================================================== --}}
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    {!! \App\Support\Vendor::js('chart.js') !!}
 
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    {!! \App\Support\Vendor::js('sortable.js') !!}
 
 
     <script>
@@ -4129,7 +4117,7 @@
 
 
                             const colors = [
-                                'rgba(139,92,246,.95)',
+                                'rgba(23,137,92,.95)',
                                 'rgba(124,58,237,.82)',
                                 'rgba(109,40,217,.72)',
                                 'rgba(167,139,250,.82)',
@@ -4737,7 +4725,7 @@
 
 
                             const background =
-                                'rgba(139,92,246,'
+                                'rgba(23,137,92,'
                                 +
                                 intensidad.toFixed(
                                     2
@@ -4753,7 +4741,7 @@
                                     ?
                                     '#ffffff'
                                     :
-                                    '#0f172a';
+                                    '#14201a';
 
 
                             html += `

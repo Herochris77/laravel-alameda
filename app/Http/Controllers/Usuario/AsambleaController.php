@@ -41,6 +41,7 @@ class AsambleaController extends Controller
                     'hora' => $a->hora,
                     'lugar' => $a->lugar,
                     'estado' => $a->estado,
+                    'modalidad' => $this->svc->modalidad($a),
                     'mis_casas' => $misCasas,
                     'num_votos' => count($misCasas),
                 ];
@@ -95,6 +96,7 @@ class AsambleaController extends Controller
                     'valor' => $v->valor,
                     'opcion_id' => $v->opcion_id,
                     'posicion' => $v->posicion,
+                    'origen' => $v->origen ?? 'plataforma',
                 ];
             }
         }
@@ -112,6 +114,7 @@ class AsambleaController extends Controller
                 'lugar' => $asamblea->lugar,
                 'estado' => $asamblea->estado,
                 'control_asistencia' => (bool) $asamblea->control_asistencia,
+                'modalidad' => $this->svc->modalidad($asamblea),
                 'quorum' => $this->svc->quorum($asamblea),
                 'mis_casas' => $misCasas,
                 'mi_casa' => $user->casa,
@@ -131,6 +134,7 @@ class AsambleaController extends Controller
                         'estado' => $p->estado,
                         'opciones' => $p->opciones->map(fn ($o) => ['id' => $o->id, 'opcion' => $o->opcion]),
                         'mis_votos' => $misVotos[$p->id] ?? [],
+                        'resolucion' => $p->resolucion ?? null,
                     ];
                     // Resultados visibles solo cuando la asamblea está cerrada.
                     if ($asamblea->estado === 'cerrada') {

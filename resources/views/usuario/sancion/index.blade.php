@@ -10,9 +10,9 @@
         .filter-btn {
             padding: 10px 18px;
             border-radius: 50px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--arena);
             background: white;
-            color: #64748b;
+            color: var(--ink-3);
             font-weight: 600;
             font-size: 0.85rem;
             cursor: pointer;
@@ -20,12 +20,12 @@
         }
         
         .filter-btn:hover {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: var(--brand-600);
+            color: var(--brand-600);
         }
         
         .filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-800) 100%);
             border-color: transparent;
             color: white;
         }
@@ -49,9 +49,9 @@
             height: 100%;
         }
         
-        .sancion-card.pendiente::before { background: #ef4444; }
-        .sancion-card.pagado::before { background: #10b981; }
-        .sancion-card.rechazado::before { background: #f59e0b; }
+        .sancion-card.pendiente::before { background: var(--danger); }
+        .sancion-card.pagado::before { background: var(--brand-500); }
+        .sancion-card.rechazado::before { background: var(--oro-700); }
         
         .sancion-header {
             display: flex;
@@ -63,20 +63,20 @@
         .sancion-title {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #1e293b;
+            color: var(--ink);
             margin: 0;
         }
         
         .sancion-monto {
             font-size: 1.5rem;
             font-weight: 800;
-            color: #1e293b;
+            color: var(--ink);
         }
         
         .sancion-monto span {
             font-size: 0.9rem;
             font-weight: 500;
-            color: #94a3b8;
+            color: var(--ink-4);
         }
         
         .sancion-meta {
@@ -85,7 +85,7 @@
             gap: 16px;
             margin-bottom: 16px;
             padding-bottom: 16px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--crema-100);
         }
         
         .sancion-meta-item {
@@ -93,11 +93,11 @@
             align-items: center;
             gap: 6px;
             font-size: 0.85rem;
-            color: #64748b;
+            color: var(--ink-3);
         }
         
         .sancion-meta-item i {
-            color: #94a3b8;
+            color: var(--ink-4);
         }
         
         .sancion-desc {
@@ -108,7 +108,7 @@
             display: flex;
             gap: 10px;
             padding: 8px 0;
-            border-bottom: 1px solid #f8fafc;
+            border-bottom: 1px solid var(--crema-50);
             font-size: 0.9rem;
         }
         
@@ -117,12 +117,12 @@
         }
         
         .sancion-desc-item .label {
-            color: #94a3b8;
+            color: var(--ink-4);
             min-width: 100px;
         }
         
         .sancion-desc-item .value {
-            color: #475569;
+            color: var(--ink-2);
             font-weight: 500;
         }
         
@@ -143,18 +143,18 @@
         }
         
         .status-badge.pendiente {
-            background: #fee2e2;
-            color: #dc2626;
+            background: var(--danger-bg);
+            color: var(--danger);
         }
         
         .status-badge.pagado {
-            background: #d1fae5;
-            color: #059669;
+            background: var(--ok-bg);
+            color: var(--brand-600);
         }
         
         .status-badge.rechazado {
-            background: #fef3c7;
-            color: #d97706;
+            background: var(--warn-bg);
+            color: var(--oro-700);
         }
         
         .evidence-btn {
@@ -163,8 +163,8 @@
             gap: 6px;
             padding: 8px 16px;
             border-radius: 10px;
-            background: #f1f5f9;
-            color: #475569;
+            background: var(--crema-100);
+            color: var(--ink-2);
             font-size: 0.85rem;
             font-weight: 600;
             border: none;
@@ -173,7 +173,7 @@
         }
         
         .evidence-btn:hover {
-            background: #e2e8f0;
+            background: var(--arena);
         }
     </style>
     
@@ -224,7 +224,7 @@
                 <div class="sancion-header">
                     <div>
                         <h3 class="sancion-title">
-                            <i class="warning icon" style="color: #ef4444;"></i>
+                            <i class="warning icon" style="color: var(--danger);"></i>
                             {{ $sancion->motivo }}
                         </h3>
                         <div class="sancion-meta">
@@ -293,7 +293,7 @@
 
 <!-- Modal Pago -->
 <div class="ui modal" id="modal-pago">
-    <div class="header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="header" style="background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-800) 100%); color: white;">
         <i class="dollar icon"></i> Subir Comprobante de Pago
     </div>
     <div class="content">
@@ -310,7 +310,7 @@
             </div>
 
             <div class="upload-area" id="uploadAreaSancion">
-                <input type="file" name="comprobante" accept="image/jpeg,image/png" id="comprobante-input-sancion" style="display: none;">
+                <input type="file" name="comprobante" accept="image/jpeg,image/png" id="comprobante-input-sancion" style="display: none;" required>
                 
                 <label for="comprobante-input-sancion" id="uploadLabelSancion" style="cursor: pointer; width: 100%;">
                     <div class="upload-placeholder" id="uploadPlaceholderSancion">
@@ -328,7 +328,7 @@
                 </label>
                 
                 <div class="upload-preview" id="uploadPreviewSancion" style="display: none;">
-                    <img id="previewImageSancion" src="" alt="Preview" style="max-height: 200px; border-radius: 8px;">
+                    <img id="previewImageSancion" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Preview" style="max-height: 200px; border-radius: 8px;">
                     <button type="button" class="remove-btn" id="removeImageSancion" style="position: absolute; top: 10px; right: 10px;">
                         <i class="times icon"></i>
                     </button>
@@ -350,7 +350,7 @@
         <i class="image icon"></i> Evidencia
     </div>
     <div class="content" style="text-align: center;">
-        <img id="evidencia-img" src="" alt="Evidencia" style="max-width: 100%; border-radius: 8px;">
+        <img id="evidencia-img" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Evidencia" style="max-width: 100%; border-radius: 8px;">
     </div>
     <div class="actions">
         <button class="ui black deny button">Cerrar</button>
@@ -439,8 +439,12 @@
         const cantidad = $('#cantidad-pago').val();
         const comprobante = $('#comprobante-input-sancion')[0].files[0];
 
-        if (!cantidad || !comprobante) {
-            alertify.error('Completa todos los campos');
+        var faltan = [];
+        if (!cantidad) { faltan.push('Cantidad pagada'); }
+        if (!comprobante) { faltan.push('Comprobante de pago'); }
+
+        if (faltan.length) {
+            alertify.error('Falta completar: <b>' + faltan.join(', ') + '</b>');
             return;
         }
 

@@ -1,22 +1,21 @@
 <x-app-layout>
     <style>
         :root {
-            --primary: #0d9488;
-            --primary-dark: #0f766e;
-            --primary-soft: rgba(13, 148, 136, 0.12);
-            --success: #10b981;
-            --success-dark: #059669;
-            --danger: #ef4444;
-            --danger-dark: #dc2626;
-            --info: #3b82f6;
-            --info-dark: #2563eb;
-            --purple: #7c3aed;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --text-soft: #94a3b8;
-            --border: #e2e8f0;
+            --primary: var(--brand-600);
+            --primary-dark: var(--brand-700);
+            --primary-soft: rgba(11,107,69, 0.12);
+            --success: var(--brand-500);
+            --success-dark: var(--brand-600);
+            --danger-dark: var(--danger);
+            --info: var(--brand-500);
+            --info-dark: var(--brand-600);
+            --purple: var(--brand-700);
+            --text-main: var(--ink);
+            --text-muted: var(--ink-3);
+            --text-soft: var(--ink-4);
+            --border: var(--arena);
             --surface: #ffffff;
-            --soft-bg: #f8fafc;
+            --soft-bg: var(--crema-50);
         }
 
         .estacionamiento-page {
@@ -28,14 +27,13 @@
             background:
                 radial-gradient(circle at top right, rgba(255,255,255,0.24), transparent 34%),
                 radial-gradient(circle at bottom left, rgba(255,255,255,0.14), transparent 30%),
-                linear-gradient(135deg, var(--primary) 0%, #14b8a6 100%);
+                linear-gradient(135deg, var(--primary) 0%, var(--brand-500) 100%);
             border-radius: 26px;
             padding: 26px;
             color: white;
             margin-bottom: 22px;
-            box-shadow: 0 12px 30px rgba(13, 148, 136, 0.18);
+            box-shadow: 0 12px 30px rgba(11,107,69, 0.18);
             overflow: hidden;
-            animation: fadeSlideDown 0.55s ease both;
         }
 
         .parking-hero-content {
@@ -64,7 +62,6 @@
             justify-content: center;
             flex-shrink: 0;
             backdrop-filter: blur(8px);
-            animation: softFloat 3.2s ease-in-out infinite;
         }
 
         .parking-hero-icon i {
@@ -110,9 +107,8 @@
             width: 9px;
             height: 9px;
             border-radius: 999px;
-            background: #22c55e;
+            background: var(--brand-500);
             box-shadow: 0 0 0 rgba(34, 197, 94, 0.55);
-            animation: pulseDot 1.5s infinite;
         }
 
         .estacionamiento-container {
@@ -126,13 +122,12 @@
             border-radius: 22px;
             padding: 18px 20px;
             margin-bottom: 20px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
             flex-wrap: wrap;
-            animation: fadeUp 0.5s ease both;
         }
 
         .parking-toolbar-text {
@@ -158,14 +153,13 @@
 
         .parking-toolbar-text-icon i {
             margin: 0 !important;
-            animation: rotateSoft 2.2s linear infinite;
         }
 
         .parking-last-update {
             font-size: 0.82rem;
             color: var(--text-muted);
             background: var(--soft-bg);
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--crema-100);
             padding: 9px 12px;
             border-radius: 999px;
             font-weight: 800;
@@ -174,8 +168,7 @@
 
         .parking-message {
             border-radius: 20px !important;
-            box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08) !important;
-            animation: fadeUp 0.45s ease both;
+            box-shadow: 0 8px 22px rgba(20,32,26, 0.08) !important;
         }
 
         .parking-message .button {
@@ -198,10 +191,9 @@
             display: flex;
             align-items: center;
             gap: 14px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
             border: 1px solid var(--border);
             background: white;
-            animation: scaleFade 0.45s ease both;
         }
 
         .stat-card:nth-child(2) {
@@ -221,11 +213,11 @@
         }
 
         .stat-card:hover::after {
-            transform: scale(1.12);
+            
         }
 
         .stat-card.disponible {
-            background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);
+            background: linear-gradient(135deg, #ffffff 0%, var(--brand-50) 100%);
         }
 
         .stat-card.disponible::after {
@@ -233,7 +225,7 @@
         }
 
         .stat-card.ocupado {
-            background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+            background: linear-gradient(135deg, #ffffff 0%, var(--danger-bg) 100%);
         }
 
         .stat-card.ocupado::after {
@@ -258,12 +250,12 @@
         }
 
         .stat-card.disponible .stat-icon {
-            background: rgba(16, 185, 129, 0.14);
+            background: rgba(23,137,92, 0.14);
             color: var(--success-dark);
         }
 
         .stat-card.ocupado .stat-icon {
-            background: rgba(239, 68, 68, 0.14);
+            background: rgba(192,67,44, 0.14);
             color: var(--danger-dark);
         }
 
@@ -295,7 +287,6 @@
             justify-content: space-between;
             gap: 12px;
             color: var(--text-main);
-            animation: fadeUp 0.45s ease both;
         }
 
         .section-title-left {
@@ -317,7 +308,7 @@
         }
 
         .section-title:hover .icon-bg {
-            transform: rotate(-4deg) scale(1.04);
+            
         }
 
         .section-title .icon-bg i {
@@ -326,7 +317,7 @@
         }
 
         .section-title.entrada .icon-bg {
-            background: rgba(13, 148, 136, 0.12);
+            background: rgba(11,107,69, 0.12);
             color: var(--primary);
         }
 
@@ -355,7 +346,7 @@
             background: white;
             border-radius: 22px;
             padding: 18px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+            box-shadow: 0 8px 24px rgba(20,32,26, 0.07);
             border: 1px solid var(--border);
             transition:
                 transform 0.22s ease,
@@ -367,7 +358,6 @@
             min-height: 248px;
             display: flex;
             flex-direction: column;
-            animation: cardEnter 0.45s ease both;
         }
 
         .cajon-card:nth-child(1) { animation-delay: 0.02s; }
@@ -399,16 +389,16 @@
         }
 
         .cajon-card:hover::after {
-            transform: scale(1.25);
+            
             opacity: 0.18;
         }
 
         .cajon-card.disponible {
-            border-color: rgba(16, 185, 129, 0.28);
+            border-color: rgba(23,137,92, 0.28);
         }
 
         .cajon-card.disponible::before {
-            background: linear-gradient(90deg, var(--success), #34d399);
+            background: linear-gradient(90deg, var(--success), var(--brand-500));
         }
 
         .cajon-card.disponible::after {
@@ -416,11 +406,11 @@
         }
 
         .cajon-card.ocupado {
-            border-color: rgba(239, 68, 68, 0.25);
+            border-color: rgba(192,67,44, 0.25);
         }
 
         .cajon-card.ocupado::before {
-            background: linear-gradient(90deg, var(--danger), #f87171);
+            background: linear-gradient(90deg, var(--danger), var(--danger));
         }
 
         .cajon-card.ocupado::after {
@@ -428,12 +418,12 @@
         }
 
         .cajon-card.mio {
-            border-color: rgba(59, 130, 246, 0.34);
-            background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+            border-color: rgba(23,137,92, 0.34);
+            background: linear-gradient(135deg, #ffffff 0%, var(--info-bg) 100%);
         }
 
         .cajon-card.mio::before {
-            background: linear-gradient(90deg, var(--info), #60a5fa);
+            background: linear-gradient(90deg, var(--info), var(--brand-500));
         }
 
         .cajon-card.mio::after {
@@ -441,12 +431,11 @@
         }
 
         .cajon-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.13);
+            
+            box-shadow: 0 16px 34px rgba(20,32,26, 0.13);
         }
 
         .cajon-card.updating {
-            animation: pulseCard 0.6s ease;
         }
 
         .cajon-top {
@@ -472,7 +461,7 @@
         }
 
         .cajon-card:hover .cajon-icon {
-            transform: scale(1.06) rotate(-3deg);
+            
         }
 
         .cajon-icon i {
@@ -481,17 +470,17 @@
         }
 
         .cajon-card.disponible .cajon-icon {
-            background: rgba(16, 185, 129, 0.12);
+            background: rgba(23,137,92, 0.12);
             color: var(--success-dark);
         }
 
         .cajon-card.ocupado .cajon-icon {
-            background: rgba(239, 68, 68, 0.12);
+            background: rgba(192,67,44, 0.12);
             color: var(--danger-dark);
         }
 
         .cajon-card.mio .cajon-icon {
-            background: rgba(59, 130, 246, 0.13);
+            background: rgba(23,137,92, 0.13);
             color: var(--info-dark);
         }
 
@@ -512,18 +501,18 @@
         }
 
         .cajon-estado.disponible {
-            background: rgba(16, 185, 129, 0.13);
-            color: #047857;
+            background: rgba(23,137,92, 0.13);
+            color: var(--brand-600);
         }
 
         .cajon-estado.ocupado {
-            background: rgba(239, 68, 68, 0.13);
-            color: #b91c1c;
+            background: rgba(192,67,44, 0.13);
+            color: var(--danger);
         }
 
         .cajon-estado.mio {
-            background: rgba(59, 130, 246, 0.14);
-            color: #1d4ed8;
+            background: rgba(23,137,92, 0.14);
+            color: var(--info);
         }
 
         .cajon-body {
@@ -564,8 +553,8 @@
         }
 
         .cajon-card.mio .cajon-usuario {
-            background: rgba(59, 130, 246, 0.08);
-            border-color: rgba(59, 130, 246, 0.16);
+            background: rgba(23,137,92, 0.08);
+            border-color: rgba(23,137,92, 0.16);
         }
 
         .cajon-usuario-label {
@@ -618,8 +607,8 @@
         }
 
         .btn-ocupar:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 22px rgba(239, 68, 68, 0.32);
+            
+            box-shadow: 0 8px 22px rgba(192,67,44, 0.32);
         }
 
         .btn-liberar {
@@ -628,12 +617,12 @@
         }
 
         .btn-liberar:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 22px rgba(16, 185, 129, 0.32);
+            
+            box-shadow: 0 8px 22px rgba(23,137,92, 0.32);
         }
 
         .btn-accion:active {
-            transform: scale(0.98);
+            
         }
 
         .btn-accion:disabled {
@@ -650,9 +639,8 @@
         }
 
         .loading-shimmer {
-            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background: linear-gradient(90deg, var(--crema-100) 25%, var(--arena) 50%, var(--crema-100) 75%);
             background-size: 200% 100%;
-            animation: shimmer 1.4s infinite;
             border-radius: 22px;
             height: 248px;
         }
@@ -663,8 +651,7 @@
             color: var(--text-soft);
             background: white;
             border-radius: 22px;
-            border: 1px dashed #cbd5e1;
-            animation: fadeUp 0.45s ease both;
+            border: 1px dashed var(--arena-2);
         }
 
         .empty-state i {
@@ -675,7 +662,7 @@
 
         .empty-state h3 {
             margin: 0 0 8px;
-            color: #475569;
+            color: var(--ink-2);
             font-size: 1.15rem;
             font-weight: 900;
         }
@@ -685,100 +672,23 @@
             color: var(--text-soft);
         }
 
-        @keyframes fadeSlideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-14px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        
 
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(14px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        
 
-        @keyframes scaleFade {
-            from {
-                opacity: 0;
-                transform: scale(0.96);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
+        
 
-        @keyframes cardEnter {
-            from {
-                opacity: 0;
-                transform: translateY(16px) scale(0.98);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
+        
 
-        @keyframes shimmer {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
-        }
+        
 
-        @keyframes pulseDot {
-            0% {
-                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
-            }
-        }
+        
 
-        @keyframes pulseCard {
-            0% {
-                transform: scale(1);
-            }
-            45% {
-                transform: scale(1.015);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
+        
 
-        @keyframes softFloat {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-4px);
-            }
-        }
+        
 
-        @keyframes rotateSoft {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        
 
         @media (max-width: 768px) {
             .estacionamiento-page {
@@ -1490,7 +1400,7 @@
         function actualizarDisponibilidad(silencioso = false) {
             actualizandoSilencioso = silencioso;
 
-            $.get('{{ route("usuario.estacionamiento.disponibilidad") }}', function(response) {
+            $.ajax({ url: '{{ route("usuario.estacionamiento.disponibilidad") }}', global: !silencioso, success: function(response) {
                 if (response.success) {
                     esSuperAdmin = response.es_super_admin === true;
                     datosCajones = response.estacionamientos || [];
@@ -1498,7 +1408,7 @@
                     renderizarCajones(datosCajones);
                     actualizarHoraConsulta();
                 }
-            });
+            } });
         }
 
         function escapeHtml(text) {

@@ -11,7 +11,7 @@ class AsambleaPunto extends Model
     protected $table = 'asamblea_puntos';
 
     protected $fillable = [
-        'asamblea_id', 'orden', 'titulo', 'descripcion', 'tipo', 'estado',
+        'asamblea_id', 'orden', 'titulo', 'descripcion', 'tipo', 'estado', 'resolucion',
     ];
 
     public function asamblea(): BelongsTo

@@ -10,7 +10,7 @@ class AsambleaVoto extends Model
     protected $table = 'asamblea_votos';
 
     protected $fillable = [
-        'asamblea_id', 'punto_id', 'casa', 'valor', 'opcion_id', 'posicion', 'emitido_por',
+        'asamblea_id', 'punto_id', 'casa', 'valor', 'opcion_id', 'posicion', 'emitido_por', 'origen',
     ];
 
     public function punto(): BelongsTo

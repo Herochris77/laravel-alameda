@@ -1,0 +1,1 @@
+@include('errors.layout', ['titulo' => 'Algo salió mal de nuestro lado', 'mensaje' => 'No fue tu culpa. Intenta de nuevo en unos minutos; si sigue pasando, avisa a la mesa directiva.', 'icono' => 'wrench', 'codigo' => '500', 'destino' => url('/inicio')])

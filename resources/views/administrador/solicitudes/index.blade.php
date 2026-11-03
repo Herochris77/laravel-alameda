@@ -221,21 +221,21 @@
 
     <style>
         :root {
-            --soli-primary: #3b82f6;
-            --soli-primary-dark: #2563eb;
-            --soli-secondary: #667eea;
-            --soli-success: #10b981;
-            --soli-success-dark: #059669;
-            --soli-danger: #ef4444;
-            --soli-danger-dark: #dc2626;
-            --soli-warning: #f59e0b;
-            --soli-info: #3b82f6;
-            --soli-text-main: #0f172a;
-            --soli-text-muted: #64748b;
-            --soli-text-soft: #94a3b8;
-            --soli-border: #e2e8f0;
+            --soli-primary: var(--brand-500);
+            --soli-primary-dark: var(--brand-600);
+            --soli-secondary: var(--brand-600);
+            --soli-success: var(--brand-500);
+            --soli-success-dark: var(--brand-600);
+            --soli-danger: var(--danger);
+            --soli-danger-dark: var(--danger);
+            --soli-warning: var(--oro-700);
+            --soli-info: var(--brand-500);
+            --soli-text-main: var(--ink);
+            --soli-text-muted: var(--ink-3);
+            --soli-text-soft: var(--ink-4);
+            --soli-border: var(--arena);
             --soli-surface: #ffffff;
-            --soli-soft-bg: #f8fafc;
+            --soli-soft-bg: var(--crema-50);
         }
 
         .solicitudes-admin-page {
@@ -252,7 +252,7 @@
             padding: 26px;
             color: white;
             margin-bottom: 22px;
-            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.18);
+            box-shadow: 0 12px 30px rgba(11,107,69, 0.18);
             overflow: hidden;
         }
 
@@ -328,14 +328,14 @@
             background: var(--soli-surface);
             border: 1px solid var(--soli-border);
             border-radius: 22px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
             overflow: hidden;
         }
 
         .solicitud-card-header {
             padding: 18px 20px;
-            border-bottom: 1px solid #f1f5f9;
-            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border-bottom: 1px solid var(--crema-100);
+            background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
         }
 
         .solicitud-card-title-wrap {
@@ -355,7 +355,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 8px 18px rgba(59, 130, 246, 0.24);
+            box-shadow: 0 8px 18px rgba(23,137,92, 0.24);
         }
 
         .solicitud-card-icon.secondary {
@@ -388,7 +388,7 @@
             grid-template-columns: minmax(0, 1fr) minmax(170px, 210px) minmax(170px, 210px) auto;
             gap: 14px;
             align-items: end;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--crema-100);
         }
 
         .filter-field {
@@ -414,8 +414,8 @@
         }
 
         .solicitud-input:focus {
-            border-color: rgba(59, 130, 246, 0.65) !important;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12) !important;
+            border-color: rgba(23,137,92, 0.65) !important;
+            box-shadow: 0 0 0 4px rgba(23,137,92, 0.12) !important;
             outline: none;
             background: white;
         }
@@ -455,7 +455,7 @@
             align-items: center;
             gap: 12px;
             background: var(--soli-soft-bg);
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--crema-100);
             border-radius: 16px;
             padding: 12px 14px;
             min-width: 165px;
@@ -465,7 +465,7 @@
             width: 42px;
             height: 42px;
             border-radius: 14px;
-            background: #dbeafe;
+            background: var(--info-bg);
             color: var(--soli-primary-dark);
             display: flex;
             align-items: center;
@@ -474,17 +474,17 @@
         }
 
         .summary-icon.warning {
-            background: #fef3c7;
-            color: #b45309;
+            background: var(--warn-bg);
+            color: var(--warn);
         }
 
         .summary-icon.success {
-            background: #d1fae5;
+            background: var(--ok-bg);
             color: var(--soli-success-dark);
         }
 
         .summary-icon.danger {
-            background: #fee2e2;
+            background: var(--danger-bg);
             color: var(--soli-danger-dark);
         }
 
@@ -526,7 +526,7 @@
             border: 1px solid var(--soli-border);
             border-radius: 18px;
             background: white;
-            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 6px 18px rgba(20,32,26, 0.05);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -534,14 +534,14 @@
         }
 
         .solicitud-item-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(59, 130, 246, 0.35);
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            
+            border-color: rgba(23,137,92, 0.35);
+            box-shadow: 0 10px 24px rgba(20,32,26, 0.08);
         }
 
         .solicitud-item-header {
             padding: 16px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--crema-100);
             display: flex;
             align-items: flex-start;
             gap: 12px;
@@ -551,7 +551,7 @@
             width: 46px;
             height: 46px;
             border-radius: 14px;
-            background: #dbeafe;
+            background: var(--info-bg);
             color: var(--soli-primary-dark);
             display: flex;
             align-items: center;
@@ -560,23 +560,23 @@
         }
 
         .solicitud-item-icon.pendiente {
-            background: #fef3c7;
-            color: #b45309;
+            background: var(--warn-bg);
+            color: var(--warn);
         }
 
         .solicitud-item-icon.aprobado {
-            background: #d1fae5;
+            background: var(--ok-bg);
             color: var(--soli-success-dark);
         }
 
         .solicitud-item-icon.rechazado {
-            background: #fee2e2;
+            background: var(--danger-bg);
             color: var(--soli-danger-dark);
         }
 
         .solicitud-item-icon.eliminada {
-            background: #e5e7eb;
-            color: #4b5563;
+            background: var(--arena);
+            color: var(--ink-2);
         }
 
         .solicitud-item-icon i {
@@ -624,23 +624,23 @@
         }
 
         .solicitud-badge.pendiente {
-            background: #fef3c7;
-            color: #92400e;
+            background: var(--warn-bg);
+            color: var(--warn);
         }
 
         .solicitud-badge.aprobado {
-            background: #d1fae5;
-            color: #065f46;
+            background: var(--ok-bg);
+            color: var(--brand-700);
         }
 
         .solicitud-badge.rechazado {
-            background: #fee2e2;
-            color: #991b1b;
+            background: var(--danger-bg);
+            color: var(--danger);
         }
 
         .solicitud-badge.eliminada {
-            background: #e5e7eb;
-            color: #374151;
+            background: var(--arena);
+            color: var(--ink);
         }
 
         .solicitud-item-body {
@@ -673,8 +673,8 @@
 
         .solicitud-item-footer {
             padding: 14px 16px 16px;
-            border-top: 1px solid #f1f5f9;
-            background: #fbfdff;
+            border-top: 1px solid var(--crema-100);
+            background: var(--crema-50);
         }
 
         .solicitud-actions {
@@ -714,14 +714,14 @@
 
         .solicitud-actions .btn-ver-solicitud,
         .solicitud-actions .btn-ver-detalle {
-            background: #eff6ff !important;
-            color: #1d4ed8 !important;
-            border: 1px solid #bfdbfe !important;
+            background: var(--info-bg) !important;
+            color: var(--info) !important;
+            border: 1px solid var(--info-bg) !important;
         }
 
         .solicitud-actions .btn-ver-solicitud:hover,
         .solicitud-actions .btn-ver-detalle:hover {
-            background: #dbeafe !important;
+            background: var(--info-bg) !important;
         }
 
         .solicitudes-pagination {
@@ -746,16 +746,16 @@
         }
 
         .pagination-btn:hover {
-            background: #eff6ff;
+            background: var(--info-bg);
             color: var(--soli-primary-dark);
-            border-color: rgba(59, 130, 246, 0.35);
+            border-color: rgba(23,137,92, 0.35);
         }
 
         .pagination-btn.active {
             background: linear-gradient(135deg, var(--soli-primary) 0%, var(--soli-primary-dark) 100%);
             color: #ffffff;
             border-color: transparent;
-            box-shadow: 0 8px 18px rgba(59, 130, 246, 0.22);
+            box-shadow: 0 8px 18px rgba(23,137,92, 0.22);
         }
 
         .pagination-btn:disabled {
@@ -783,7 +783,7 @@
             height: 78px;
             border-radius: 24px;
             margin: 0 auto 18px;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(37, 99, 235, 0.16));
+            background: linear-gradient(135deg, rgba(23,137,92, 0.12), rgba(11,107,69, 0.16));
             color: var(--soli-primary-dark);
             display: flex;
             align-items: center;
@@ -791,7 +791,7 @@
         }
 
         .empty-solicitudes-icon.error {
-            background: #fee2e2;
+            background: var(--danger-bg);
             color: var(--soli-danger);
         }
 
@@ -802,7 +802,7 @@
 
         .empty-solicitudes-card h3 {
             margin: 0 0 8px 0;
-            color: #475569;
+            color: var(--ink-2);
             font-weight: 900;
         }
 
@@ -840,7 +840,7 @@
         .solicitud-modal-item {
             padding: 12px 14px;
             background: var(--soli-soft-bg);
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--crema-100);
             border-radius: 14px;
             overflow-wrap: anywhere;
         }
@@ -874,7 +874,7 @@
 
         .solicitud-modal-mensaje {
             background: var(--soli-soft-bg);
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--crema-100);
             padding: 18px;
             border-radius: 14px;
             line-height: 1.6;
@@ -891,7 +891,7 @@
             flex-wrap: wrap;
             padding: 16px 20px !important;
             background: var(--soli-soft-bg) !important;
-            border-top: 1px solid #f1f5f9 !important;
+            border-top: 1px solid var(--crema-100) !important;
         }
 
         .solicitud-modal-actions .btn {
@@ -1014,7 +1014,7 @@
                 position: sticky;
                 bottom: 0;
                 background: #ffffff;
-                box-shadow: 0 -8px 18px rgba(15, 23, 42, 0.04);
+                box-shadow: 0 -8px 18px rgba(20,32,26, 0.04);
             }
 
             .solicitud-actions .btn,
@@ -1667,9 +1667,10 @@
         }
 
         function extraerTextoSolicitud(valor) {
-            const temporal = document.createElement('div');
-            temporal.innerHTML = valor || '';
-            return temporal.textContent || temporal.innerText || '';
+            // DOMParser crea un documento INERTE: no carga imagenes ni ejecuta
+        // onerror/onload. Un div.innerHTML sobre un elemento suelto SI los ejecuta,
+        // y por eso un nombre como <img src=x onerror=...> corria codigo aqui.
+        return new DOMParser().parseFromString(String(valor || ''), 'text/html').body.textContent || '';
         }
 
         function escapeHtmlSolicitud(text) {

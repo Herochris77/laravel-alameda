@@ -18,6 +18,13 @@ class ContactoController extends Controller
     public function crearContacto(Request $request)
     {
         try {
+            $request->validate([
+                'nombre_contacto' => 'required|string|max:255',
+                'numero_contacto' => 'required|string|max:50',
+                'tipo_contacto' => 'required|string|max:100',
+                'pagina_web' => 'nullable|string|max:255',
+            ]);
+
             Contacto::create([
                 'nombre_contacto' => $request->nombre_contacto,
                 'numero_contacto' => $request->numero_contacto,
@@ -31,6 +38,8 @@ class ContactoController extends Controller
                 'header' => 'Contacto guardado ✅',
                 'message' => 'Tu contacto se guardó correctamente',
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Ocurrió un error al generar un contacto: '.$e);
 
@@ -67,7 +76,7 @@ class ContactoController extends Controller
                                 </div>';
                     }
 
-                    return ' <div class="ui center aligned"><i data-content="Creado por: '.$c->user->nombre.'" class="exclamation circle icon"></i></div>';
+                    return ' <div class="ui center aligned"><i data-content="Creado por: '.e($c->user->nombre ?? '').'" class="exclamation circle icon"></i></div>';
                 })
                 ->rawColumns(['acciones'])
                 ->make(true);

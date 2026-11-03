@@ -97,13 +97,13 @@ class PerfilController extends Controller
         $request->validate(
             [
                 'actual' => 'required',
-                'nueva' => 'required|min:6',
+                'nueva' => 'required|min:8',
                 'confirmacion' => 'required|same:nueva',
             ],
             [
                 'actual.required' => 'Debes ingresar tu contraseña actual',
                 'nueva.required' => 'La nueva contraseña es obligatoria',
-                'nueva.min' => 'La nueva contraseña debe tener al menos 6 caracteres',
+                'nueva.min' => 'La nueva contraseña debe tener al menos 8 caracteres',
                 'confirmacion.required' => 'Debes confirmar la nueva contraseña',
                 'confirmacion.same' => 'La confirmación no coincide con la nueva contraseña',
             ]
@@ -280,6 +280,12 @@ class PerfilController extends Controller
                     ? 'Tu nombre, casa, teléfono y fotografía vuelven a ser visibles para los demás vecinos.'
                     : 'Los demás vecinos ya no pueden ver tus datos en el directorio. El cambio es inmediato.',
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'header' => '⚠️ Dato no válido',
+                'message' => implode(' ', $e->validator->errors()->all()),
+            ], 422);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Error al cambiar visibilidad del directorio: '.$e->getMessage());
 

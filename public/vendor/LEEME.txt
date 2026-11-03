@@ -1,0 +1,16 @@
+Librerias de terceros, alojadas aqui para no depender de CDN externos.
+
+Origen: registro oficial de npm, version exacta indicada en cada ruta. Cada
+paquete se verifico contra el hash sha512 que publica el registro antes de
+extraerse. MANIFEST.sha256 guarda la huella de cada archivo de esta carpeta:
+
+    sha256sum -c MANIFEST.sha256
+
+Si un archivo cambia sin que se haya actualizado una libreria a proposito,
+algo anda mal.
+
+Para actualizar una libreria: cambia la version, vuelve a bajar el paquete,
+verifica su hash y regenera el manifiesto. No edites estos archivos a mano.
+
+Los botones de exportar de DataTables (Buttons, JSZip, pdfmake) NO estan
+incluidos a proposito: ninguna pantalla los usa y pesaban ~1 MB comprimido.

@@ -12,7 +12,7 @@ class Asamblea extends Model
 
     protected $fillable = [
         'titulo', 'descripcion', 'fecha', 'hora', 'lugar', 'minuta',
-        'quorum_pct', 'control_asistencia', 'estado', 'created_by',
+        'quorum_pct', 'control_asistencia', 'estado', 'created_by', 'modalidad',
     ];
 
     protected $casts = [

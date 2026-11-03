@@ -1,0 +1,1 @@
+@include('errors.layout', ['titulo' => 'Vas muy rápido', 'mensaje' => 'Hiciste muchos intentos seguidos. Espera un minuto y vuelve a intentarlo.', 'icono' => 'hourglass half', 'codigo' => '429', 'destino' => url('/inicio')])

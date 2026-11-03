@@ -1,0 +1,1 @@
+@include('errors.layout', ['titulo' => 'Tu sesión se venció', 'mensaje' => 'Pasó mucho tiempo sin actividad y por seguridad cerramos la página. Lo ya guardado está seguro; vuelve a entrar e inténtalo de nuevo.', 'icono' => 'clock outline', 'boton' => 'Volver a empezar', 'codigo' => '419', 'destino' => url('/login')])

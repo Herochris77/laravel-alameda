@@ -1,17 +1,17 @@
 <x-app-layout>
     <style>
         :root {
-            --uasm-primary: #14b8a6;
-            --uasm-primary-dark: #0f766e;
-            --uasm-success: #10b981;
-            --uasm-danger: #ef4444;
-            --uasm-warning: #f59e0b;
-            --uasm-text-main: #0f172a;
-            --uasm-text-muted: #64748b;
-            --uasm-text-soft: #94a3b8;
-            --uasm-border: #e2e8f0;
+            --uasm-primary: var(--brand-500);
+            --uasm-primary-dark: var(--brand-700);
+            --uasm-success: var(--brand-500);
+            --uasm-danger: var(--danger);
+            --uasm-warning: var(--oro-700);
+            --uasm-text-main: var(--ink);
+            --uasm-text-muted: var(--ink-3);
+            --uasm-text-soft: var(--ink-4);
+            --uasm-border: var(--arena);
             --uasm-surface: #ffffff;
-            --uasm-soft-bg: #f8fafc;
+            --uasm-soft-bg: var(--crema-50);
         }
 
         .uasm-page {
@@ -31,7 +31,7 @@
             margin-bottom: 24px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 10px 30px rgba(20,32,26, 0.08);
         }
 
         .uasm-hero::before {
@@ -76,7 +76,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 12px 28px rgba(20,32,26, 0.12);
         }
 
         .uasm-hero-icon i {
@@ -118,7 +118,7 @@
             background: var(--uasm-surface);
             border: 1px solid var(--uasm-border);
             border-radius: 22px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
             padding: 20px 22px;
             margin-bottom: 16px;
         }
@@ -170,9 +170,9 @@
             white-space: nowrap;
         }
 
-        .b-convocada { background: #fef3c7; color: #92400e; }
-        .b-en_curso { background: #dcfce7; color: #166534; }
-        .b-cerrada { background: #e2e8f0; color: #475569; }
+        .b-convocada { background: var(--warn-bg); color: var(--warn); }
+        .b-en_curso { background: var(--ok-bg); color: var(--brand-800); }
+        .b-cerrada { background: var(--arena); color: var(--ink-2); }
 
         .uasm-hint-voto {
             font-size: 0.78rem;
@@ -224,7 +224,7 @@
         .uasm-filtro-input:focus {
             outline: none;
             border-color: var(--uasm-primary);
-            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+            box-shadow: 0 0 0 3px rgba(23,137,92, 0.15);
         }
 
         .uasm-fecha-filtro {
@@ -270,7 +270,7 @@
         }
 
         .uasm-filtro-limpia:hover {
-            background: #eef2f7;
+            background: var(--crema-100);
         }
 
         /* ---------- ENLACE ---------- */
@@ -287,7 +287,7 @@
         }
 
         .uasm-link:hover {
-            color: #0d9488;
+            color: var(--brand-600);
             text-decoration-thickness: 2px;
         }
 
@@ -319,22 +319,22 @@
         .uasm-btn.primary {
             background: linear-gradient(135deg, var(--uasm-primary) 0%, var(--uasm-primary-dark) 100%);
             color: #fff;
-            box-shadow: 0 8px 20px rgba(20, 184, 166, 0.24);
+            box-shadow: 0 8px 20px rgba(23,137,92, 0.24);
         }
 
         .uasm-btn.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(20, 184, 166, 0.30);
+            
+            box-shadow: 0 12px 28px rgba(23,137,92, 0.30);
         }
 
         .uasm-btn.ghost {
             background: var(--uasm-soft-bg);
             color: var(--uasm-text-main);
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--crema-100);
         }
 
         .uasm-btn.ghost:hover {
-            background: #eef2f7;
+            background: var(--crema-100);
         }
 
         .uasm-btn.sm {
@@ -350,7 +350,7 @@
         /* ---------- CAJAS DE INFORMACIÓN ---------- */
         .cred-box {
             background: var(--uasm-soft-bg);
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--crema-100);
             border-radius: 14px;
             padding: 14px 16px;
             margin: 12px 0;
@@ -378,15 +378,15 @@
             margin: 0 !important;
         }
 
-        .cred-fila.ok { color: #166534; }
-        .cred-fila.wait { color: #92400e; }
+        .cred-fila.ok { color: var(--brand-800); }
+        .cred-fila.wait { color: var(--warn); }
         .cred-fila.info { color: var(--uasm-text-muted); }
         .cred-fila.fuerte { font-weight: 700; color: var(--uasm-text-main); }
 
         /* ---------- QUÓRUM ---------- */
         .quorum-bar {
             height: 8px;
-            background: #e9eef5;
+            background: var(--crema-100);
             border-radius: 20px;
             overflow: hidden;
             margin-top: 8px;
@@ -394,7 +394,7 @@
 
         .quorum-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--uasm-success) 0%, #34d399 100%);
+            background: linear-gradient(90deg, var(--uasm-success) 0%, var(--brand-500) 100%);
             border-radius: 20px;
             transition: width 0.3s ease;
         }
@@ -436,13 +436,13 @@
         }
 
         .voto-opt:hover {
-            border-color: #99f6e4;
-            transform: translateY(-1px);
+            border-color: var(--brand-100);
+            
         }
 
         .voto-opt.sel {
             border-color: var(--uasm-primary);
-            background: rgba(20, 184, 166, 0.08);
+            background: rgba(23,137,92, 0.08);
         }
 
         .voto-opt i {
@@ -478,7 +478,7 @@
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: rgba(20, 184, 166, 0.12);
+            background: rgba(23,137,92, 0.12);
             color: var(--uasm-primary-dark);
             display: flex;
             align-items: center;
@@ -513,7 +513,7 @@
 
         .res-bar {
             height: 8px;
-            background: #f1f5f9;
+            background: var(--crema-100);
             border-radius: 20px;
             overflow: hidden;
             margin-top: 4px;
@@ -582,7 +582,7 @@
             width: 68px;
             height: 68px;
             border-radius: 50%;
-            background: #f1f5f9;
+            background: var(--crema-100);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -628,7 +628,7 @@
 
         .delegar-aviso {
             font-size: 0.78rem;
-            color: #92400e;
+            color: var(--warn);
             margin-top: 10px;
             display: flex;
             align-items: center;
@@ -676,7 +676,7 @@
         }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    {!! \App\Support\Vendor::js('sortable.js') !!}
 
     <div class="uasm-page">
         <!-- HÉROE -->
@@ -878,6 +878,13 @@
             const q = a.quorum;
             html += `<div class="cred-box"><div class="cred-row"><span>Quórum</span><span>${q.presentes}/${q.total} (${q.pct}%)</span></div><div class="quorum-bar"><div class="quorum-fill" style="width:${Math.min(q.pct,100)}%;"></div></div></div>`;
 
+            // Cómo se vota en esta asamblea
+            if (a.modalidad === 'presencial') {
+                html += `<div class="cred-box"><div class="cred-fila info"><i class="users icon"></i> <span><strong>Asamblea presencial.</strong> Los votos se emiten en la sala y la mesa directiva los registra por cada casa. No necesitas votar aquí.</span></div></div>`;
+            } else if (a.modalidad === 'mixta') {
+                html += `<div class="cred-box"><div class="cred-fila info"><i class="info circle icon"></i> <span><strong>Asamblea mixta.</strong> Puedes votar desde aquí o en la sala; si votas en la sala, la mesa directiva lo registra.</span></div></div>`;
+            }
+
             // Credencial de voto
             html += '<div class="cred-box">';
             if (a.mis_casas.length) {
@@ -917,10 +924,25 @@
 
         function renderPunto(a, p, i) {
             const puedeVotar = a.estado === 'en_curso' && p.estado !== 'cerrado' && a.mis_casas.length > 0
+                && a.modalidad !== 'presencial'
                 && (!a.control_asistencia || a.presente_mi_casa);
             let html = `<div class="uasm-card"><div class="titulo">${i + 1}. ${esc(p.titulo)}</div>`;
             if (p.descripcion) html += `<div class="uasm-desc" style="margin:4px 0 0;">${esc(p.descripcion)}</div>`;
 
+            // Punto informativo: no se vota; se muestra el acuerdo cuando la mesa lo registra.
+            if (p.tipo === 'informativo') {
+                html += p.resolucion
+                    ? `<div class="voto-registrado" style="white-space:pre-wrap;"><i class="handshake outline icon"></i> <strong>Acuerdo:</strong> ${esc(p.resolucion)}</div>`
+                    : `<div class="motivo-bloqueo"><i class="info circle icon"></i> Punto informativo: no se somete a votación.</div>`;
+                return html + '</div>';
+            }
+
+            // Voto que la mesa registró por mi casa en la sala.
+            const votoMesa = Object.values(p.mis_votos || {}).some(v => v && v[0] && v[0].origen === 'mesa');
+            if (votoMesa && a.estado !== 'cerrada') {
+                html += `<div class="voto-registrado"><i class="check icon"></i> La mesa directiva registró el voto de tu casa en la sala.</div>`;
+                return html + '</div>';
+            }
             if (a.estado === 'cerrada' && p.resultados) {
                 html += renderResultado(p.resultados);
                 const mv = miVotoDe(p);
@@ -932,6 +954,7 @@
                 let motivo = 'La votación no está disponible.';
                 let icono = 'info circle';
                 if (a.estado === 'convocada') { motivo = 'La asamblea aún no inicia.'; icono = 'clock'; }
+                else if (a.modalidad === 'presencial') { motivo = 'Este punto se vota en la sala; la mesa directiva registra el voto de cada casa.'; icono = 'users'; }
                 else if (!a.mis_casas.length) { motivo = 'No tienes voto en esta asamblea.'; icono = 'ban'; }
                 else if (a.control_asistencia && !a.presente_mi_casa) { motivo = 'Debes ser registrado como presente para votar.'; icono = 'user clock'; }
                 else if (p.estado === 'cerrado') { motivo = 'Este punto está cerrado.'; icono = 'lock'; }
@@ -967,16 +990,16 @@
             if (r.tipo === 'si_no') {
                 const t = r.total_casas || 0;
                 const row = (l, n, c) => `<div class="res-row"><div class="res-top"><span>${l}</span><span>${n}</span></div><div class="res-bar"><div class="res-fill" style="width:${t?(n/t*100):0}%;background:${c};"></div></div></div>`;
-                return `<div style="margin-top:8px;">${row('A favor', r.conteo.a_favor, '#10b981')}${row('En contra', r.conteo.en_contra, '#ef4444')}${row('Abstención', r.conteo.abstencion, '#94a3b8')}<div class="res-foot"><span class="uasm-badge ${r.aprobado?'b-en_curso':'b-cerrada'}">${r.aprobado?'Aprobado':'No aprobado'}</span></div></div>`;
+                return `<div style="margin-top:8px;">${row('A favor', r.conteo.a_favor, '#17895c')}${row('En contra', r.conteo.en_contra, '#c0432c')}${row('Abstención', r.conteo.abstencion, '#6f6a58')}<div class="res-foot"><span class="uasm-badge ${r.aprobado?'b-en_curso':'b-cerrada'}">${r.aprobado?'Aprobado':'No aprobado'}</span></div></div>`;
             }
             if (r.tipo === 'opciones') {
                 let h = '<div style="margin-top:8px;">';
-                r.resultados.forEach(o => h += `<div class="res-row"><div class="res-top"><span>${esc(o.opcion)}</span><span>${o.votos} (${o.pct}%)</span></div><div class="res-bar"><div class="res-fill" style="width:${o.pct}%;background:#0d9488;"></div></div></div>`);
+                r.resultados.forEach(o => h += `<div class="res-row"><div class="res-top"><span>${esc(o.opcion)}</span><span>${o.votos} (${o.pct}%)</span></div><div class="res-bar"><div class="res-fill" style="width:${o.pct}%;background:#0b6b45;"></div></div></div>`);
                 return h + `<div class="res-foot">Ganador: <strong>${esc(r.ganador||'—')}</strong></div></div>`;
             }
             if (r.tipo === 'ordenamiento') {
                 let h = '<div style="margin-top:8px;">';
-                r.ranking.forEach((f, i) => h += `<div class="res-row"><div class="res-top"><span>${i+1}. ${esc(f.opcion)}</span><span>${f.puntos} pts</span></div><div class="res-bar"><div class="res-fill" style="width:${f.pct}%;background:#0d9488;"></div></div></div>`);
+                r.ranking.forEach((f, i) => h += `<div class="res-row"><div class="res-top"><span>${i+1}. ${esc(f.opcion)}</span><span>${f.puntos} pts</span></div><div class="res-bar"><div class="res-fill" style="width:${f.pct}%;background:#0b6b45;"></div></div></div>`);
                 return h + '</div>';
             }
             return '';
@@ -1043,11 +1066,11 @@
         function iniciarPoll(id) {
             detenerPoll();
             poll = setInterval(function () {
-                $.get('{{ url("usuario/asamblea/detalle") }}/' + id, function (r) {
+                $.ajax({ url: '{{ url("usuario/asamblea/detalle") }}/' + id, global: false, success: function (r) {
                     if (!r.success) return;
                     detalleActual = r.asamblea; render(r.asamblea); initSortables();
                     if (r.asamblea.estado !== 'en_curso') detenerPoll();
-                });
+                } });
             }, 12000);
         }
         function detenerPoll() { if (poll) { clearInterval(poll); poll = null; } }

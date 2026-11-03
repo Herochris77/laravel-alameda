@@ -29,6 +29,13 @@ class ComunicadoController extends Controller
     public function crearComunicado(Request $request)
     {
         try {
+            // Sin esto, un envío incompleto llegaba a la base de datos y terminaba en un error genérico.
+            $request->validate([
+                'titulo' => 'required|string|max:255',
+                'contenido' => 'required|string',
+                'fecha_vencimiento' => 'required|date',
+            ]);
+
             Comunicado::create([
                 'titulo' => $request->titulo,
                 'comunicado' => $request->contenido,
@@ -38,7 +45,8 @@ class ComunicadoController extends Controller
 
             $subjectmail = '📢 Comunicado publicado';
             $titulomail = 'Nuevo comunicado disponible';
-            $mensajemail = $request->contenido;
+            // El comunicado es texto plano: se escapa y se conservan los saltos de linea.
+            $mensajemail = nl2br(e($request->contenido));
 
             $usuarios = User::get();
             foreach ($usuarios as $usuario) {
@@ -46,7 +54,7 @@ class ComunicadoController extends Controller
                 // Notificación in-app Web
                 $usuario->notify(new NotificacionGenerica(
                     'Nuevo Comunicado',
-                    '<b>Título: </b>'.$request->titulo.'',
+                    '<b>Título: </b>'.e($request->titulo),
                     'comunicado',
                     'usuario/comunicados',
                     null,
@@ -61,6 +69,8 @@ class ComunicadoController extends Controller
                 'header' => 'Comunicado publicado ✅',
                 'message' => 'Tu comunicado se publicó correctamente',
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;   // 422 con el detalle: la pantalla muestra qué falta
         } catch (\Exception $e) {
             Log::error('Ocurrió un error al generar un comunicado: '.$e);
 

@@ -1,26 +1,25 @@
 <x-app-layout>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {!! \App\Support\Vendor::js('chart.js') !!}
 
     <style>
 
         .tp-page {
-            --primary: #0d9488;
-            --primary-dark: #0f766e;
-            --primary-light: #14b8a6;
+            --primary: var(--brand-600);
+            --primary-dark: var(--brand-700);
+            --primary-light: var(--brand-500);
 
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
+            --success: var(--brand-500);
+            --warning: var(--oro-700);
 
-            --text: #0f172a;
-            --muted: #64748b;
-            --soft: #94a3b8;
+            --text: var(--ink);
+            --muted: var(--ink-3);
+            --soft: var(--ink-4);
 
-            --border: #e2e8f0;
+            --border: var(--arena);
 
             --surface: #ffffff;
-            --bg: #f8fafc;
+            --bg: var(--crema-50);
 
             padding-bottom: 30px;
         }
@@ -61,7 +60,7 @@
             margin-bottom: 20px;
 
             box-shadow:
-                0 12px 30px rgba(13,148,136,.18);
+                0 12px 30px rgba(11,107,69,.18);
         }
 
         .tp-hero-top {
@@ -235,7 +234,7 @@
             padding: 12px 14px;
 
             box-shadow:
-                0 4px 12px rgba(15,23,42,.04);
+                0 4px 12px rgba(20,32,26,.04);
 
             display: flex;
 
@@ -269,7 +268,7 @@
 
         .ic-green {
             background:
-                rgba(16,185,129,.12);
+                rgba(23,137,92,.12);
 
             color:
                 var(--success);
@@ -277,7 +276,7 @@
 
         .ic-red {
             background:
-                rgba(239,68,68,.11);
+                rgba(192,67,44,.11);
 
             color:
                 var(--danger);
@@ -285,7 +284,7 @@
 
         .ic-teal {
             background:
-                rgba(13,148,136,.11);
+                rgba(11,107,69,.11);
 
             color:
                 var(--primary);
@@ -293,10 +292,10 @@
 
         .ic-blue {
             background:
-                rgba(59,130,246,.12);
+                rgba(23,137,92,.12);
 
             color:
-                #2563eb;
+                var(--info);
         }
 
         .tp-kpi-content {
@@ -358,15 +357,15 @@
             padding: 13px 15px;
 
             border:
-                1px solid #ccfbf1;
+                1px solid var(--brand-100);
 
             border-radius: 15px;
 
             background:
-                #f0fdfa;
+                var(--brand-50);
 
             color:
-                #475569;
+                var(--ink-2);
         }
 
         .tp-explain-icon {
@@ -384,7 +383,7 @@
             flex-shrink: 0;
 
             background:
-                rgba(13,148,136,.12);
+                rgba(11,107,69,.12);
 
             color:
                 var(--primary);
@@ -428,7 +427,7 @@
             padding: 20px;
 
             box-shadow:
-                0 8px 22px rgba(15,23,42,.05);
+                0 8px 22px rgba(20,32,26,.05);
 
             margin-bottom: 18px;
         }
@@ -489,13 +488,13 @@
         .mes-pista {
             text-align: center;
             font-size: .78rem;
-            color: var(--tp-soft, #94a3b8);
+            color: var(--tp-soft, var(--ink-4));
             margin-top: 6px;
         }
 
         .mes-detalle {
             margin-top: 14px;
-            border: 1px solid #c7d2fe;
+            border: 1px solid var(--brand-100);
             border-radius: 14px;
             background: #f5f7ff;
             padding: 14px 16px;
@@ -513,28 +512,28 @@
             display: block;
             font-size: 1rem;
             font-weight: 700;
-            color: #3730a3;
+            color: var(--brand-800);
             text-transform: capitalize;
         }
 
-        .mes-resumen { font-size: .82rem; color: #64748b; }
+        .mes-resumen { font-size: .82rem; color: var(--ink-3); }
 
         .mes-cerrar {
             background: none;
             border: none;
-            color: #6366f1;
+            color: var(--brand-600);
             cursor: pointer;
             font-size: 1rem;
             padding: 2px 6px;
             line-height: 1;
         }
 
-        .mes-cerrar:hover { color: #3730a3; }
+        .mes-cerrar:hover { color: var(--brand-800); }
 
         .mes-aviso {
-            background: #fffbeb;
-            border: 1px solid #fcd34d;
-            color: #92400e;
+            background: var(--warn-bg);
+            border: 1px solid var(--oro-300);
+            color: var(--warn);
             border-radius: 9px;
             padding: 8px 11px;
             font-size: .8rem;
@@ -550,15 +549,15 @@
             display: flex;
             justify-content: space-between;
             font-size: .82rem;
-            color: #334155;
+            color: var(--ink);
             margin-bottom: 3px;
         }
 
-        .mes-cat-head strong { color: #0f172a; }
+        .mes-cat-head strong { color: var(--ink); }
 
         .mes-cat-barra {
             height: 8px;
-            background: #e0e7ff;
+            background: var(--brand-100);
             border-radius: 99px;
             overflow: hidden;
         }
@@ -566,13 +565,13 @@
         .mes-cat-barra span {
             display: block;
             height: 8px;
-            background: #6366f1;
+            background: var(--brand-600);
             border-radius: 99px;
         }
 
         .mes-lista {
             background: #fff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--arena);
             border-radius: 11px;
             overflow: hidden;
         }
@@ -583,7 +582,7 @@
             justify-content: space-between;
             gap: 10px;
             padding: 9px 12px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--crema-100);
             font-size: .85rem;
         }
 
@@ -591,9 +590,9 @@
 
         .mes-item-info { min-width: 0; }
 
-        .mes-item-titulo { color: #0f172a; font-weight: 600; }
+        .mes-item-titulo { color: var(--ink); font-weight: 600; }
 
-        .mes-item-meta { font-size: .76rem; color: #94a3b8; margin-top: 1px; }
+        .mes-item-meta { font-size: .76rem; color: var(--ink-4); margin-top: 1px; }
 
         .mes-item-der {
             display: flex;
@@ -605,27 +604,27 @@
         .mes-item-monto { font-weight: 700; font-variant-numeric: tabular-nums; }
 
         .mes-comprobante {
-            color: #6366f1;
+            color: var(--brand-600);
             text-decoration: none;
             font-size: 1rem;
         }
 
-        .mes-comprobante:hover { color: #3730a3; }
+        .mes-comprobante:hover { color: var(--brand-800); }
 
-        .mes-sin-archivo { color: #d97706; font-size: 1rem; }
+        .mes-sin-archivo { color: var(--oro-700); font-size: 1rem; }
 
         .mes-aprox {
             display: inline-block;
             margin-left: 5px;
             padding: 0 6px;
             border-radius: 99px;
-            background: #fef3c7;
-            color: #92400e;
+            background: var(--warn-bg);
+            color: var(--warn);
             font-size: .68rem;
             font-weight: 700;
         }
 
-        .mes-vacio { padding: 18px; text-align: center; color: #94a3b8; font-size: .85rem; }
+        .mes-vacio { padding: 18px; text-align: center; color: var(--ink-4); font-size: .85rem; }
 
         .cat-row {
             margin-bottom: 12px;
@@ -775,27 +774,26 @@
         }
 
         .casa-chip:hover {
-            transform:
-                translateY(-1px);
+            
 
             box-shadow:
-                0 4px 12px rgba(15,23,42,.07);
+                0 4px 12px rgba(20,32,26,.07);
         }
 
         .casa-chip.ok {
             border:
-                1px solid #a7f3d0;
+                1px solid var(--brand-100);
 
             background:
-                #f0fdf4;
+                var(--brand-50);
         }
 
         .casa-chip.pend {
             border:
-                1px solid #fecaca;
+                1px solid var(--danger-bg);
 
             background:
-                #fef2f2;
+                var(--danger-bg);
         }
 
         .casa-chip.ok i {
@@ -920,7 +918,7 @@
             height: 38px;
 
             border:
-                1px solid #dbe2ea;
+                1px solid var(--arena);
 
             border-radius: 10px;
 
@@ -948,10 +946,10 @@
         .expenses-field input:focus,
         .expenses-field select:focus {
             border-color:
-                rgba(13,148,136,.5);
+                rgba(11,107,69,.5);
 
             box-shadow:
-                0 0 0 3px rgba(13,148,136,.08);
+                0 0 0 3px rgba(11,107,69,.08);
         }
 
         .expenses-buttons {
@@ -1094,7 +1092,7 @@
             border-radius: 999px;
 
             background:
-                rgba(13,148,136,.08);
+                rgba(11,107,69,.08);
 
             color:
                 var(--primary-dark);
@@ -1219,7 +1217,7 @@
 
         .pagination-item:hover {
             border-color:
-                rgba(13,148,136,.4);
+                rgba(11,107,69,.4);
 
             color:
                 var(--primary);
@@ -1263,7 +1261,7 @@
             padding: 16px;
 
             background:
-                rgba(15,23,42,.48);
+                rgba(20,32,26,.48);
         }
 
         .tp-modal.show {
@@ -1782,11 +1780,11 @@
                                    border-top:1px dashed rgba(0,0,0,.12); font-size:.7rem;
                                    line-height:1.5;"
                         >
-                            <div style="display:flex; justify-content:space-between; gap:8px; color:#b45309; white-space:nowrap;">
+                            <div style="display:flex; justify-content:space-between; gap:8px; color:var(--warn); white-space:nowrap;">
                                 <span>− Adelantos</span>
                                 <strong id="k-saldo-comprometido">$0</strong>
                             </div>
-                            <div style="display:flex; justify-content:space-between; gap:8px; color:#047857; font-weight:800; white-space:nowrap;">
+                            <div style="display:flex; justify-content:space-between; gap:8px; color:var(--brand-600); font-weight:800; white-space:nowrap;">
                                 <span>Disponible</span>
                                 <strong id="k-saldo-disponible">$0</strong>
                             </div>
@@ -2884,7 +2882,7 @@
                                             ing,
 
                                         backgroundColor:
-                                            '#10b981',
+                                            '#17895c',
 
                                         borderRadius:
                                             6
@@ -2898,7 +2896,7 @@
                                             egr,
 
                                         backgroundColor:
-                                            '#ef4444',
+                                            '#c0432c',
 
                                         borderRadius:
                                             6
@@ -3010,7 +3008,7 @@
                                             const valor = ds.data[i];
                                             if (!valor) return;
 
-                                            ctx2.fillStyle = di === 0 ? '#047857' : '#b91c1c';
+                                            ctx2.fillStyle = di === 0 ? '#0b6b45' : '#8f3220';
 
                                             const texto = valor >= 1000
                                                 ? '$' + Math.round(valor / 1000) + 'k'

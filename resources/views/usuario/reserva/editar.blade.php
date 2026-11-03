@@ -163,17 +163,16 @@
 
 <style>
     :root {
-        --primary: #667eea;
-        --primary-dark: #4f46e5;
-        --secondary: #764ba2;
-        --success: #10b981;
-        --danger: #ef4444;
-        --warning: #f59e0b;
-        --text-main: #0f172a;
-        --text-muted: #64748b;
-        --border: #e2e8f0;
+        --primary: var(--brand-600);
+        --primary-dark: var(--brand-700);
+        --secondary: var(--brand-800);
+        --success: var(--brand-500);
+        --warning: var(--oro-700);
+        --text-main: var(--ink);
+        --text-muted: var(--ink-3);
+        --border: var(--arena);
         --surface: #ffffff;
-        --soft-bg: #f8fafc;
+        --soft-bg: var(--crema-50);
     }
 
     .editar-reserva-page {
@@ -218,7 +217,7 @@
         border: 1px solid var(--border);
         border-radius: 22px;
         overflow: hidden;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
     }
 
     .editar-reserva-card {
@@ -227,8 +226,8 @@
 
     .editar-reserva-card-header {
         padding: 18px 20px;
-        border-bottom: 1px solid #f1f5f9;
-        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        border-bottom: 1px solid var(--crema-100);
+        background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
     }
 
     .editar-reserva-card-title-wrap {
@@ -247,7 +246,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(102, 126, 234, 0.24);
+        box-shadow: 0 8px 18px rgba(11,107,69, 0.24);
     }
 
     .editar-reserva-card-icon i {
@@ -318,7 +317,7 @@
 
     input[type="date"]::-webkit-calendar-picker-indicator:hover,
     input[type="time"]::-webkit-calendar-picker-indicator:hover {
-        background: #f0f4ff;
+        background: var(--brand-50);
         opacity: 1;
     }
 
@@ -348,21 +347,21 @@
     }
 
     .editar-reserva-alert.alert-success {
-        background: #dcfce7;
-        color: #166534;
-        border: 1px solid #bbf7d0;
+        background: var(--ok-bg);
+        color: var(--brand-800);
+        border: 1px solid var(--brand-100);
     }
 
     .editar-reserva-alert.alert-warning {
-        background: #fef3c7;
-        color: #92400e;
-        border: 1px solid #fde68a;
+        background: var(--warn-bg);
+        color: var(--warn);
+        border: 1px solid var(--warn-bg);
     }
 
     .editar-reserva-alert.alert-error {
-        background: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fecaca;
+        background: var(--danger-bg);
+        color: var(--danger);
+        border: 1px solid var(--danger-bg);
     }
 
     .editar-reserva-helper {
@@ -370,7 +369,7 @@
         align-items: flex-start;
         gap: 9px;
         background: var(--soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         color: var(--text-muted);
         border-radius: 14px;
         padding: 12px 14px;
@@ -414,12 +413,12 @@
         width: 64px;
         height: 64px;
         border-radius: 18px;
-        background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+        background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-600) 100%);
         color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+        box-shadow: 0 8px 18px rgba(11,107,69, 0.22);
         margin-bottom: 16px;
     }
 
@@ -443,7 +442,7 @@
 
     .preview-item {
         background: var(--soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 14px;
         padding: 12px 14px;
     }
@@ -470,14 +469,14 @@
         color: var(--text-muted);
         font-size: 0.88rem;
         line-height: 1.45;
-        background: #fef3c7;
-        border: 1px solid #fde68a;
+        background: var(--warn-bg);
+        border: 1px solid var(--warn-bg);
         border-radius: 14px;
         padding: 12px 14px;
     }
 
     .preview-note i {
-        color: #92400e;
+        color: var(--warn);
         margin: 0;
         margin-top: 2px;
         flex-shrink: 0;

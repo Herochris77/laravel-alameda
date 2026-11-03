@@ -3,37 +3,37 @@
     <style>
 
         :root {
-            --pay-primary: #2563eb;
-            --pay-primary-dark: #1d4ed8;
-            --pay-secondary: #7c3aed;
+            --pay-primary: var(--brand-600);
+            --pay-primary-dark: var(--brand-700);
+            --pay-secondary: var(--brand-700);
 
-            --pay-warning: #f59e0b;
-            --pay-warning-dark: #d97706;
+            --pay-warning: var(--oro-700);
+            --pay-warning-dark: var(--oro-700);
 
-            --pay-danger: #ef4444;
-            --pay-danger-dark: #dc2626;
+            --pay-danger: var(--danger);
+            --pay-danger-dark: var(--danger);
 
-            --pay-success: #10b981;
-            --pay-success-dark: #059669;
+            --pay-success: var(--brand-500);
+            --pay-success-dark: var(--brand-600);
 
-            --pay-info: #0ea5e9;
+            --pay-info: var(--brand-500);
 
-            --pay-text: #0f172a;
-            --pay-muted: #64748b;
-            --pay-soft: #94a3b8;
+            --pay-text: var(--ink);
+            --pay-muted: var(--ink-3);
+            --pay-soft: var(--ink-4);
 
             --pay-bg: #f5f8ff;
             --pay-surface: #ffffff;
-            --pay-surface-soft: #f8fafc;
+            --pay-surface-soft: var(--crema-50);
 
             --pay-border:
-                rgba(148, 163, 184, 0.22);
+                rgba(111,106,88, 0.22);
 
             --pay-shadow-sm:
-                0 6px 20px rgba(15, 23, 42, 0.06);
+                0 6px 20px rgba(20,32,26, 0.06);
 
             --pay-shadow-md:
-                0 16px 38px rgba(15, 23, 42, 0.11);
+                0 16px 38px rgba(20,32,26, 0.11);
         }
 
 
@@ -87,7 +87,7 @@
 
         .pay-estado-cuenta:hover {
             background: rgba(255, 255, 255, .26);
-            transform: translateY(-1px);
+            
             color: #fff;
         }
 
@@ -142,7 +142,7 @@
                 );
 
             box-shadow:
-                0 14px 34px rgba(37,99,235,.18);
+                0 14px 34px rgba(11,107,69,.18);
         }
 
 
@@ -268,22 +268,22 @@
 
 
         .pay-alert.success {
-            color: #065f46;
+            color: var(--brand-700);
 
-            background: #ecfdf5;
+            background: var(--brand-50);
 
             border:
-                1px solid #a7f3d0;
+                1px solid var(--brand-100);
         }
 
 
         .pay-alert.error {
-            color: #991b1b;
+            color: var(--danger);
 
-            background: #fef2f2;
+            background: var(--danger-bg);
 
             border:
-                1px solid #fecaca;
+                1px solid var(--danger-bg);
         }
 
 
@@ -312,7 +312,7 @@
                 17px;
 
             border:
-                1px solid #bfdbfe;
+                1px solid var(--info-bg);
 
             border-radius:
                 16px;
@@ -320,8 +320,8 @@
             background:
                 linear-gradient(
                     135deg,
-                    #eff6ff,
-                    #f5f3ff
+                    var(--info-bg),
+                    var(--brand-50)
                 );
 
             box-shadow:
@@ -409,7 +409,7 @@
                 );
 
             box-shadow:
-                0 8px 18px rgba(37,99,235,.18);
+                0 8px 18px rgba(11,107,69,.18);
 
             font-size: .72rem;
 
@@ -527,8 +527,8 @@
             background:
                 linear-gradient(
                     135deg,
-                    #64748b,
-                    #475569
+                    var(--ink-3),
+                    var(--ink-2)
                 );
         }
 
@@ -699,7 +699,7 @@
                 );
 
             box-shadow:
-                0 8px 18px rgba(37,99,235,.18);
+                0 8px 18px rgba(11,107,69,.18);
         }
 
 
@@ -732,7 +732,7 @@
                 var(--pay-primary);
 
             background:
-                #eff6ff;
+                var(--info-bg);
         }
 
 
@@ -801,8 +801,6 @@
             font-size:
                 .95rem;
 
-            animation:
-                swipeHint 1.3s ease-in-out infinite;
         }
 
 
@@ -816,22 +814,7 @@
         }
 
 
-        @keyframes swipeHint {
-
-            0%,
-            100% {
-                transform:
-                    translateY(-50%)
-                    translateX(0);
-            }
-
-            50% {
-                transform:
-                    translateY(-50%)
-                    translateX(4px);
-            }
-
-        }
+        
 
 
         .mobile-swipe-text {
@@ -998,8 +981,7 @@
 
 
         .pago-card:hover {
-            transform:
-                translateY(-2px);
+            
 
             box-shadow:
                 var(--pay-shadow-md);
@@ -1099,10 +1081,10 @@
                 11px;
 
             border-top:
-                1px solid #eef2f7;
+                1px solid var(--crema-100);
 
             border-bottom:
-                1px solid #eef2f7;
+                1px solid var(--crema-100);
         }
 
 
@@ -1131,31 +1113,31 @@
 
 
         .status-badge.pending {
-            color: #b45309;
+            color: var(--warn);
 
-            background: #fef3c7;
+            background: var(--warn-bg);
         }
 
 
         .status-badge.review {
-            color: #0369a1;
+            color: var(--info);
 
-            background: #e0f2fe;
+            background: var(--info-bg);
         }
 
 
         .status-badge.expired,
         .status-badge.rejected {
-            color: #b91c1c;
+            color: var(--danger);
 
-            background: #fee2e2;
+            background: var(--danger-bg);
         }
 
 
         .status-badge.paid {
-            color: #047857;
+            color: var(--brand-600);
 
-            background: #d1fae5;
+            background: var(--ok-bg);
         }
 
 
@@ -1268,9 +1250,9 @@
 
 
         .pay-btn.secondary {
-            color: #475569;
+            color: var(--ink-2);
 
-            background: #f1f5f9;
+            background: var(--crema-100);
         }
 
 
@@ -1301,7 +1283,7 @@
                 28px 18px;
 
             border:
-                1px dashed #cbd5e1;
+                1px dashed var(--arena-2);
 
             border-radius:
                 19px;
@@ -1333,7 +1315,7 @@
                 var(--pay-soft);
 
             background:
-                #f1f5f9;
+                var(--crema-100);
         }
 
 
@@ -1450,14 +1432,14 @@
                 13px;
 
             border:
-                1px solid #bfdbfe;
+                1px solid var(--info-bg);
 
             border-radius:
                 11px;
 
-            color: #1e40af;
+            color: var(--info);
 
-            background: #eff6ff;
+            background: var(--info-bg);
 
             font-size: .74rem;
 
@@ -1473,7 +1455,7 @@
 
         .modal-compress-link {
             color:
-                #1d4ed8 !important;
+                var(--info) !important;
 
             font-weight: 900;
 
@@ -1505,7 +1487,7 @@
             border-radius:
                 16px;
 
-            background: #f8fafc;
+            background: var(--crema-50);
 
             cursor: pointer;
         }
@@ -1515,7 +1497,7 @@
             border-color:
                 var(--pay-primary);
 
-            background: #eff6ff;
+            background: var(--info-bg);
         }
 
 
@@ -1665,7 +1647,7 @@
 
         #modal-ver-comprobante
         .scrolling.content {
-            background: #0f172a;
+            background: var(--ink);
         }
 
 
@@ -1897,7 +1879,6 @@
         @media (prefers-reduced-motion: reduce) {
 
             .tabs-scroll-hint i {
-                animation: none !important;
             }
 
         }
@@ -1910,20 +1891,20 @@
             align-items: flex-start;
             margin-top: 10px;
             padding: 10px 12px;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
+            background: var(--danger-bg);
+            border: 1px solid var(--danger-bg);
             border-radius: 10px;
         }
 
         .motivo-rechazo i {
-            color: #dc2626;
+            color: var(--danger);
             margin: 2px 0 0 !important;
             flex-shrink: 0;
         }
 
         .motivo-rechazo strong {
             display: block;
-            color: #991b1b;
+            color: var(--danger);
             font-size: .8rem;
             text-transform: uppercase;
             letter-spacing: .02em;
@@ -1932,7 +1913,7 @@
 
         .motivo-rechazo p {
             margin: 0;
-            color: #7f1d1d;
+            color: var(--danger);
             font-size: .88rem;
             line-height: 1.5;
         }
@@ -1940,8 +1921,8 @@
         /* ===== SALDO A FAVOR ===== */
 
         .saldo-favor-card {
-            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%);
-            border: 1px solid #a7f3d0;
+            background: linear-gradient(135deg, var(--brand-50) 0%, var(--brand-50) 100%);
+            border: 1px solid var(--brand-100);
             border-radius: 16px;
             padding: 18px 20px;
             margin-bottom: 20px;
@@ -1957,7 +1938,7 @@
             width: 52px;
             height: 52px;
             border-radius: 14px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-600) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1973,7 +1954,7 @@
         .saldo-favor-label {
             font-size: .8rem;
             font-weight: 600;
-            color: #047857;
+            color: var(--brand-600);
             text-transform: uppercase;
             letter-spacing: .03em;
         }
@@ -1981,18 +1962,18 @@
         .saldo-favor-monto {
             font-size: 1.9rem;
             font-weight: 700;
-            color: #065f46;
+            color: var(--brand-700);
             line-height: 1.15;
         }
 
         .saldo-favor-sub {
             font-size: .88rem;
-            color: #0f766e;
+            color: var(--brand-700);
         }
 
         .saldo-favor-detalle {
             margin-top: 14px;
-            border-top: 1px solid #a7f3d0;
+            border-top: 1px solid var(--brand-100);
             padding-top: 12px;
         }
 
@@ -2000,7 +1981,7 @@
             cursor: pointer;
             font-size: .88rem;
             font-weight: 600;
-            color: #047857;
+            color: var(--brand-600);
         }
 
         .saldo-favor-detalle ul {
@@ -2023,13 +2004,13 @@
         }
 
         .saldo-favor-detalle .mov-fecha {
-            color: #6b7280;
+            color: var(--ink-3);
             flex-shrink: 0;
             font-variant-numeric: tabular-nums;
         }
 
         .saldo-favor-detalle .mov-desc {
-            color: #374151;
+            color: var(--ink);
             flex: 1;
             min-width: 0;
         }
@@ -2041,11 +2022,11 @@
         }
 
         .saldo-favor-detalle .mov-monto.positivo {
-            color: #059669;
+            color: var(--brand-600);
         }
 
         .saldo-favor-detalle .mov-monto.negativo {
-            color: #b45309;
+            color: var(--warn);
         }
 
         @media (max-width: 480px) {
@@ -2237,31 +2218,16 @@
                 <div>
 
                     <div class="compress-title">
-                        ¿Tu comprobante pesa más de 2 MB?
+                        ¿Tu foto pesa mucho?
                     </div>
 
                     <div class="compress-text">
-                        Puedes reducir el tamaño de la imagen
-                        antes de subirla para evitar errores.
+                        No te preocupes: si tu comprobante pesa más de 2 MB,
+                        lo reducimos automáticamente al subirlo.
                     </div>
 
                 </div>
 
-
-                <a
-                    href="https://www.iloveimg.com/es/comprimir-imagen"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="compress-btn"
-                >
-
-                    <i class="compress icon"></i>
-
-                    Comprimir imagen
-
-                    <i class="external alternate icon"></i>
-
-                </a>
 
             </div>
 
@@ -2984,6 +2950,7 @@
                                 </div>
 
 
+                                @include('usuario.pago._exonerado', ['pago' => $pago])
                                 <div class="pago-state">
 
 
@@ -3060,7 +3027,7 @@
                                              fecha que capture el vecino, no
                                              según el día en que sube. --}}
                                         data-recargo-pct="{{
-                                            $pagoPrincipal->recargo_pct ?? 0
+                                            $pago->recargoExonerado() ? 0 : ($pagoPrincipal->recargo_pct ?? 0)
                                         }}"
                                         data-vencimiento="{{
                                             $pagoPrincipal->vencimiento
@@ -3179,6 +3146,7 @@
                                 </div>
 
 
+                                @include('usuario.pago._exonerado', ['pago' => $pago])
                                 <div class="pago-state">
 
                                     <span class="status-badge expired">
@@ -3219,7 +3187,7 @@
                                              fecha que capture el vecino, no
                                              según el día en que sube. --}}
                                         data-recargo-pct="{{
-                                            $pagoPrincipal->recargo_pct ?? 0
+                                            $pago->recargoExonerado() ? 0 : ($pagoPrincipal->recargo_pct ?? 0)
                                         }}"
                                         data-vencimiento="{{
                                             $pagoPrincipal->vencimiento
@@ -3302,6 +3270,7 @@
                                 </div>
 
 
+                                @include('usuario.pago._exonerado', ['pago' => $pago])
                                 <div class="pago-state">
 
                                     <span class="status-badge paid">
@@ -3446,6 +3415,7 @@
                                 </div>
 
 
+                                @include('usuario.pago._exonerado', ['pago' => $pago])
                                 <div class="pago-state">
 
                                     <span class="status-badge rejected">
@@ -3514,7 +3484,7 @@
                                              fecha que capture el vecino, no
                                              según el día en que sube. --}}
                                         data-recargo-pct="{{
-                                            $pagoPrincipal->recargo_pct ?? 0
+                                            $pago->recargoExonerado() ? 0 : ($pagoPrincipal->recargo_pct ?? 0)
                                         }}"
                                         data-vencimiento="{{
                                             $pagoPrincipal->vencimiento
@@ -3634,19 +3604,8 @@
 
                 <div>
 
-                    El comprobante debe pesar
-                    máximo 2 MB.
-
-                    Si necesitas reducirlo,
-
-                    <a
-                        href="https://www.iloveimg.com/es/comprimir-imagen"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="modal-compress-link"
-                    >
-                        comprime tu imagen aquí
-                    </a>.
+                    Sube una foto o captura de tu comprobante.
+                    Si pesa mucho, la reducimos automáticamente.
 
                 </div>
 
@@ -3663,8 +3622,8 @@
                 <div
                     id="motivo-rechazo-modal"
                     style="display:none; margin-bottom:16px; padding:12px 14px;
-                           background:#fef2f2; border:1px solid #fecaca;
-                           border-radius:10px; color:#991b1b; font-size:.88rem;
+                           background:var(--danger-bg); border:1px solid var(--danger-bg);
+                           border-radius:10px; color:var(--danger); font-size:.88rem;
                            line-height:1.5;"
                 ></div>
 
@@ -3721,7 +3680,7 @@
 
                         <span class="upload-formats">
 
-                            JPG · PNG · GIF · Máximo 2 MB
+                            JPG · PNG · GIF · Se reduce sola si pesa mucho
 
                         </span>
 
@@ -3736,7 +3695,7 @@
 
                         <img
                             id="previewImage"
-                            src=""
+                            src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
                             alt="Vista previa"
                         >
 
@@ -3820,7 +3779,7 @@
                     </div>
 
 
-                    <small style="color:#94a3b8; display:block; margin-top:6px;">
+                    <small style="color:var(--ink-4); display:block; margin-top:6px;">
                         Usa la fecha que aparece en tu comprobante, no la de hoy.
                         Si transferiste a tiempo, no importa que subas el
                         comprobante después.
@@ -3832,8 +3791,8 @@
                     <div
                         id="aviso-recargo"
                         style="display:none; margin-top:10px; padding:10px 12px;
-                               background:#fffbeb; border:1px solid #fcd34d;
-                               border-radius:10px; color:#92400e; font-size:.86rem;"
+                               background:var(--warn-bg); border:1px solid var(--oro-300);
+                               border-radius:10px; color:var(--warn); font-size:.86rem;"
                     ></div>
 
                 </div>
@@ -3894,7 +3853,7 @@
 
             <img
                 id="imagen-comprobante"
-                src=""
+                src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
                 alt="Comprobante"
             >
 
@@ -4417,13 +4376,22 @@
                         2 * 1024 * 1024
                     ) {
 
-                        limpiarArchivo();
+                        // Se reduce sola; si no se logra, se explica qué hacer.
+                        window.comprimirImagen(file, 2 * 1024 * 1024).then(function (reducido) {
 
+                            if (!reducido) {
+                                limpiarArchivo();
+                                alertify.error('No pudimos reducir esa imagen. Intenta con una captura de pantalla de tu comprobante.');
+                                return;
+                            }
 
-                        alertify.error(
-                            'La imagen debe pesar menos de 2 MB'
-                        );
+                            var lista = new DataTransfer();
+                            lista.items.add(reducido);
+                            fileInput[0].files = lista.files;
 
+                            alertify.success('Reducimos el tamaño de tu imagen automáticamente');
+                            processFile(reducido);
+                        });
 
                         return;
                     }

@@ -195,7 +195,7 @@ class PagoController extends Controller
 
             return response()->json([
                 'header' => '❌ Error',
-                'message' => $e->getMessage(),
+                'message' => \App\Support\Errores::mensaje($e, 'No se pudo crear el recibo'),
             ]);
         }
     }
@@ -301,6 +301,9 @@ class PagoController extends Controller
                 'Entro a la cuenta',
                 'Motivo de rechazo',
                 'Saldo a favor del vecino',
+                'Recargo exonerado por acuerdo',
+                'Recargo condonado',
+                'Motivo del acuerdo',
             ], ';');
 
             foreach ($detalles as $d) {
@@ -328,6 +331,8 @@ class PagoController extends Controller
                     : 0.0;
 
                 $totales['recibos']++;
+                $condonado = $d->recargoCondonado();
+                $totales['condonado'] = ($totales['condonado'] ?? 0) + $condonado;
                 $totales['esperado'] += $x['esperado'];
                 $totales['entro'] += $entroACuenta;
                 $totales['faltante'] += $x['faltante'];
@@ -362,6 +367,9 @@ class PagoController extends Controller
                     number_format($entroACuenta, 2, '.', ''),
                     $d->comentario_rechazo ?? '',
                     number_format($saldoPorUsuario[$uid], 2, '.', ''),
+                    $d->recargoExonerado() ? 'Si' : 'No',
+                    number_format($condonado, 2, '.', ''),
+                    $d->recargoExonerado() ? ($d->recargo_exonerado_motivo ?? '') : '',
                 ], ';');
             }
 
@@ -380,6 +388,7 @@ class PagoController extends Controller
             fputcsv($out, ['   de eso, excedente a favor de vecinos', number_format($totales['excedente'], 2, '.', '')], ';');
             fputcsv($out, ['Cubierto con saldo (no entro dinero)', number_format($totales['conSaldo'], 2, '.', '')], ';');
             fputcsv($out, ['Pendiente de cobro', number_format($totales['faltante'], 2, '.', '')], ';');
+            fputcsv($out, ['Recargos condonados por acuerdo (no cobrados)', number_format($totales['condonado'] ?? 0, 2, '.', '')], ';');
 
             fclose($out);
         }, $nombre, [
@@ -780,7 +789,7 @@ class PagoController extends Controller
             }
 
             $mensaje = 'Se actualizó el estado de tu pago. <br><br>
-            <strong>Concepto:</strong> '.$pago->pago->concepto.'<br>
+            <strong>Concepto:</strong> '.e($pago->pago->concepto).'<br>
             <strong>Monto:</strong> $'.number_format($montoMostrar, 2).'<br>
             <strong>Estado:</strong> '.$pago->estado.$avisoRechazo.$avisoSaldo;
 
@@ -794,11 +803,11 @@ class PagoController extends Controller
             $usuario->notify(new NotificacionGenerica(
                 $esRechazo ? 'Tu comprobante fue rechazado' : 'Actualización de pago',
                 $esRechazo
-                    ? '<strong>Concepto:</strong> '.$pago->pago->concepto.'
+                    ? '<strong>Concepto:</strong> '.e($pago->pago->concepto).'
                        <strong>Motivo:</strong> '.e($pago->comentario_rechazo).'
                        Sube un nuevo comprobante desde la plataforma.'
                     : 'Se actualizó el estado de tu pago.
-                <strong>Concepto:</strong> '.$pago->pago->concepto.'
+                <strong>Concepto:</strong> '.e($pago->pago->concepto).'
                 <strong>Monto:</strong> $'.number_format($montoMostrar, 2).'
                 <strong>Estado:</strong> '.$pago->estado,
                 'pagos',
@@ -826,6 +835,131 @@ class PagoController extends Controller
         }
     }
 
+    /**
+     * Exonera (o vuelve a cobrar) el recargo por mora de UN recibo.
+     *
+     * Caso: el vecino pagó o va a pagar después del vencimiento, pero hay un
+     * acuerdo con la mesa directiva para no cobrarle el recargo. Se puede
+     * marcar ANTES de que pague, y entonces el formulario del vecino ya no le
+     * sugiere el monto con recargo.
+     *
+     * Queda registrado quién, cuándo y por qué. Si el recibo ya estaba validado
+     * con el recargo incluido, lo pagado de más pasa a saldo a favor del vecino
+     * (el recargo nunca se pierde dentro del recibo).
+     *
+     * Solo el tesorero: es una decisión sobre dinero.
+     */
+    public function exonerarRecargo($id, Request $request)
+    {
+        try {
+            $request->validate([
+                'accion' => 'required|in:exonerar,quitar',
+                'motivo' => 'required_if:accion,exonerar|nullable|string|min:5|max:255',
+            ], [
+                'motivo.required_if' => 'Escribe el motivo del acuerdo: queda registrado para la mesa directiva.',
+                'motivo.min' => 'Describe el acuerdo con al menos 5 caracteres.',
+            ]);
+
+            if (! Schema::hasColumn('detallepagos', 'recargo_exonerado')) {
+                return response()->json([
+                    'header' => '⚠️ Falta actualizar la base',
+                    'message' => 'Ejecuta primero la ruta /migrar para habilitar esta función.',
+                ], 422);
+            }
+
+            $recibo = Detallepago::with('pago')->findOrFail($id);
+
+            if (! $recibo->pago || (float) ($recibo->pago->recargo_pct ?? 0) <= 0) {
+                return response()->json([
+                    'header' => 'ℹ️ Sin recargo',
+                    'message' => 'Este concepto no lleva recargo por mora, no hay nada que exonerar.',
+                ], 422);
+            }
+
+            $exonerar = $request->accion === 'exonerar';
+
+            if ($exonerar === $recibo->recargoExonerado()) {
+                return response()->json([
+                    'header' => 'ℹ️ Sin cambios',
+                    'message' => $exonerar
+                        ? 'El recargo de este recibo ya estaba exonerado.'
+                        : 'El recargo de este recibo no estaba exonerado.',
+                ]);
+            }
+
+            $recibo->update($exonerar
+                ? [
+                    'recargo_exonerado' => true,
+                    'recargo_exonerado_motivo' => $request->motivo,
+                    'recargo_exonerado_por' => Auth::user()->id,
+                    'recargo_exonerado_en' => now(),
+                ]
+                : [
+                    'recargo_exonerado' => false,
+                    'recargo_exonerado_motivo' => null,
+                    'recargo_exonerado_por' => null,
+                    'recargo_exonerado_en' => null,
+                ]);
+
+            Log::info(($exonerar ? 'Recargo exonerado' : 'Exoneración de recargo retirada')
+                .' | recibo '.$recibo->id.' | vecino '.$recibo->user_id.' | por '.Auth::user()->id
+                .($exonerar ? ' | motivo: '.$request->motivo : ''));
+
+            // Si ya estaba validado con el recargo dentro, lo pagado de más se
+            // acredita como saldo a favor (y se corrige si se vuelve a cobrar).
+            app(\App\Services\SaldoService::class)->registrarExcedente($recibo->fresh('pago'));
+
+            $this->avisarExoneracion($recibo, $exonerar, (string) $request->motivo);
+
+            return response()->json([
+                'header' => $exonerar ? '✅ Recargo exonerado' : '✅ Recargo restablecido',
+                'message' => $exonerar
+                    ? 'A este vecino ya no se le cobrará recargo por este recibo. Se le avisó.'
+                    : 'Este recibo vuelve a cobrar el recargo por mora que corresponda.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'header' => '⚠️ Faltan datos',
+                'message' => implode(' ', $e->validator->errors()->all()),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error al exonerar recargo: '.$e->getMessage());
+
+            return response()->json(['header' => '❌ Error', 'message' => 'No se pudo guardar el cambio, intenta de nuevo.'], 500);
+        }
+    }
+
+    /** Le avisa al vecino (notificación y correo) que su recargo cambió. */
+    private function avisarExoneracion(Detallepago $recibo, bool $exonerado, string $motivo): void
+    {
+        try {
+            $usuario = User::withTrashed()->find($recibo->user_id);
+            if (! $usuario) {
+                return;
+            }
+
+            $concepto = e($recibo->pago->concepto);
+            $titulo = $exonerado ? 'Recargo por mora exonerado' : 'Recargo por mora restablecido';
+            $texto = $exonerado
+                ? "La mesa directiva acordó <strong>no cobrarte el recargo por mora</strong> del concepto <strong>{$concepto}</strong>."
+                  .($motivo !== '' ? '<br><strong>Motivo:</strong> '.e($motivo) : '')
+                  .'<br>Paga solo la cuota; no se te sumará recargo.'
+                : "El recargo por mora del concepto <strong>{$concepto}</strong> volvió a aplicarse según la fecha de tu pago.";
+
+            $usuario->notify(new NotificacionGenerica(
+                $titulo,
+                $texto,
+                'pagos',
+                'usuario/pago',
+                null,
+                '<i class="handshake outline icon"></i>'
+            ));
+
+            $this->sendmail->enviarCorreoPersonal($usuario->correo, '🤝 '.$titulo, $titulo, $texto);
+        } catch (\Throwable $e) {
+            Log::error('No se pudo avisar la exoneración de recargo: '.$e->getMessage());
+        }
+    }
     public function eliminarPago($id)
     {
         try {
@@ -841,7 +975,7 @@ class PagoController extends Controller
             $subject = 'Pago eliminado';
             $titulo = 'Pago eliminado por la Administración';
             $mensaje = 'La administración eliminó tu recibo de pago. <br><br>
-            <strong>Concepto:</strong> '.$pago->pago->concepto;
+            <strong>Concepto:</strong> '.e($pago->pago->concepto);
 
             // Se elimina despues de obtener el correo
             $pago->delete();
@@ -851,7 +985,7 @@ class PagoController extends Controller
             $usuario->notify(new NotificacionGenerica(
                 'Pago eliminado',
                 'La administración eliminó tu recibo de pago.
-                <strong>Concepto:</strong> '.$pago->pago->concepto,
+                <strong>Concepto:</strong> '.e($pago->pago->concepto),
                 'pagos',
                 'usuario/pago',
                 null,
@@ -949,7 +1083,7 @@ class PagoController extends Controller
             $usuario->notify(new NotificacionGenerica(
                 '🧾 Nuevo recibo de pago',
                 'Se te asignó un nuevo recibo de pago:
-                <strong>Concepto:</strong> '.$pagoHeader->concepto.'
+                <strong>Concepto:</strong> '.e($pagoHeader->concepto).'
                 <strong>Cantidad a pagar:</strong> $'.number_format($pagoHeader->cantidad, 2),
                 'pagos',
                 'usuario/pago',
@@ -977,7 +1111,7 @@ class PagoController extends Controller
             return response()->json([
                 'header' => '❌ Error',
                 'success' => false,
-                'message' => 'Error al agregar usuario: '.$e->getMessage(),
+                'message' => \App\Support\Errores::mensaje($e, 'Error al agregar usuario'),
             ]);
         }
     }

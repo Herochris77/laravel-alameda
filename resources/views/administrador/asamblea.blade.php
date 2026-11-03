@@ -1,17 +1,17 @@
 <x-app-layout>
     <style>
         :root {
-            --asm-primary: #3b82f6;
-            --asm-primary-dark: #2563eb;
-            --asm-success: #10b981;
-            --asm-danger: #ef4444;
-            --asm-warning: #f59e0b;
-            --asm-text-main: #0f172a;
-            --asm-text-muted: #64748b;
-            --asm-text-soft: #94a3b8;
-            --asm-border: #e2e8f0;
+            --asm-primary: var(--brand-500);
+            --asm-primary-dark: var(--brand-600);
+            --asm-success: var(--brand-500);
+            --asm-danger: var(--danger);
+            --asm-warning: var(--oro-700);
+            --asm-text-main: var(--ink);
+            --asm-text-muted: var(--ink-3);
+            --asm-text-soft: var(--ink-4);
+            --asm-border: var(--arena);
             --asm-surface: #ffffff;
-            --asm-soft-bg: #f8fafc;
+            --asm-soft-bg: var(--crema-50);
         }
 
         .asamblea-page {
@@ -31,7 +31,7 @@
             margin-bottom: 24px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 10px 30px rgba(20,32,26, 0.08);
         }
 
         .asamblea-hero::before {
@@ -76,7 +76,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 12px 28px rgba(20,32,26, 0.12);
         }
 
         .hero-icon i {
@@ -132,15 +132,15 @@
             background: var(--asm-surface);
             border: 1px solid var(--asm-border);
             border-radius: 22px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
             overflow: hidden;
             margin-bottom: 20px;
         }
 
         .card-header {
             padding: 18px 22px;
-            border-bottom: 1px solid #f1f5f9;
-            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border-bottom: 1px solid var(--crema-100);
+            background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -212,7 +212,7 @@
         .asm-textarea:focus {
             outline: none;
             border-color: var(--asm-primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+            box-shadow: 0 0 0 3px rgba(23,137,92, 0.12);
         }
 
         .field-row {
@@ -241,11 +241,11 @@
 
         /* ---------- PUNTOS DEL DÍA ---------- */
         .punto-row {
-            border: 1.5px dashed #cbd5e1;
+            border: 1.5px dashed var(--arena-2);
             border-radius: 14px;
             padding: 14px;
             margin-bottom: 12px;
-            background: #fcfdff;
+            background: var(--crema-50);
         }
 
         .punto-row .punto-head {
@@ -305,28 +305,28 @@
         .asm-btn.primary {
             background: linear-gradient(135deg, var(--asm-primary) 0%, var(--asm-primary-dark) 100%);
             color: #fff;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.22);
+            box-shadow: 0 8px 20px rgba(23,137,92, 0.22);
         }
 
         .asm-btn.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(59, 130, 246, 0.30);
+            
+            box-shadow: 0 12px 28px rgba(23,137,92, 0.30);
         }
 
         .asm-btn.ghost {
             background: var(--asm-soft-bg);
             color: var(--asm-text-main);
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--crema-100);
         }
 
         .asm-btn.ghost:hover {
-            background: #eef2f7;
+            background: var(--crema-100);
         }
 
         .asm-btn.danger {
             background: #fff;
             color: var(--asm-danger);
-            border: 1px solid #fee2e2;
+            border: 1px solid var(--danger-bg);
         }
 
         .asm-btn.danger:hover {
@@ -360,8 +360,8 @@
         }
 
         .asamblea-item:hover {
-            border-color: #c7d2fe;
-            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.08);
+            border-color: var(--brand-100);
+            box-shadow: 0 4px 14px rgba(23,137,92, 0.08);
         }
 
         .asamblea-item .item-main {
@@ -403,9 +403,9 @@
             white-space: nowrap;
         }
 
-        .b-convocada { background: #fef3c7; color: #92400e; }
-        .b-en_curso { background: #dcfce7; color: #166534; }
-        .b-cerrada { background: #e2e8f0; color: #475569; }
+        .b-convocada { background: var(--warn-bg); color: var(--warn); }
+        .b-en_curso { background: var(--ok-bg); color: var(--brand-800); }
+        .b-cerrada { background: var(--arena); color: var(--ink-2); }
 
         /* ---------- ESTADO VACÍO ---------- */
         .empty-state {
@@ -417,7 +417,7 @@
             width: 68px;
             height: 68px;
             border-radius: 50%;
-            background: #f1f5f9;
+            background: var(--crema-100);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -471,7 +471,7 @@
 
         .quorum-bar {
             height: 10px;
-            background: #f1f5f9;
+            background: var(--crema-100);
             border-radius: 20px;
             overflow: hidden;
             margin-top: 8px;
@@ -479,7 +479,7 @@
 
         .quorum-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--asm-success) 0%, #34d399 100%);
+            background: linear-gradient(90deg, var(--asm-success) 0%, var(--brand-500) 100%);
             border-radius: 20px;
             transition: width 0.3s ease;
         }
@@ -527,7 +527,7 @@
 
         .casa-chip.presente {
             border-color: var(--asm-success);
-            background: #f0fdf4;
+            background: var(--brand-50);
         }
 
         .casa-chip .chip-nombre {
@@ -582,7 +582,7 @@
 
         .res-bar {
             height: 8px;
-            background: #f1f5f9;
+            background: var(--crema-100);
             border-radius: 20px;
             overflow: hidden;
             margin-top: 4px;
@@ -708,12 +708,21 @@
                             <label class="asm-field">Quórum requerido (%)</label>
                             <input type="number" id="asm-quorum" class="asm-input" value="50" min="1" max="100">
 
+                            <label class="asm-field" for="asm-modalidad">¿Cómo se llevará a cabo?</label>
+                            <select id="asm-modalidad" class="asm-select">
+                                <option value="mixta">Mixta: plataforma y sala (recomendada)</option>
+                                <option value="presencial">Presencial: la mesa registra asistencia y votos</option>
+                                <option value="plataforma">Solo por la plataforma</option>
+                            </select>
+                            <small class="punto-hint" id="asm-modalidad-ayuda" style="display:block;"></small>
+
                             <label class="check-field">
                                 <input type="checkbox" id="asm-control" checked>
                                 Solo votan las casas registradas como presentes
                             </label>
 
-                            <label class="asm-field">Orden del día *</label>
+                            <label class="asm-field">Orden del día <span style="font-weight:400; color:var(--ink-3);">(opcional)</span></label>
+                            <small class="punto-hint" style="display:block; margin-bottom:6px;">Puedes dejarlo vacío (asamblea sin votación) y agregar puntos después, incluso durante la asamblea.</small>
                             <div id="puntos-container"></div>
                             <button type="button" class="asm-btn ghost sm" id="btn-add-punto">
                                 <i class="plus icon"></i> Agregar punto
@@ -755,15 +764,30 @@
 
     <script>
         let asambleaActual = null;
+        let asambleaDatos = null;
         let pollTablero = null;
+
+        const MODALIDADES = {
+            mixta: { titulo: 'Mixta: plataforma y sala', ayuda: 'Quien puede entrar vota desde su cuenta; a quien vota en la sala o no puede entrar a la plataforma (por ejemplo, no aceptó el aviso de privacidad) la mesa le registra asistencia y voto.' },
+            presencial: { titulo: 'Presencial: la mesa registra los votos', ayuda: 'Todo se vota en la sala. La mesa pasa lista y registra el voto de cada casa; los vecinos solo consultan.' },
+            plataforma: { titulo: 'Solo por la plataforma', ayuda: 'Cada casa vota desde su cuenta. La mesa solo puede registrar a las casas que no pueden entrar a la plataforma.' }
+        };
+        const TIPOS = { si_no: 'A favor / En contra / Abstención', opciones: 'Opciones (elegir una)', ordenamiento: 'Ordenamiento (priorizar)', informativo: 'Informativo (sin votación)' };
 
         $(function () {
             $('#modal-asamblea').modal({ onHide: function () { detenerPoll(); } });
-            agregarPunto();
             $('#btn-add-punto').on('click', agregarPunto);
             cargarAsambleas();
             $('#form-asamblea').on('submit', crearAsamblea);
+            $('#asm-modalidad').on('change', actualizarAyudaModalidad).trigger('change');
         });
+
+        function actualizarAyudaModalidad() {
+            const m = $('#asm-modalidad').val();
+            $('#asm-modalidad-ayuda').text(MODALIDADES[m].ayuda);
+            // En una asamblea presencial siempre hay pase de lista.
+            $('#asm-control').prop('checked', m === 'presencial' ? true : $('#asm-control').prop('checked')).prop('disabled', m === 'presencial');
+        }
 
         function agregarPunto() {
             const html = `
@@ -773,22 +797,20 @@
                         <button type="button" class="asm-btn danger btn-del-punto" title="Quitar punto"><i class="times icon"></i></button>
                     </div>
                     <select class="asm-select punto-tipo" style="margin-top:8px;">
-                        <option value="si_no">A favor / En contra / Abstención</option>
-                        <option value="opciones">Opciones (elegir una)</option>
-                        <option value="ordenamiento">Ordenamiento (priorizar)</option>
+                        ${Object.keys(TIPOS).map(k => `<option value="${k}">${TIPOS[k]}</option>`).join('')}
                     </select>
                     <textarea class="asm-textarea punto-opciones" rows="4" style="margin-top:8px; display:none;" placeholder="Una opción por renglón (Enter para la siguiente). Ej.:&#10;Repavimentar el acceso&#10;Área de juegos&#10;Cámaras de seguridad"></textarea>
-                    <small class="punto-hint">Escribe cada opción/proyecto en su propio renglón dentro de esta caja (presiona Enter). Mínimo 2. No agregues otro punto por cada opción.</small>
+                    <small class="punto-hint" style="display:none;">Escribe cada opción/proyecto en su propio renglón dentro de esta caja (presiona Enter). Mínimo 2. No agregues otro punto por cada opción.</small>
                 </div>`;
             $('#puntos-container').append(html);
         }
 
         $(document).on('click', '.btn-del-punto', function () {
-            if ($('.punto-row').length > 1) $(this).closest('.punto-row').remove();
+            $(this).closest('.punto-row').remove();
         });
         $(document).on('change', '.punto-tipo', function () {
             const row = $(this).closest('.punto-row');
-            const mostrar = $(this).val() !== 'si_no';
+            const mostrar = ['opciones', 'ordenamiento'].includes($(this).val());
             row.find('.punto-opciones').toggle(mostrar);
             row.find('.punto-hint').toggle(mostrar);
         });
@@ -802,29 +824,31 @@
                 const tipo = $(this).find('.punto-tipo').val();
                 if (!titulo) return;
                 let opciones = [];
-                if (tipo !== 'si_no') {
+                if (['opciones', 'ordenamiento'].includes(tipo)) {
                     opciones = $(this).find('.punto-opciones').val().split('\n').map(s => s.trim()).filter(Boolean);
                     if (opciones.length < 2) { valido = false; }
                 }
                 puntos.push({ titulo, tipo, opciones });
             });
-            if (!puntos.length) { alertify.error('Agrega al menos un punto'); return; }
             if (!valido) { alertify.error('Los puntos de opciones/ordenamiento necesitan al menos 2 opciones'); return; }
 
+            const datos = {
+                _token: '{{ csrf_token() }}',
+                titulo: $('#asm-titulo').val(), descripcion: $('#asm-desc').val(),
+                fecha: $('#asm-fecha').val(), hora: $('#asm-hora').val(), lugar: $('#asm-lugar').val(),
+                quorum_pct: $('#asm-quorum').val(), control_asistencia: $('#asm-control').is(':checked') ? 1 : 0,
+                modalidad: $('#asm-modalidad').val()
+            };
+            if (puntos.length) { datos.puntos = puntos; }
+
             $.ajax({
-                url: '{{ route("admin.asamblea.crear") }}', type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    titulo: $('#asm-titulo').val(), descripcion: $('#asm-desc').val(),
-                    fecha: $('#asm-fecha').val(), hora: $('#asm-hora').val(), lugar: $('#asm-lugar').val(),
-                    quorum_pct: $('#asm-quorum').val(), control_asistencia: $('#asm-control').is(':checked') ? 1 : 0,
-                    puntos: puntos
-                },
+                url: '{{ route("admin.asamblea.crear") }}', type: 'POST', data: datos,
                 success: function (r) {
                     if (r.success) {
                         alertify.success(r.message);
                         $('#form-asamblea')[0].reset();
-                        $('#puntos-container').html(''); agregarPunto();
+                        $('#puntos-container').html('');
+                        actualizarAyudaModalidad();
                         cargarAsambleas();
                     } else { alertify.error(r.message); }
                 },
@@ -840,7 +864,7 @@
                     $('#lista-asambleas').html(`
                         <div class="empty-state">
                             <div class="empty-icon"><i class="gavel icon"></i></div>
-                            <p>Aún no hay asambleas. Convocá la primera desde el formulario.</p>
+                            <p>Aún no hay asambleas. Convoca la primera desde el formulario.</p>
                         </div>`);
                     return;
                 }
@@ -853,6 +877,7 @@
                                 <div class="item-meta">
                                     ${a.fecha ? '<i class="calendar alternate outline icon"></i>' + esc(a.fecha) : ''}
                                     <span>· ${a.puntos} punto(s)</span>
+                                    <span>· ${esc((MODALIDADES[a.modalidad] || MODALIDADES.plataforma).titulo.split(':')[0])}</span>
                                     <span class="asm-badge b-${a.estado}">${a.estado.replace('_',' ')}</span>
                                 </div>
                             </div>
@@ -877,6 +902,7 @@
             asambleaActual = id;
             $.get('{{ url("administrador/asamblea/detalle") }}/' + id, function (r) {
                 if (!r.success) return;
+                asambleaDatos = r.asamblea;
                 renderDetalle(r.asamblea);
                 $('#modal-asamblea').modal('show');
                 if (r.asamblea.estado === 'en_curso') iniciarPoll(id);
@@ -885,6 +911,8 @@
 
         function renderDetalle(a) {
             const minutaActual = $('#minuta-texto').length ? $('#minuta-texto').val() : (a.minuta || '');
+            const modalidad = MODALIDADES[a.modalidad] || MODALIDADES.plataforma;
+            const sinAcceso = (a.casas || []).filter(c => !c.acceso);
             $('#modal-titulo').html('<i class="gavel icon"></i> ' + esc(a.titulo));
             let html = '';
 
@@ -896,34 +924,70 @@
             html += `<span class="asm-badge b-${a.estado}">${a.estado.replace('_',' ')}</span>`;
             html += '</div>';
 
+            // Modalidad (se puede cambiar mientras no esté cerrada: p. ej. si en la sala deciden votar a mano)
+            html += '<div class="quorum-box"><div class="quorum-head"><span><i class="users icon"></i> Cómo se lleva</span></div>';
+            if (a.estado !== 'cerrada') {
+                html += `<div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:6px;">
+                    <select id="cfg-modalidad" class="asm-select" style="flex:1; min-width:220px;">
+                        ${Object.keys(MODALIDADES).map(k => `<option value="${k}" ${a.modalidad === k ? 'selected' : ''}>${esc(MODALIDADES[k].titulo)}</option>`).join('')}
+                    </select>
+                    <button class="asm-btn ghost sm" onclick="guardarModalidad(${a.id})"><i class="save icon"></i> Guardar</button>
+                </div>`;
+            } else {
+                html += `<div style="margin-top:6px;"><strong>${esc(modalidad.titulo)}</strong></div>`;
+            }
+            html += `<p class="seccion-sub" style="margin:6px 0 0;">${esc(modalidad.ayuda)}</p></div>`;
+
+            // Casas que no pueden entrar a la plataforma
+            if (sinAcceso.length) {
+                html += `<div class="aviso-sin-acceso"><i class="lock icon"></i> <span><strong>${sinAcceso.length} casa(s) no pueden entrar a la plataforma</strong> (no han aceptado el aviso de privacidad y los términos, o su cuenta está bloqueada): ${sinAcceso.map(c => 'Casa ' + esc(c.casa)).join(', ')}. La mesa registra su asistencia y su voto en la sala.</span></div>`;
+            }
+
             // Quórum
             html += '<div id="quorum-box">' + renderQuorum(a.quorum) + '</div>';
 
-            // Pase de lista (si control de asistencia) — agrupado por votante.
-            if (a.control_asistencia) {
-                html += '<div class="seccion-titulo"><i class="clipboard list icon"></i> Pase de lista</div>';
-                html += '<p class="seccion-sub">Marca a quien esté presente. Si trae poder de otras casas, al marcarlo cuentan todas.</p>';
-                html += '<div class="pase-lista" id="pase-lista">';
-                a.pase_lista.forEach(function (v) {
-                    const casasTxt = v.casas.map(c => 'Casa ' + esc(c)).join(', ');
-                    const poderTxt = v.representadas.length
-                        ? `<span class="chip-poder"> · con poder de ${v.representadas.map(c => 'Casa ' + esc(c)).join(', ')}</span>`
-                        : '';
-                    html += `
-                        <div class="casa-chip ${v.presente ? 'presente' : ''}">
-                            <div style="min-width:0;">
-                                <div class="chip-nombre">${esc(v.nombre)}${v.es_inquilino ? ' · inquilino' : ''}</div>
-                                <div class="chip-info">Vota por ${v.casas.length} casa(s): ${casasTxt}${poderTxt}</div>
-                            </div>
-                            <input type="checkbox" onchange="marcarGrupo(${a.id}, '${esc(v.ref)}', this)" ${v.presente ? 'checked' : ''}>
-                        </div>`;
-                });
-                html += '</div>';
-            }
+            // Pase de lista — agrupado por votante. Siempre disponible: en una asamblea presencial es la base de todo.
+            html += '<div class="seccion-titulo"><i class="clipboard list icon"></i> Pase de lista</div>';
+            html += a.control_asistencia
+                ? '<p class="seccion-sub">Marca a quien esté presente. Si trae poder de otras casas, al marcarlo cuentan todas.</p>'
+                : '<p class="seccion-sub">En esta asamblea no es obligatorio, pero sirve para llevar el quórum. Marca a quien esté presente.</p>';
+            html += '<div class="pase-lista" id="pase-lista">';
+            a.pase_lista.forEach(function (v) {
+                const casasTxt = v.casas.map(c => 'Casa ' + esc(c)).join(', ');
+                const poderTxt = v.representadas.length
+                    ? `<span class="chip-poder"> · con poder de ${v.representadas.map(c => 'Casa ' + esc(c)).join(', ')}</span>`
+                    : '';
+                const info = (a.casas || []).find(c => c.casa === String(v.ref));
+                const sinAccesoChip = info && !info.acceso
+                    ? '<span class="chip-sin-acceso" title="No puede entrar a la plataforma: la mesa registra su asistencia y su voto."><i class="lock icon"></i> sin acceso</span>'
+                    : '';
+                html += `
+                    <div class="casa-chip ${v.presente ? 'presente' : ''}">
+                        <div style="min-width:0;">
+                            <div class="chip-nombre">${esc(v.nombre)}${v.es_inquilino ? ' · inquilino' : ''} ${sinAccesoChip}</div>
+                            <div class="chip-info">Vota por ${v.casas.length} casa(s): ${casasTxt}${poderTxt}</div>
+                        </div>
+                        <input type="checkbox" aria-label="Presente" onchange="marcarGrupo(${a.id}, '${esc(v.ref)}', this)" ${v.presente ? 'checked' : ''}>
+                    </div>`;
+            });
+            html += '</div>';
 
             // Puntos + resultados
             html += '<div class="seccion-titulo"><i class="list ol icon"></i> Orden del día</div>';
-            html += '<div id="puntos-resultados">' + renderPuntos(a.puntos) + '</div>';
+            if (!a.puntos.length) {
+                html += '<p class="seccion-sub">Esta asamblea no tiene puntos todavía. Puedes agregar uno en cualquier momento, también durante la asamblea.</p>';
+            }
+            html += '<div id="puntos-resultados">' + renderPuntos(a) + '</div>';
+
+            if (a.estado !== 'cerrada') {
+                html += `<button class="asm-btn ghost sm" id="btn-nuevo-punto" onclick="$('#form-nuevo-punto').slideToggle(120)"><i class="plus icon"></i> Agregar un punto</button>
+                    <div id="form-nuevo-punto" class="quorum-box" style="display:none; margin-top:10px;">
+                        <input type="text" id="np-titulo" class="asm-input" placeholder="Título del punto">
+                        <select id="np-tipo" class="asm-select" style="margin-top:8px;">${Object.keys(TIPOS).map(k => `<option value="${k}">${TIPOS[k]}</option>`).join('')}</select>
+                        <textarea id="np-opciones" class="asm-textarea" rows="3" style="margin-top:8px; display:none;" placeholder="Una opción por renglón (mínimo 2)"></textarea>
+                        <button class="asm-btn primary sm" style="margin-top:10px;" onclick="guardarNuevoPunto(${a.id})"><i class="check icon"></i> Agregar al orden del día</button>
+                    </div>`;
+            }
 
             // Minuta / acuerdos
             html += '<div class="seccion-titulo"><i class="sticky note outline icon"></i> Minuta / Acuerdos</div>';
@@ -935,6 +999,7 @@
 
             $('#modal-content').html(html);
             $('#minuta-texto').val(minutaActual);
+            $('#np-tipo').on('change', function () { $('#np-opciones').toggle(['opciones', 'ordenamiento'].includes($(this).val())); });
         }
 
         function renderQuorum(q) {
@@ -948,17 +1013,47 @@
                 </div>`;
         }
 
-        function renderPuntos(puntos) {
+        function renderPuntos(a) {
+            const puntos = a.puntos;
+            const hayCasasSinAcceso = (a.casas || []).some(c => !c.acceso);
             let html = '';
             puntos.forEach(function (p, i) {
+                const votable = p.tipo !== 'informativo';
+                const puedeRegistrar = votable && p.tipo !== 'ordenamiento' && a.estado === 'en_curso' && p.estado !== 'cerrado'
+                    && (a.modalidad !== 'plataforma' || hayCasasSinAcceso);
+                const sinVotos = votable && p.resultados && !p.resultados.total_casas;
+
                 html += `<div class="punto-result"><div class="punto-head-res">
-                    <strong>${i + 1}. ${esc(p.titulo)}</strong>
-                    <button class="asm-btn ghost sm" onclick="togglePunto(${p.id})">${p.estado === 'cerrado' ? '<i class="lock icon"></i> Cerrado' : '<i class="unlock icon"></i> Abierto'}</button>
+                    <strong>${i + 1}. ${esc(p.titulo)}${p.tipo === 'informativo' ? ' <span class="asm-badge b-convocada">informativo</span>' : ''}</strong>
+                    <span style="display:flex; gap:6px; flex-wrap:wrap;">
+                        ${votable ? `<button class="asm-btn ghost sm" onclick="togglePunto(${p.id})">${p.estado === 'cerrado' ? '<i class="lock icon"></i> Cerrado' : '<i class="unlock icon"></i> Abierto'}</button>` : ''}
+                        ${a.estado !== 'cerrada' && (sinVotos || !votable) ? `<button class="asm-btn danger sm" title="Quitar este punto" onclick="eliminarPunto(${p.id})"><i class="trash icon"></i></button>` : ''}
+                    </span>
                 </div>`;
-                html += renderResultado(p);
+                if (p.descripcion) html += `<p class="seccion-sub" style="margin:4px 0 0;">${esc(p.descripcion)}</p>`;
+
+                if (p.tipo === 'informativo') {
+                    html += `<div style="margin-top:8px;">
+                        <label class="asm-field" for="res-${p.id}">Acuerdo o resumen de este punto</label>
+                        <textarea id="res-${p.id}" class="asm-textarea" rows="3" placeholder="Ej.: Se informó a la asamblea que...">${esc(p.resolucion || '')}</textarea>
+                        <button class="asm-btn primary sm" style="margin-top:8px;" onclick="guardarResolucion(${p.id})"><i class="save icon"></i> Guardar acuerdo</button>
+                    </div>`;
+                } else {
+                    html += renderResultado(p);
+                    if (puedeRegistrar) {
+                        html += `<button class="asm-btn primary sm" style="margin-top:10px;" onclick="abrirCapturaMesa(${p.id})"><i class="users icon"></i> Registrar votos en sala</button>`;
+                    } else if (p.tipo === 'ordenamiento' && a.estado === 'en_curso' && a.modalidad !== 'plataforma') {
+                        html += '<p class="seccion-sub" style="margin-top:8px;">Los puntos de priorización se votan desde la plataforma.</p>';
+                    }
+                }
                 html += '</div>';
             });
             return html;
+        }
+
+        function pieOrigen(r) {
+            if (!r.origen || !r.origen.mesa) return '';
+            return `<div class="res-foot">${r.origen.plataforma} por la plataforma · <strong>${r.origen.mesa} registrados por la mesa en sala</strong></div>`;
         }
 
         function renderResultado(p) {
@@ -967,23 +1062,177 @@
             if (r.tipo === 'si_no') {
                 const t = r.total_casas || 0;
                 const row = (lbl, n, color) => `<div class="res-row"><div class="res-top"><span>${lbl}</span><span>${n}</span></div><div class="res-bar"><div class="res-fill" style="width:${t ? (n/t*100) : 0}%; background:${color};"></div></div></div>`;
-                return `<div style="margin-top:8px;">${row('A favor', r.conteo.a_favor, '#10b981')}${row('En contra', r.conteo.en_contra, '#ef4444')}${row('Abstención', r.conteo.abstencion, '#94a3b8')}
-                    <div class="res-foot"><span class="asm-badge ${r.aprobado ? 'b-en_curso' : 'b-cerrada'}">${r.aprobado ? 'Aprobado' : 'No aprobado'}</span> · ${t} casa(s)</div></div>`;
+                return `<div style="margin-top:8px;">${row('A favor', r.conteo.a_favor, '#17895c')}${row('En contra', r.conteo.en_contra, '#c0432c')}${row('Abstención', r.conteo.abstencion, '#6f6a58')}
+                    <div class="res-foot"><span class="asm-badge ${r.aprobado ? 'b-en_curso' : 'b-cerrada'}">${r.aprobado ? 'Aprobado' : 'No aprobado'}</span> · ${t} casa(s)</div>${pieOrigen(r)}</div>`;
             }
             if (r.tipo === 'opciones') {
                 let h = '<div style="margin-top:8px;">';
-                r.resultados.forEach(o => { h += `<div class="res-row"><div class="res-top"><span>${esc(o.opcion)}</span><span>${o.votos} (${o.pct}%)</span></div><div class="res-bar"><div class="res-fill" style="width:${o.pct}%; background:#0d9488;"></div></div></div>`; });
-                h += `<div class="res-foot">Ganador: <strong>${esc(r.ganador || '—')}</strong> · ${r.total_casas} casa(s)</div></div>`;
+                r.resultados.forEach(o => { h += `<div class="res-row"><div class="res-top"><span>${esc(o.opcion)}</span><span>${o.votos} (${o.pct}%)</span></div><div class="res-bar"><div class="res-fill" style="width:${o.pct}%; background:#0b6b45;"></div></div></div>`; });
+                h += `<div class="res-foot">Ganador: <strong>${esc(r.ganador || '—')}</strong> · ${r.total_casas} casa(s)</div>${pieOrigen(r)}</div>`;
                 return h;
             }
             if (r.tipo === 'ordenamiento') {
                 let h = '<div style="margin-top:8px;">';
-                r.ranking.forEach((f, i) => { h += `<div class="res-row"><div class="res-top"><span>${i + 1}. ${esc(f.opcion)}</span><span>${f.puntos} pts</span></div><div class="res-bar"><div class="res-fill" style="width:${f.pct}%; background:#0d9488;"></div></div></div>`; });
-                h += `<div class="res-foot">${r.total_casas} casa(s)</div></div>`;
+                r.ranking.forEach((f, i) => { h += `<div class="res-row"><div class="res-top"><span>${i + 1}. ${esc(f.opcion)}</span><span>${f.puntos} pts</span></div><div class="res-bar"><div class="res-fill" style="width:${f.pct}%; background:#0b6b45;"></div></div></div>`; });
+                h += `<div class="res-foot">${r.total_casas} casa(s)</div>${pieOrigen(r)}</div>`;
                 return h;
             }
             return '';
         }
+
+        // ---- Registro de votos de la mesa, casa por casa ------------------------------
+        window.abrirCapturaMesa = function (puntoId) {
+            detenerPoll();
+            $.get('{{ url("administrador/asamblea/detalle") }}/' + asambleaActual, function (r) {
+                if (!r.success) return;
+                asambleaDatos = r.asamblea;
+                renderCaptura(r.asamblea, puntoId);
+            });
+        };
+
+        window.volverTablero = function () {
+            verAsamblea(asambleaActual);
+        };
+
+        const ETIQ_VOTO = { a_favor: 'A favor', en_contra: 'En contra', abstencion: 'Abstención' };
+
+        function renderCaptura(a, puntoId) {
+            const p = a.puntos.find(x => x.id === puntoId);
+            if (!p) { volverTablero(); return; }
+            const modalidadPlataforma = a.modalidad === 'plataforma';
+
+            let h = `<div class="tablero-acciones">
+                <button class="asm-btn ghost sm" onclick="volverTablero()"><i class="arrow left icon"></i> Volver al tablero</button>
+                <span class="asm-badge b-${a.estado}">${a.estado.replace('_',' ')}</span>
+            </div>`;
+            h += '<div class="seccion-titulo"><i class="users icon"></i> Registrar votos en sala</div>';
+            h += `<p class="seccion-sub"><strong>${esc(p.titulo)}</strong><br>Marca el voto de cada casa tal como lo expresó en la asamblea. Si una casa no estaba marcada como presente, se marca al guardar su voto. Los votos que ya se emitieron desde la plataforma no se modifican.</p>`;
+
+            if (p.tipo === 'si_no') {
+                h += `<div class="quorum-box"><div class="quorum-head"><span>Por unanimidad</span></div>
+                    <p class="seccion-sub" style="margin:4px 0 8px;">Le pone el mismo voto a todas las casas <strong>presentes</strong> que aún no votaron en este punto.</p>
+                    <div class="tablero-acciones">
+                        <button class="asm-btn primary sm" onclick="unanimidad(${a.id}, ${p.id}, 'a_favor')"><i class="thumbs up outline icon"></i> Todos a favor</button>
+                        <button class="asm-btn ghost sm" onclick="unanimidad(${a.id}, ${p.id}, 'en_contra')">Todos en contra</button>
+                        <button class="asm-btn ghost sm" onclick="unanimidad(${a.id}, ${p.id}, 'abstencion')">Todos se abstienen</button>
+                    </div></div>`;
+            }
+
+            h += '<input type="search" id="buscar-casa" class="asm-input" placeholder="Buscar casa o nombre..." style="margin:10px 0;">';
+            h += '<div id="lista-captura">';
+            (a.casas || []).forEach(function (c) {
+                const v = (p.votos_casas || {})[c.casa];
+                const deMesa = v && v.origen === 'mesa';
+                const deLaPlataforma = v && v.origen !== 'mesa';
+                const bloqueada = modalidadPlataforma && c.acceso;   // en "solo plataforma" esa casa vota ella misma
+                const nombreCasa = 'v-' + c.casa;
+
+                let control = '';
+                if (deLaPlataforma) {
+                    const txt = v.valor ? ETIQ_VOTO[v.valor] : ((p.opciones.find(o => o.id == v.opcion_id) || {}).opcion || 'votó');
+                    control = `<span class="asm-badge b-en_curso">Votó en la plataforma: ${esc(txt)}</span>`;
+                } else if (bloqueada) {
+                    control = '<span class="seccion-sub" style="margin:0;">Puede votar desde su cuenta.</span>';
+                } else if (p.tipo === 'si_no') {
+                    control = ['a_favor', 'en_contra', 'abstencion'].map(val => `<label class="opt-voto"><input type="radio" name="${nombreCasa}" value="${val}" ${deMesa && v.valor === val ? 'checked' : ''}> ${ETIQ_VOTO[val]}</label>`).join('');
+                } else {
+                    control = `<select class="asm-select sel-voto" data-casa="${esc(c.casa)}"><option value="">— sin registrar —</option>${p.opciones.map(o => `<option value="${o.id}" ${deMesa && v.opcion_id == o.id ? 'selected' : ''}>${esc(o.opcion)}</option>`).join('')}</select>`;
+                }
+                if (deMesa) {
+                    control += ` <button class="asm-btn ghost sm" title="Quitar el voto registrado" onclick="quitarVotoMesa(${a.id}, ${p.id}, '${esc(c.casa)}')"><i class="times icon"></i></button>`;
+                }
+
+                h += `<div class="casa-voto ${c.presente ? 'presente' : ''}" data-casa="${esc(c.casa)}" data-buscar="${esc((c.casa + ' ' + c.nombre).toLowerCase())}">
+                    <div class="cv-info">
+                        <strong>Casa ${esc(c.casa)}</strong> · ${esc(c.nombre)}
+                        ${c.acceso ? '' : '<span class="chip-sin-acceso" title="No puede entrar a la plataforma"><i class="lock icon"></i> sin acceso</span>'}
+                        ${c.presente ? '<span class="chip-presente"><i class="check icon"></i> presente</span>' : ''}
+                    </div>
+                    <div class="cv-voto">${control}</div>
+                </div>`;
+            });
+            h += '</div>';
+            h += `<button class="asm-btn primary block" style="margin-top:14px;" onclick="guardarVotosMesa(${a.id}, ${p.id}, '${p.tipo}')"><i class="save icon"></i> Guardar los votos marcados</button>`;
+
+            $('#modal-content').html(h);
+            $('#buscar-casa').on('input', function () {
+                const q = $(this).val().toLowerCase().trim();
+                $('#lista-captura .casa-voto').each(function () { $(this).toggle(!q || String($(this).data('buscar')).includes(q)); });
+            });
+        }
+
+        window.guardarVotosMesa = function (id, puntoId, tipo) {
+            const votos = [];
+            $('#lista-captura .casa-voto').each(function () {
+                const casa = String($(this).data('casa'));
+                if (tipo === 'si_no') {
+                    const val = $(this).find('input[type=radio]:checked').val();
+                    if (val) votos.push({ casa, valor: val });
+                } else {
+                    const op = $(this).find('select.sel-voto').val();
+                    if (op) votos.push({ casa, opcion_id: op });
+                }
+            });
+            if (!votos.length) { alertify.error('Marca el voto de al menos una casa.'); return; }
+
+            $.ajax({ url: '{{ url("administrador/asamblea") }}/' + id + '/votos-mesa', type: 'POST',
+                data: { _token: '{{ csrf_token() }}', punto_id: puntoId, votos: votos },
+                success: function (r) {
+                    r.errores && r.errores.length ? alertify.alert('Votos registrados', esc(r.message)) : alertify.success(r.message);
+                    abrirCapturaMesa(puntoId);
+                },
+                error: function (x) { alertify.error(x.responseJSON?.message || 'No se pudieron registrar los votos'); } });
+        };
+
+        window.unanimidad = function (id, puntoId, valor) {
+            alertify.confirm('Registrar por unanimidad', 'Se registrará «' + ETIQ_VOTO[valor] + '» para todas las casas presentes que aún no han votado en este punto. ¿Continuar?', function () {
+                $.ajax({ url: '{{ url("administrador/asamblea") }}/' + id + '/unanimidad', type: 'POST',
+                    data: { _token: '{{ csrf_token() }}', punto_id: puntoId, valor: valor },
+                    success: function (r) { alertify.success(r.message); abrirCapturaMesa(puntoId); },
+                    error: function (x) { alertify.error(x.responseJSON?.message || 'No se pudo registrar'); } });
+            }, function () {}).set('labels', { ok: 'Sí, registrar', cancel: 'Cancelar' });
+        };
+
+        window.quitarVotoMesa = function (id, puntoId, casa) {
+            $.ajax({ url: '{{ url("administrador/asamblea") }}/' + id + '/voto-mesa', type: 'DELETE',
+                data: { _token: '{{ csrf_token() }}', punto_id: puntoId, casa: casa },
+                success: function (r) { alertify.success(r.message); abrirCapturaMesa(puntoId); },
+                error: function (x) { alertify.error(x.responseJSON?.message || 'No se pudo quitar'); } });
+        };
+
+        // ---- Puntos, modalidad y acuerdos -------------------------------------------------
+        window.guardarNuevoPunto = function (id) {
+            const tipo = $('#np-tipo').val();
+            const opciones = $('#np-opciones').val().split('\n').map(s => s.trim()).filter(Boolean);
+            if (!$('#np-titulo').val().trim()) { alertify.error('Escribe el título del punto.'); return; }
+            if (['opciones', 'ordenamiento'].includes(tipo) && opciones.length < 2) { alertify.error('Un punto de opciones necesita al menos 2 opciones.'); return; }
+            $.ajax({ url: '{{ url("administrador/asamblea") }}/' + id + '/puntos', type: 'POST',
+                data: { _token: '{{ csrf_token() }}', titulo: $('#np-titulo').val().trim(), tipo: tipo, opciones: opciones },
+                success: function (r) { alertify.success(r.message); verAsamblea(id); cargarAsambleas(); },
+                error: function (x) { alertify.error(x.responseJSON?.message || 'No se pudo agregar el punto'); } });
+        };
+
+        window.eliminarPunto = function (puntoId) {
+            alertify.confirm('Quitar punto', '¿Quitar este punto del orden del día?', function () {
+                $.ajax({ url: '{{ url("administrador/asamblea/punto") }}/' + puntoId, type: 'DELETE', data: { _token: '{{ csrf_token() }}' },
+                    success: function (r) { alertify.success(r.message); verAsamblea(asambleaActual); cargarAsambleas(); },
+                    error: function (x) { alertify.error(x.responseJSON?.message || 'No se pudo quitar'); } });
+            }, function () {}).set('labels', { ok: 'Sí, quitar', cancel: 'Cancelar' });
+        };
+
+        window.guardarResolucion = function (puntoId) {
+            $.ajax({ url: '{{ url("administrador/asamblea/punto") }}/' + puntoId + '/resolucion', type: 'POST',
+                data: { _token: '{{ csrf_token() }}', resolucion: $('#res-' + puntoId).val() },
+                success: function (r) { alertify.success(r.message); },
+                error: function (x) { alertify.error(x.responseJSON?.message || 'No se pudo guardar'); } });
+        };
+
+        window.guardarModalidad = function (id) {
+            $.ajax({ url: '{{ url("administrador/asamblea/configurar") }}/' + id, type: 'POST',
+                data: { _token: '{{ csrf_token() }}', modalidad: $('#cfg-modalidad').val() },
+                success: function (r) { alertify.success(r.message); verAsamblea(id); cargarAsambleas(); },
+                error: function (x) { alertify.error(x.responseJSON?.message || 'No se pudo cambiar'); } });
+        };
 
         // Marca al votante y a todas las casas que ejerce (propia + representadas).
         window.marcarGrupo = function (id, refCasa, el) {
@@ -1016,12 +1265,15 @@
         function iniciarPoll(id) {
             detenerPoll();
             pollTablero = setInterval(function () {
-                $.get('{{ url("administrador/asamblea/detalle") }}/' + id, function (d) {
+                // No se pisa lo que la mesa está escribiendo (acuerdo de un punto, nuevo punto, minuta).
+                const escribiendo = document.activeElement && $(document.activeElement).is('textarea, input, select') && $('#modal-content').has(document.activeElement).length;
+                $.ajax({ url: '{{ url("administrador/asamblea/detalle") }}/' + id, global: false, success: function (d) {
                     if (!d.success) return;
+                    asambleaDatos = d.asamblea;
                     $('#quorum-box').html(renderQuorum(d.asamblea.quorum));
-                    $('#puntos-resultados').html(renderPuntos(d.asamblea.puntos));
+                    if (!escribiendo) $('#puntos-resultados').html(renderPuntos(d.asamblea));
                     if (d.asamblea.estado !== 'en_curso') detenerPoll();
-                });
+                } });
             }, 8000);
         }
         function detenerPoll() { if (pollTablero) { clearInterval(pollTablero); pollTablero = null; } }

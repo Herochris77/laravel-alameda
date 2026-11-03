@@ -35,16 +35,52 @@ use Illuminate\Support\Facades\File;
  * los vecinos o acreditar saldos a favor. Ahora sale del .env.
  *
  * Define MANTENIMIENTO_TOKEN en producción con algo largo y privado.
- * El valor por omisión se conserva solo para no dejar las rutas inservibles
- * si la variable falta tras desplegar.
+ *
+ * En local se sigue aceptando 'admin123' para no estorbar al desarrollar.
+ * EN PRODUCCIÓN YA NO: ese valor está escrito en el código, o sea que lo conoce
+ * cualquiera que lea el repositorio. Si la variable falta o sigue valiendo
+ * 'admin123', las rutas responden 403 y explican qué falta.
  */
 if (! function_exists('tokenMantenimientoValido')) {
     function tokenMantenimientoValido($token): bool
     {
-        return hash_equals(
-            (string) env('MANTENIMIENTO_TOKEN', 'admin123'),
-            (string) $token
-        );
+        $porDefecto = 'admin123';
+        $configurado = (string) (config('mantenimiento.token') ?: env('MANTENIMIENTO_TOKEN', ''));
+
+        if (app()->isProduction() && ($configurado === '' || $configurado === $porDefecto)) {
+            \Illuminate\Support\Facades\Log::warning('Ruta de mantenimiento rechazada: MANTENIMIENTO_TOKEN no está definido o es el de fábrica.');
+
+            // Solo a quien intenta con el token viejo se le dice la razón; a
+            // cualquier otro no se le confirma nada.
+            if ((string) $token === $porDefecto) {
+                abort(403, 'Define MANTENIMIENTO_TOKEN en el archivo .env del servidor con un valor propio y largo. El token de fábrica ya no se acepta en producción.');
+            }
+
+            return false;
+        }
+
+        return hash_equals($configurado !== '' ? $configurado : $porDefecto, (string) $token);
+    }
+}
+
+/*
+ * El cron del hosting es la excepción: si CRON_TOKEN no está definido sigue
+ * aceptando el de fábrica, para que los recordatorios de pago no dejen de salir
+ * el día del despliegue. Se registra una advertencia cada vez y el panel del
+ * comité muestra una alerta hasta que se cambie.
+ */
+if (! function_exists('tokenCronValido')) {
+    function tokenCronValido($token): bool
+    {
+        $configurado = (string) (config('mantenimiento.cron') ?: env('CRON_TOKEN', ''));
+
+        if ($configurado === '' || $configurado === 'admin123') {
+            \Illuminate\Support\Facades\Log::warning('El cron se ejecutó con el token de fábrica. Define CRON_TOKEN en el .env.');
+
+            return hash_equals('admin123', (string) $token);
+        }
+
+        return hash_equals($configurado, (string) $token);
     }
 }
 
@@ -66,7 +102,7 @@ Route::get('/limpiar-cache/{token}', function ($token) {
             'config:cache' => 'OK',
         ],
     ]);
-});
+})->middleware('throttle:10,1');
 
 /*
 |--------------------------------------------------------------------------
@@ -82,11 +118,13 @@ Route::get('/limpiar-cache/{token}', function ($token) {
 |   2) Amplía el enum `ubicacion` de `estacionamientos` para aceptar 'escalera'.
 | Cambia el token 'admin123' por algo privado si lo deseas.
 */
-Route::get('/migrar/{token}', function ($token) {
-    if (! tokenMantenimientoValido($token)) {
-        abort(403, 'No autorizado');
-    }
-
+if (! function_exists('ejecutarMigracionWeb')) {
+/**
+ * Aplica, de forma idempotente y solo aditiva, los cambios de base de datos nuevos.
+ * La usan /migrar/{token} y la ruta de un solo uso /actualizar-una-vez/{clave}.
+ */
+function ejecutarMigracionWeb()
+{
     $schema = \Illuminate\Support\Facades\Schema::class;
     $db = \Illuminate\Support\Facades\DB::class;
     $pasos = [];
@@ -246,6 +284,32 @@ Route::get('/migrar/{token}', function ($token) {
         $pasos[] = "ℹ️  Tabla 'asamblea_asistencias' ya existía.";
     }
 
+    // Asambleas flexibles (aditivo) ------------------------------------------
+    //  - modalidad: plataforma (lo de siempre) | presencial | mixta
+    //  - resolucion: acuerdo escrito de un punto informativo
+    //  - origen del voto: plataforma | mesa (registrado por la mesa en sala)
+    //  - modo y nota de la asistencia
+    foreach ([
+        'asambleas' => ['modalidad' => fn ($t) => $t->string('modalidad', 20)->default('plataforma')],
+        'asamblea_puntos' => ['resolucion' => fn ($t) => $t->text('resolucion')->nullable()],
+        'asamblea_votos' => ['origen' => fn ($t) => $t->string('origen', 20)->default('plataforma')],
+        'asamblea_asistencias' => [
+            'modo' => fn ($t) => $t->string('modo', 20)->default('mesa'),
+            'nota' => fn ($t) => $t->string('nota', 255)->nullable(),
+        ],
+    ] as $tablaAsm => $columnasAsm) {
+        foreach ($columnasAsm as $columnaAsm => $definirAsm) {
+            if ($schema::hasTable($tablaAsm) && ! $schema::hasColumn($tablaAsm, $columnaAsm)) {
+                $schema::table($tablaAsm, function (\Illuminate\Database\Schema\Blueprint $t) use ($definirAsm) {
+                    $definirAsm($t);
+                });
+                $pasos[] = "✅ Columna '{$columnaAsm}' agregada a '{$tablaAsm}'.";
+            } else {
+                $pasos[] = "ℹ️  Columna '{$tablaAsm}.{$columnaAsm}' ya existía.";
+            }
+        }
+    }
+
     // 5) Notas del comité por casa (expediente) ----------------------------
     if (! $schema::hasTable('expediente_notas')) {
         $schema::create('expediente_notas', function (\Illuminate\Database\Schema\Blueprint $t) {
@@ -303,6 +367,19 @@ Route::get('/migrar/{token}', function ($token) {
         $pasos[] = "ℹ️  Columna 'proyecto_avances.foto' ya existía.";
     }
 
+    // Varias fotos de evidencia por avance (aditiva: la columna `foto` se conserva)
+    if (! $schema::hasTable('proyecto_avance_fotos')) {
+        $schema::create('proyecto_avance_fotos', function (\Illuminate\Database\Schema\Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('proyecto_avance_id');
+            $t->string('ruta');
+            $t->timestamps();
+            $t->index('proyecto_avance_id');
+        });
+        $pasos[] = "✅ Tabla 'proyecto_avance_fotos' creada.";
+    } else {
+        $pasos[] = "ℹ️  Tabla 'proyecto_avance_fotos' ya existía.";
+    }
     // Costo opcional (nullable) en proyectos
     if ($schema::hasTable('proyectos') && $db::getDriverName() === 'mysql') {
         $colCosto = $db::selectOne("SHOW COLUMNS FROM proyectos LIKE 'costo'");
@@ -426,6 +503,31 @@ Route::get('/migrar/{token}', function ($token) {
         $pasos[] = "✅ Columna 'recargo_pct' agregada a 'pagos' (nullable = sin recargo, no altera los recibos existentes).";
     } else {
         $pasos[] = "ℹ️  Columna 'pagos.recargo_pct' ya existía. No se tocó.";
+    }
+
+    // Exoneración del recargo por mora, recibo por recibo ---------------------
+    //
+    // Para los acuerdos con la mesa directiva: el vecino paga después del
+    // vencimiento pero no se le cobra el recargo. Todo recibo existente queda
+    // en 0 (no exonerado), así que ninguna cifra histórica cambia.
+    if ($schema::hasTable('detallepagos')) {
+        $nuevas = [
+            'recargo_exonerado' => fn ($t) => $t->boolean('recargo_exonerado')->default(false),
+            'recargo_exonerado_motivo' => fn ($t) => $t->string('recargo_exonerado_motivo', 255)->nullable(),
+            'recargo_exonerado_por' => fn ($t) => $t->unsignedBigInteger('recargo_exonerado_por')->nullable(),
+            'recargo_exonerado_en' => fn ($t) => $t->timestamp('recargo_exonerado_en')->nullable(),
+        ];
+
+        foreach ($nuevas as $columna => $definir) {
+            if (! $schema::hasColumn('detallepagos', $columna)) {
+                $schema::table('detallepagos', function (\Illuminate\Database\Schema\Blueprint $t) use ($definir) {
+                    $definir($t);
+                });
+                $pasos[] = "✅ Columna '{$columna}' agregada a 'detallepagos'.";
+            } else {
+                $pasos[] = "ℹ️  Columna 'detallepagos.{$columna}' ya existía. No se tocó.";
+            }
+        }
     }
 
     // Cierre mensual de caja -------------------------------------------------
@@ -678,624 +780,54 @@ Route::get('/migrar/{token}', function ($token) {
     }
 
     return response('<pre>'.e(implode("\n", $pasos))."\n\nListo. No se modificó ni eliminó ningún dato existente.</pre>");
-});
+}
+}
 
-/*
- * Retiro del módulo de vehículos.
- *
- * Borra los registros y las fotografías de los autos. Es IRREVERSIBLE y no se
- * dispara sola: por omisión solo muestra qué se eliminaría, y hay que
- * confirmar explícitamente.
- *
- *   Ver qué se borraría : /purgar-vehiculos/TOKEN
- *   Borrar de verdad    : /purgar-vehiculos/TOKEN?aplicar=CONFIRMAR
- */
-Route::get('/purgar-vehiculos/{token}', function ($token) {
+Route::get('/migrar/{token}', function ($token) {
     if (! tokenMantenimientoValido($token)) {
         abort(403, 'No autorizado');
     }
 
-    if (! \Illuminate\Support\Facades\Schema::hasTable('vehiculos')) {
-        return response('<pre>La tabla vehiculos no existe. No hay nada que borrar.</pre>');
-    }
-
-    $aplicar = request('aplicar') === 'CONFIRMAR';
-    $disco = \Illuminate\Support\Facades\Storage::disk('public');
-
-    $vehiculos = \Illuminate\Support\Facades\DB::table('vehiculos')
-        ->leftJoin('users', 'users.id', '=', 'vehiculos.user_id')
-        ->get(['vehiculos.id', 'vehiculos.placas', 'vehiculos.marca', 'vehiculos.modelo',
-            'vehiculos.foto', 'users.casa', 'users.nombre']);
-
-    $lineas = [];
-    $lineas[] = $aplicar ? '=== BORRADO APLICADO ===' : '=== VISTA PREVIA (no se ha borrado nada) ===';
-    $lineas[] = '';
-    $lineas[] = 'Registros de vehículos: '.$vehiculos->count();
-    $lineas[] = '';
-
-    $archivos = 0;
-    $borrados = 0;
-
-    foreach ($vehiculos as $v) {
-        $tieneFoto = $v->foto && $disco->exists('vehiculos/'.$v->foto);
-
-        $lineas[] = sprintf('  casa %-5s %-26s %-12s %s',
-            $v->casa ?? '?',
-            mb_substr(($v->marca ?? '').' '.($v->modelo ?? ''), 0, 25),
-            $v->placas ?? 'sin placas',
-            $tieneFoto ? '[con fotografía]' : '[sin fotografía]');
-
-        if ($tieneFoto) {
-            $archivos++;
-
-            if ($aplicar) {
-                $disco->delete('vehiculos/'.$v->foto);
-            }
-        }
-    }
-
-    if ($aplicar) {
-        $borrados = \Illuminate\Support\Facades\DB::table('vehiculos')->delete();
-
-        // Fotos huérfanas que quedaron de registros ya eliminados antes.
-        foreach ($disco->files('vehiculos') as $archivo) {
-            $disco->delete($archivo);
-            $archivos++;
-        }
-    }
-
-    $lineas[] = '';
-    $lineas[] = 'Fotografías: '.$archivos;
-    $lineas[] = '';
-
-    if ($aplicar) {
-        $lineas[] = "✅ Se eliminaron {$borrados} registro(s) y {$archivos} fotografía(s).";
-        $lineas[] = '';
-        $lineas[] = 'No se tocó ninguna otra tabla. Los pagos, usuarios y documentos';
-        $lineas[] = 'quedaron exactamente como estaban.';
-    } else {
-        $lineas[] = 'Esto es SOLO una vista previa. Para borrarlo de verdad, agrega al final';
-        $lineas[] = 'de la dirección:  ?aplicar=CONFIRMAR';
-        $lineas[] = '';
-        $lineas[] = 'No se puede deshacer. Respalda la base antes si quieres vuelta atrás.';
-    }
-
-    return response('<pre>'.e(implode("\n", $lineas)).'</pre>');
-});
+    return ejecutarMigracionWeb();
+})->middleware('throttle:10,1');
 
 /*
- * Limpieza de avisos viejos que nombran a un vecino.
- *
- * El módulo de estacionamiento dejó de mandar estos avisos hace tiempo, pero
- * los que se mandaron entonces siguen en el centro de notificaciones de todos:
- * cada uno dice "el cajón X está ahora ocupado por <nombre completo> #<casa>".
- * Es el nombre de un vecino a la vista de los demás, sin que aporte nada hoy.
- *
- * Solo toca notificaciones. Ni un pago, ni un usuario, ni un documento.
- *
- *   Ver qué se borraría : /purgar-avisos-viejos/TOKEN
- *   Borrar de verdad    : /purgar-avisos-viejos/TOKEN?aplicar=CONFIRMAR
- */
-Route::get('/purgar-avisos-viejos/{token}', function ($token) {
-    if (! tokenMantenimientoValido($token)) {
-        abort(403, 'No autorizado');
+|--------------------------------------------------------------------------
+| ACTUALIZACIÓN DE UN SOLO USO (noviembre 2026)
+|--------------------------------------------------------------------------
+| Hace de una vez lo que piden /migrar y /limpiar-cache, sin depender del
+| token del .env: la llave va en la URL y es aleatoria.
+|
+| Se bloquea sola: al terminar crea storage/app/actualizacion-2026-11.lock y
+| cualquier visita posterior responde 410. Puedes borrar esta ruta cuando
+| quieras; mientras esté, ya no hace nada.
+|
+| Solo AGREGA columnas y tablas (la misma lógica de /migrar); no modifica ni
+| elimina ningún dato existente.
+*/
+Route::get('/actualizar-una-vez/{clave}', function ($clave) {
+    $candado = storage_path('app/actualizacion-2026-11.lock');
+
+    if (! hash_equals('36e1da42755a276804b4d1f6516ed787bf0cbed7', (string) $clave)) {
+        abort(404);
     }
 
-    $aplicar = request('aplicar') === 'CONFIRMAR';
-    $db = \Illuminate\Support\Facades\DB::class;
-
-    // Los textos que nombran a alguien. Se buscan literales para no barrer de
-    // más: un aviso de pago o de comunicado no entra aquí.
-    $patrones = [
-        '%ocupado por%',
-        '%lo ocupaba%',
-        '%ya está en uso por%',
-    ];
-
-    $consulta = fn () => $db::table('notifications')->where(function ($q) use ($patrones) {
-        foreach ($patrones as $p) {
-            $q->orWhere('data', 'like', $p);
-        }
-    });
-
-    $total = $db::table('notifications')->count();
-    $afectadas = $consulta()->count();
-    $destinatarios = $consulta()->distinct()->count('notifiable_id');
-
-    $lineas = [];
-    $lineas[] = $aplicar ? '=== BORRADO APLICADO ===' : '=== VISTA PREVIA (no se ha borrado nada) ===';
-    $lineas[] = '';
-    $lineas[] = 'Notificaciones en total      : '.$total;
-    $lineas[] = 'Que nombran a un vecino      : '.$afectadas;
-    $lineas[] = 'Vecinos que las están viendo : '.$destinatarios;
-    $lineas[] = '';
-    $lineas[] = 'Ejemplos:';
-
-    foreach ($consulta()->limit(5)->get(['data']) as $n) {
-        $d = json_decode($n->data, true);
-        $lineas[] = '  · '.mb_substr($d['mensaje'] ?? $n->data, 0, 90);
+    if (file_exists($candado)) {
+        abort(410, 'Esta actualización ya se ejecutó. Puedes borrar esta ruta.');
     }
 
-    $lineas[] = '';
+    $migracion = ejecutarMigracionWeb()->getContent();
 
-    if ($aplicar) {
-        $borradas = $consulta()->delete();
-        $lineas[] = "✅ Se eliminaron {$borradas} notificación(es).";
-        $lineas[] = '';
-        $lineas[] = 'Quedan '.$db::table('notifications')->count().' notificaciones.';
-        $lineas[] = 'No se tocó ninguna otra tabla.';
-    } else {
-        $lineas[] = 'Esto es SOLO una vista previa. Para borrarlo de verdad, agrega al final';
-        $lineas[] = 'de la dirección:  ?aplicar=CONFIRMAR';
-        $lineas[] = '';
-        $lineas[] = 'Se borran únicamente notificaciones. Nada de pagos ni de usuarios.';
-    }
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('config:cache');
 
-    return response('<pre>'.e(implode("\n", $lineas)).'</pre>');
-});
+    file_put_contents($candado, now()->toDateTimeString());
 
-/*
- * Conversión de sobrepagos históricos en saldo a favor.
- *
- * Reconoce formalmente, como saldo del vecino, todo lo que ya pagó por encima
- * de su cuota antes de que existiera el módulo de saldos. Es dinero real de
- * los condóminos, así que NO se aplica sola: por defecto solo muestra el
- * detalle de a quién y cuánto, y hay que confirmar explícitamente.
- *
- *   Ver el detalle : /saldos-historicos/admin123
- *   Aplicar        : /saldos-historicos/admin123?aplicar=CONFIRMAR
- *
- * Es idempotente: registrarExcedente() no duplica abonos de un recibo que ya
- * los generó, así que volver a ejecutarla no infla ningún saldo.
- */
-Route::get('/saldos-historicos/{token}', function ($token) {
-    if (! tokenMantenimientoValido($token)) {
-        abort(403, 'No autorizado');
-    }
+    return response($migracion."<pre>Caché y configuración actualizadas.\n\nTodo listo. Esta dirección ya no volverá a funcionar.</pre>");
+})->middleware('throttle:10,1');
 
-    if (! \Illuminate\Support\Facades\Schema::hasTable('saldo_movimientos')) {
-        return response('<pre>Falta la tabla saldo_movimientos. Corre primero /migrar/admin123</pre>');
-    }
-
-    $aplicar = request('aplicar') === 'CONFIRMAR';
-    $servicio = app(\App\Services\SaldoService::class);
-
-    // Conceptos que el tesorero puede declarar como anticipo íntegro: ahí el
-    // pago COMPLETO es saldo a favor, no solo lo que exceda de la cuota.
-    // Hace falta porque algunos anticipos se cargaron con la cuota igual al
-    // monto anticipado (p. ej. "Pago Anticipado Junio 2026" de $1,300), y por
-    // esa vía el excedente sale en cero aunque todo el dinero sea adelanto.
-    $idsAnticipo = collect(explode(',', (string) request('anticipos', '')))
-        ->map(fn ($x) => (int) trim($x))
-        ->filter()
-        ->all();
-
-    // Conceptos que se dejan fuera del cálculo de excedentes.
-    //
-    // Hace falta para las derramas cobradas en parcialidades: en el proyecto
-    // de la puerta peatonal la cuota se registró por parcialidad ($427) y
-    // varios vecinos pagaron las dos juntas ($854). Ese doble no es dinero a
-    // favor suyo, es la misma derrama liquidada de una sola vez.
-    $idsExcluidos = collect(explode(',', (string) request('excluir', '')))
-        ->map(fn ($x) => (int) trim($x))
-        ->filter()
-        ->all();
-
-    $abonar = function ($detalle, $monto, $descripcion) use ($aplicar) {
-        $previo = (float) \App\Models\SaldoMovimiento::where('detallepago_id', $detalle->id)
-            ->where('tipo', \App\Models\SaldoMovimiento::TIPO_ABONO)
-            ->sum('monto');
-
-        $pendiente = round($monto - $previo, 2);
-
-        if ($pendiente <= 0) {
-            return 'ya registrado';
-        }
-
-        if (! $aplicar) {
-            return 'por aplicar';
-        }
-
-        \App\Models\SaldoMovimiento::create([
-            'user_id' => $detalle->user_id,
-            'tipo' => \App\Models\SaldoMovimiento::TIPO_ABONO,
-            'monto' => $pendiente,
-            'detallepago_id' => $detalle->id,
-            'descripcion' => $descripcion,
-            'created_by' => optional(\Illuminate\Support\Facades\Auth::user())->id,
-        ]);
-
-        return 'APLICADO';
-    };
-
-    $fmt = fn ($d, $monto, $estado) => sprintf(
-        '  %-30s casa %-5s %-28s $%10s  (%s)',
-        mb_substr($d->user->nombre ?? 'Usuario eliminado', 0, 28),
-        $d->user->casa ?? '?',
-        mb_substr($d->pago->concepto, 0, 26),
-        number_format($monto, 2),
-        $estado
-    );
-
-    $pagados = \App\Models\Detallepago::with(['pago', 'user'])
-        ->where('estado', 'pagado')
-        ->whereNotNull('cantidad_pago')
-        ->get()
-        ->filter(fn ($d) => $d->pago);
-
-    /* ---------- Bloque A: lo pagado por encima de la cuota ----------
-     *
-     * No todo excedente es saldo a favor. Quien paga tarde cubre un recargo
-     * del 10 %, y ese dinero es ingreso del condominio, no crédito del vecino.
-     * Como el recargo nunca se registró aparte, aquí se reconoce por su
-     * proporción: un excedente que cae dentro del margen del recargo se
-     * clasifica como mora y se deja FUERA del saldo.
-     *
-     * El porcentaje es ajustable con ?recargo=10 y el margen con ?margen=1.5
-     * (en puntos porcentuales), por si algún concepto usó otra regla.
-     */
-    $pctRecargo = (float) request('recargo', 10);
-    $margen = (float) request('margen', 1.5);
-
-    $lineasA = [];
-    $lineasRecargo = [];
-    $lineasDudosas = [];
-    $totalA = 0.0;
-    $totalRecargo = 0.0;
-    $totalDudoso = 0.0;
-
-    $lineasExcluidas = [];
-    $totalExcluido = 0.0;
-    $saldoProyectado = [];
-
-    foreach ($pagados as $d) {
-        if (in_array($d->pago_id, $idsAnticipo, true)) {
-            continue; // se trata completo en el bloque B
-        }
-
-        // Concepto excluido a mano: se reporta para dejar constancia, pero
-        // no genera saldo a favor.
-        if (in_array($d->pago_id, $idsExcluidos, true)) {
-            $sobra = round($d->cantidad_pago - (float) $d->pago->cantidad, 2);
-
-            if ($sobra > 0) {
-                $totalExcluido += $sobra;
-                $lineasExcluidas[] = $fmt($d, $sobra, 'excluido - no genera saldo');
-            }
-
-            continue;
-        }
-
-        $cuota = (float) $d->pago->cantidad;
-        $excedente = round($d->cantidad_pago - $cuota, 2);
-
-        if ($excedente <= 0) {
-            continue;
-        }
-
-        $pct = $cuota > 0 ? ($excedente / $cuota) * 100 : null;
-
-        // Un excedente que no alcanza a cubrir otra cuota completa no es
-        // adelanto: es recargo por mora. Cubre tanto el 10 % exacto como los
-        // montos irregulares que se cobraron por el mismo motivo.
-        if ($pct !== null && $pct < 95) {
-            $totalRecargo += $excedente;
-
-            $etiqueta = abs($pct - $pctRecargo) <= $margen
-                ? 'recargo '.round($pct, 1).'% - NO es saldo'
-                : 'recargo irregular '.round($pct, 1).'% - NO es saldo';
-
-            $lineasRecargo[] = $fmt($d, $excedente, $etiqueta);
-
-            continue;
-        }
-
-        $totalA += $excedente;
-        // En vista previa los abonos todavía no existen en la base, así que se
-        // lleva aparte el saldo que tendría cada vecino para poder simular el
-        // bloque C sin escribir nada.
-        $saldoProyectado[$d->user_id] = ($saldoProyectado[$d->user_id] ?? 0) + $excedente;
-        $lineasA[] = $fmt($d, $excedente, $abonar($d, $excedente, 'Pago de más en "'.$d->pago->concepto.'"'));
-    }
-
-    /* ---------- Bloque B: conceptos declarados como anticipo ---------- */
-
-    $lineasB = [];
-    $totalB = 0.0;
-
-    foreach ($pagados as $d) {
-        if (! in_array($d->pago_id, $idsAnticipo, true)) {
-            continue;
-        }
-
-        $monto = round((float) $d->cantidad_pago, 2);
-
-        if ($monto <= 0) {
-            continue;
-        }
-
-        $totalB += $monto;
-        $saldoProyectado[$d->user_id] = ($saldoProyectado[$d->user_id] ?? 0) + $monto;
-        $lineasB[] = $fmt($d, $monto, $abonar($d, $monto, 'Anticipo: "'.$d->pago->concepto.'"'));
-    }
-
-    /* ---------- Conceptos que parecen anticipo y no fueron incluidos ---------- */
-
-    $sugerencias = \App\Models\Pago::where(function ($q) {
-        $q->where('concepto', 'like', '%anticip%')
-            ->orWhere('concepto', 'like', '%adelant%');
-    })
-        ->get()
-        ->reject(fn ($p) => in_array($p->id, $idsAnticipo, true) || (float) $p->cantidad == 0.0);
-
-    /* ---------- Salida ---------- */
-
-    $txt = $aplicar
-        ? "SALDOS HISTORICOS - APLICADO\n"
-        : "SALDOS HISTORICOS - VISTA PREVIA (no se ha cambiado nada)\n";
-
-    $txt .= "\nA) ADELANTOS - se convierten en saldo a favor\n";
-    $txt .= $lineasA ? implode("\n", $lineasA)."\n" : "  (ninguno)\n";
-    $txt .= sprintf("  %-68s $%10s\n", '   subtotal A ('.count($lineasA).' recibos)', number_format($totalA, 2));
-
-    if ($idsExcluidos) {
-        $txt .= "\nX) CONCEPTOS EXCLUIDOS A MANO - NO se convierten\n";
-        $txt .= "   (derramas cobradas en parcialidades: pagar dos juntas no es saldo a favor)\n";
-        $txt .= $lineasExcluidas ? implode("\n", $lineasExcluidas)."\n" : "  (ninguno con excedente)\n";
-        $txt .= sprintf("  %-68s $%10s\n", '   subtotal excluido ('.count($lineasExcluidas).' recibos)', number_format($totalExcluido, 2));
-    }
-
-    $txt .= "\nR) RECARGOS POR MORA (~".$pctRecargo."%) - NO se convierten, son ingreso del condominio\n";
-    $txt .= $lineasRecargo ? implode("\n", $lineasRecargo)."\n" : "  (ninguno)\n";
-    $txt .= sprintf("  %-68s $%10s\n", '   subtotal recargos ('.count($lineasRecargo).' recibos)', number_format($totalRecargo, 2));
-
-
-    $txt .= "\nB) CONCEPTOS DECLARADOS COMO ANTICIPO INTEGRO\n";
-
-    if ($idsAnticipo) {
-        $txt .= $lineasB ? implode("\n", $lineasB)."\n" : "  (ninguno)\n";
-        $txt .= sprintf("  %-68s $%10s\n", '   subtotal B ('.count($lineasB).' recibos)', number_format($totalB, 2));
-    } else {
-        $txt .= "  (no declaraste ningun concepto como anticipo integro)\n";
-    }
-
-    $txt .= "\n".str_repeat('-', 100)."\n";
-    $txt .= sprintf("  %-68s $%10s\n", 'TOTAL A CONVERTIR EN SALDO A FAVOR', number_format($totalA + $totalB, 2));
-
-    /* ---------- Completar las mensualidades que nunca se cargaron ----------
-     *
-     * Quien pagó por adelantado normalmente no recibió los recibos de esos
-     * meses: la mesa simplemente no se los generó porque ya estaban cubiertos.
-     * Eso deja su estado de cuenta incompleto y hace parecer que el anticipo
-     * sigue entero cuando en realidad ya se consumió.
-     *
-     * Con ?completar_meses=1 se le crean esos recibos y el saldo a favor los
-     * liquida solo, dejando el expediente completo y el sobrante correcto.
-     *
-     * Se limita a quien TIENE saldo: a un vecino sin anticipo, crearle el
-     * recibo faltante le generaría una deuda, y esa es una decisión de
-     * tesorería que no corresponde tomar aquí.
-     */
-    /* ---------- Modo neto: descontar los meses ya consumidos ----------
-     *
-     * Quien pagó por adelantado normalmente no recibió los recibos de esos
-     * meses, así que su anticipo parece intacto cuando en realidad ya se
-     * gastó. Aquí se le descuenta lo consumido con un ajuste negativo, sin
-     * crear esos recibos: el histórico y el reporte no se tocan, y el vecino
-     * queda con el saldo que de verdad le sobra.
-     *
-     * Es la alternativa a ?completar_meses=1, que sí crea los recibos pero
-     * mete al reporte un ingreso que ya estaba contado.
-     */
-    if (request('neto') == '1') {
-        $mensuales = \App\Models\Pago::where('concepto', 'like', 'MANTENIMIENTO%')
-            ->where('concepto', 'not like', '%INQ%')
-            ->where('cantidad', '>', 0)
-            ->orderBy('vencimiento')
-            ->get();
-
-        $txt .= "\nN) MESES QUE EL ANTICIPO YA CUBRIO (se descuentan del saldo)\n";
-        $txt .= "   No se crea ningun recibo: el reporte historico no se altera.\n";
-
-        $conSaldo = $aplicar
-            ? \App\Models\SaldoMovimiento::select('user_id')->distinct()->pluck('user_id')->all()
-            : array_keys($saldoProyectado);
-
-        $lineasN = [];
-        $totalN = 0.0;
-
-        // Lo descontado a cada vecino, para poder mostrar su saldo final
-        // también en la vista previa (ahí los movimientos aún no existen).
-        $descontadoPorUsuario = [];
-
-        // Cuota mensual vigente, solo para traducir el saldo a "meses".
-        $cuotaReferencia = (float) ($mensuales->last()->cantidad ?? 0);
-
-        foreach ($conSaldo as $uid) {
-            $disponible = $aplicar
-                ? $servicio->saldo($uid)
-                : ($saldoProyectado[$uid] ?? 0);
-
-            if ($disponible <= 0) {
-                continue;
-            }
-
-            $usuario = \App\Models\User::withTrashed()->find($uid);
-            $yaTiene = \App\Models\Detallepago::where('user_id', $uid)->pluck('pago_id')->all();
-
-            foreach ($mensuales as $mes) {
-                if (in_array($mes->id, $yaTiene, true)) {
-                    continue;
-                }
-
-                $cuota = (float) $mes->cantidad;
-
-                if ($disponible + 0.001 < $cuota) {
-                    continue;
-                }
-
-                $disponible -= $cuota;
-                $totalN += $cuota;
-                $descontadoPorUsuario[$uid] = ($descontadoPorUsuario[$uid] ?? 0) + $cuota;
-
-                if ($aplicar) {
-                    $servicio->ajustar(
-                        $uid,
-                        -$cuota,
-                        'Ya cubierto por su anticipo: '.$mes->concepto.' (sin recibo generado)'
-                    );
-                }
-
-                $lineasN[] = sprintf('  %-30s casa %-5s %-28s -$%9s  (%s)',
-                    mb_substr($usuario->nombre ?? '?', 0, 28), $usuario->casa ?? '?',
-                    mb_substr($mes->concepto, 0, 26), number_format($cuota, 2),
-                    $aplicar ? 'DESCONTADO' : 'se descontaria');
-            }
-        }
-
-        $txt .= $lineasN ? implode("\n", $lineasN)."\n" : "  (ninguno)\n";
-        $txt .= sprintf("  %-68s -$%9s\n", '   subtotal descontado ('.count($lineasN).' meses)', number_format($totalN, 2));
-
-        $txt .= "\n".str_repeat('-', 100)."\n";
-        $txt .= sprintf("  %-68s $%10s\n", 'SALDO NETO QUE QUEDA A FAVOR DE LOS VECINOS', number_format(($totalA + $totalB) - $totalN, 2));
-
-        /*
-         * Detalle final por vecino: es la tabla que tesorería necesita revisar
-         * ANTES de confirmar, así que se arma también en la vista previa
-         * restando al saldo proyectado lo que se descontaría en este bloque.
-         */
-        $txt .= "\n  SALDO FINAL POR VECINO:\n";
-
-        $filas = [];
-
-        foreach ($conSaldo as $uid) {
-            $usuario = \App\Models\User::withTrashed()->find($uid);
-
-            $final = $aplicar
-                ? $servicio->saldo($uid)
-                : round(($saldoProyectado[$uid] ?? 0) - ($descontadoPorUsuario[$uid] ?? 0), 2);
-
-            $meses = $final > 0 && $cuotaReferencia > 0
-                ? '  ('.round($final / $cuotaReferencia, 1).' meses de cuota)'
-                : '';
-
-            $filas[] = sprintf('    casa %-5s %-32s $%10s%s',
-                $usuario->casa ?? '?',
-                mb_substr($usuario->nombre ?? '?', 0, 30),
-                number_format(max($final, 0), 2),
-                $meses);
-        }
-
-        $txt .= $filas ? implode("\n", $filas)."\n" : "    (ninguno)\n";
-    }
-
-    if (request('completar_meses') == '1') {
-        $mensuales = \App\Models\Pago::where('concepto', 'like', 'MANTENIMIENTO%')
-            ->where('concepto', 'not like', '%INQ%')
-            ->where('cantidad', '>', 0)
-            ->orderBy('vencimiento')
-            ->get();
-
-        $txt .= "\nC) MENSUALIDADES QUE NUNCA SE CARGARON (se liquidan con el saldo)\n";
-
-        // Al aplicar, el saldo ya está en la base. En vista previa se usa el
-        // proyectado, que es lo que tendrían tras los bloques A y B.
-        $conSaldo = $aplicar
-            ? \App\Models\SaldoMovimiento::select('user_id')->distinct()->pluck('user_id')->all()
-            : array_keys($saldoProyectado);
-
-        $lineasC = [];
-        $totalC = 0.0;
-
-        foreach ($conSaldo as $uid) {
-            $disponible = $aplicar
-                ? $servicio->saldo($uid)
-                : ($saldoProyectado[$uid] ?? 0);
-
-            if ($disponible <= 0) {
-                continue;
-            }
-
-            $usuario = \App\Models\User::withTrashed()->find($uid);
-            $yaTiene = \App\Models\Detallepago::where('user_id', $uid)->pluck('pago_id')->all();
-
-            foreach ($mensuales as $mes) {
-                if (in_array($mes->id, $yaTiene, true)) {
-                    continue;
-                }
-
-                $disponible = $aplicar
-                    ? $servicio->saldo($uid)
-                    : $disponible;
-
-                // Solo si el saldo alcanza para cubrirlo completo.
-                if ($disponible + 0.001 < (float) $mes->cantidad) {
-                    continue;
-                }
-
-                $totalC += (float) $mes->cantidad;
-
-                // En la simulación hay que ir descontando a mano lo que se
-                // consumiría, o un saldo chico parecería cubrir todos los meses.
-                if (! $aplicar) {
-                    $disponible -= (float) $mes->cantidad;
-                }
-
-                if (! $aplicar) {
-                    $lineasC[] = sprintf('  %-30s casa %-5s %-28s $%10s  (se crearia y liquidaria)',
-                        mb_substr($usuario->nombre ?? '?', 0, 28), $usuario->casa ?? '?',
-                        mb_substr($mes->concepto, 0, 26), number_format($mes->cantidad, 2));
-
-                    continue;
-                }
-
-                $nuevo = \App\Models\Detallepago::create([
-                    'pago_id' => $mes->id,
-                    'user_id' => $uid,
-                ]);
-                $nuevo->setRelation('pago', $mes);
-
-                $ok = $servicio->aplicarA($nuevo);
-
-                $lineasC[] = sprintf('  %-30s casa %-5s %-28s $%10s  (%s)',
-                    mb_substr($usuario->nombre ?? '?', 0, 28), $usuario->casa ?? '?',
-                    mb_substr($mes->concepto, 0, 26), number_format($mes->cantidad, 2),
-                    $ok ? 'CREADO Y LIQUIDADO' : 'creado, sin saldo suficiente');
-            }
-        }
-
-        $txt .= $lineasC ? implode("\n", $lineasC)."\n" : "  (ninguna)\n";
-        $txt .= sprintf("  %-68s $%10s\n", '   subtotal C ('.count($lineasC).' recibos)', number_format($totalC, 2));
-
-        $txt .= "\n".str_repeat('-', 100)."\n";
-        $txt .= sprintf("  %-68s $%10s\n", 'SALDO QUE QUEDA DISPONIBLE DESPUES DE LIQUIDAR', number_format(($totalA + $totalB) - $totalC, 2));
-
-        if (! $aplicar) {
-            $txt .= "\n  Los recibos de arriba NO existen todavia. Al confirmar se crean y el\n";
-            $txt .= "  saldo los paga automaticamente, sin enviar correos a los vecinos.\n";
-        }
-    }
-
-    if ($sugerencias->isNotEmpty()) {
-        $txt .= "\nCONCEPTOS QUE PARECEN ANTICIPO Y NO ESTAS INCLUYENDO:\n";
-
-        foreach ($sugerencias as $p) {
-            $cobrado = \App\Models\Detallepago::where('pago_id', $p->id)->where('estado', 'pagado')->sum('cantidad_pago');
-            $txt .= sprintf("  id %-4s %-36s cuota $%10s   cobrado $%10s\n",
-                $p->id, mb_substr($p->concepto, 0, 34), number_format($p->cantidad, 2), number_format($cobrado, 2));
-        }
-
-        $txt .= "\n  Si ese dinero es adelanto que el vecino aun no consume, agregalo asi:\n";
-        $txt .= '     ?anticipos='.$sugerencias->pluck('id')->implode(',')."\n";
-        $txt .= "  Revisa antes que no se haya aplicado ya a recibos posteriores.\n";
-    }
-
-    $txt .= $aplicar
-        ? "\nListo. Los vecinos ya ven su saldo y se aplicara solo a su proxima cuota.\n  No se modifico ningun recibo existente.\n"
-        : "\nEsto es solo una VISTA PREVIA. No se guardo nada.\n  Para aplicarlo agrega  &aplicar=CONFIRMAR  a la URL.\n";
-
-    return response('<pre>'.e($txt).'</pre>');
-});
 
 /*
  * Logs del sistema.
@@ -1522,190 +1054,6 @@ Route::post('/desvincular-datos', [App\Http\Controllers\AvisoController::class, 
     ->middleware('auth')->name('legal.desvincular');
 
 /*
- * Enlace simbólico de storage, con diagnóstico.
- *
- * El caso real que se presentó: `public/storage` existía como CARPETA de
- * verdad, no como enlace. Pasa cada vez que el proyecto se sube por FTP o
- * comprimido, porque ni el zip ni el FTP conservan los enlaces: los copian
- * como directorios con archivos dentro. La versión anterior de esta ruta se
- * limitaba a responder "ya existe" y no resolvía nada.
- *
- *   Diagnóstico : /storage-link/admin123
- *   Arreglar    : /storage-link/admin123?arreglar=CONFIRMAR
- *
- * Al arreglar, primero copia al origen los archivos que sólo estén en esa
- * carpeta (comprobantes que se perderían), luego la renombra —no la borra— y
- * recién entonces crea el enlace.
- */
-Route::get('/storage-link/{token}', function ($token) {
-    if (! tokenMantenimientoValido($token)) {
-        abort(403, 'No autorizado');
-    }
-
-    $target = storage_path('app/public');
-    $link = public_path('storage');
-    $arreglar = request('arreglar') === 'CONFIRMAR';
-
-    $out = [];
-    $out[] = 'Origen  : '.$target;
-    $out[] = 'Enlace  : '.$link;
-    $out[] = '';
-
-    if (! is_dir($target)) {
-        $out[] = '❌ No existe la carpeta origen. Créala antes de continuar.';
-
-        return response('<pre>'.e(implode("\n", $out)).'</pre>');
-    }
-
-    // Lista de rutas relativas de un directorio.
-    $listar = function ($base) {
-        if (! is_dir($base)) {
-            return [];
-        }
-
-        $items = [];
-
-        // FOLLOW_SYMLINKS es necesario para poder contar a través del propio
-        // enlace; sin él el recorrido devuelve cero archivos.
-        $it = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator(
-                $base,
-                FilesystemIterator::SKIP_DOTS | FilesystemIterator::FOLLOW_SYMLINKS
-            )
-        );
-
-        foreach ($it as $f) {
-            if ($f->isFile()) {
-                $items[] = ltrim(str_replace($base, '', $f->getPathname()), '/\\');
-            }
-        }
-
-        return $items;
-    };
-
-    // No basta con is_link(): en Windows los "junction" que crea artisan no
-    // lo satisfacen y la ruta los confundía con una carpeta normal. Comparar
-    // la ruta resuelta funciona igual en Windows y en el hosting Linux.
-    $yaEnlazado = file_exists($link)
-        && realpath($link) !== false
-        && realpath($link) === realpath($target);
-
-    if ($yaEnlazado || is_link($link)) {
-        $out[] = '✅ "storage" ya apunta al origen correcto.';
-        $out[] = 'Tipo: '.(is_link($link) ? 'enlace simbólico' : 'enlace de directorio (junction)');
-        // Se cuenta el origen y no el enlace: recorrer un enlace da resultados
-        // distintos según el sistema, y el contenido es el mismo.
-        $out[] = 'Archivos disponibles: '.count($listar($target));
-        $out[] = '';
-        $out[] = 'No hay nada que hacer.';
-
-        return response('<pre>'.e(implode("\n", $out)).'</pre>');
-    }
-
-    if (! file_exists($link)) {
-        if (! $arreglar) {
-            $out[] = 'ℹ️  No existe el enlace. Se puede crear sin riesgo.';
-            $out[] = 'Para crearlo agrega  ?arreglar=CONFIRMAR  a la URL.';
-
-            return response('<pre>'.e(implode("\n", $out)).'</pre>');
-        }
-
-        $ok = @symlink($target, $link);
-        $out[] = $ok
-            ? '✅ Enlace creado correctamente.'
-            : '❌ El hosting no permitió crear el enlace (symlink deshabilitado).';
-
-        return response('<pre>'.e(implode("\n", $out)).'</pre>');
-    }
-
-    // Existe como carpeta real: el caso problemático.
-    $enCarpeta = $listar($link);
-    $enOrigen = $listar($target);
-    $soloEnCarpeta = array_values(array_diff($enCarpeta, $enOrigen));
-
-    $out[] = '⚠️  "storage" existe como CARPETA REAL, no como enlace.';
-    $out[] = 'Por eso artisan storage:link responde "link already exists".';
-    $out[] = '';
-    $out[] = 'Archivos en esa carpeta      : '.count($enCarpeta);
-    $out[] = 'Archivos en el origen        : '.count($enOrigen);
-    $out[] = 'Solo en la carpeta (en riesgo): '.count($soloEnCarpeta);
-
-    foreach (array_slice($soloEnCarpeta, 0, 20) as $f) {
-        $out[] = '   - '.$f;
-    }
-
-    if (count($soloEnCarpeta) > 20) {
-        $out[] = '   ... y '.(count($soloEnCarpeta) - 20).' más';
-    }
-
-    if (! $arreglar) {
-        $out[] = '';
-        $out[] = 'VISTA PREVIA: no se ha modificado nada.';
-        $out[] = 'Al confirmar se hará, en este orden:';
-        $out[] = '  1. Copiar al origen los archivos que solo están en la carpeta.';
-        $out[] = '  2. Renombrar la carpeta a "storage_carpeta_vieja" (no se borra).';
-        $out[] = '  3. Crear el enlace simbólico.';
-        $out[] = '';
-        $out[] = 'Para aplicarlo agrega  ?arreglar=CONFIRMAR  a la URL.';
-
-        return response('<pre>'.e(implode("\n", $out)).'</pre>');
-    }
-
-    // 1. Rescatar lo que solo vive en la carpeta.
-    $copiados = 0;
-
-    foreach ($soloEnCarpeta as $rel) {
-        $origen = $link.DIRECTORY_SEPARATOR.$rel;
-        $destino = $target.DIRECTORY_SEPARATOR.$rel;
-
-        if (! is_dir(dirname($destino))) {
-            @mkdir(dirname($destino), 0755, true);
-        }
-
-        if (@copy($origen, $destino)) {
-            $copiados++;
-        }
-    }
-
-    $out[] = '';
-    $out[] = '✅ Archivos rescatados: '.$copiados.' de '.count($soloEnCarpeta);
-
-    if ($copiados < count($soloEnCarpeta)) {
-        $out[] = '❌ No se pudieron copiar todos. Se detiene aquí para no perder nada.';
-
-        return response('<pre>'.e(implode("\n", $out)).'</pre>');
-    }
-
-    // 2. Apartar la carpeta en vez de borrarla.
-    $viejo = dirname($link).DIRECTORY_SEPARATOR.'storage_carpeta_vieja';
-
-    if (file_exists($viejo)) {
-        $viejo .= '_'.date('YmdHis');
-    }
-
-    if (! @rename($link, $viejo)) {
-        $out[] = '❌ No se pudo renombrar la carpeta. Revisa permisos.';
-
-        return response('<pre>'.e(implode("\n", $out)).'</pre>');
-    }
-
-    $out[] = '✅ Carpeta apartada como: '.$viejo;
-
-    // 3. Crear el enlace.
-    if (@symlink($target, $link)) {
-        $out[] = '✅ Enlace simbólico creado.';
-        $out[] = '';
-        $out[] = 'Revisa que las imágenes se vean en la plataforma y, cuando confirmes';
-        $out[] = 'que todo está bien, puedes borrar "'.basename($viejo).'" por FTP.';
-    } else {
-        @rename($viejo, $link);
-        $out[] = '❌ El hosting no permitió crear el enlace. Se restauró la carpeta original.';
-        $out[] = 'Opción: en cPanel, apunta el document root a la carpeta public del proyecto.';
-    }
-
-    return response('<pre>'.e(implode("\n", $out)).'</pre>');
-});
-/*
 
 Route::get('/storage-link-test', function () {
     $target = storage_path('app/public');
@@ -1767,7 +1115,7 @@ Route::post('/notificaciones/{id}/marcar-leida', function ($id) {
  * las rutas de mantenimiento, para no dejar la ruta inservible tras desplegar.
  */
 Route::get('/cronjob/notificaciones-diarias/{token}', function ($token, CronjobController $controller) {
-    if (! hash_equals((string) env('CRON_TOKEN', 'admin123'), (string) $token)) {
+    if (! tokenCronValido($token)) {
         abort(403, 'No autorizado');
     }
 
@@ -1781,13 +1129,14 @@ Route::get('/cronjob/notificaciones-diarias/{token}', function ($token, CronjobC
     );
 })
     ->name('cronjob.notificaciones')
+    ->middleware('throttle:30,1')
     ->withoutMiddleware(['web', 'auth', 'verified']);
 
 // Verificación de cuenta por correo electrónico
-Route::get('/verificación/{id}/{token}', [PasswordController::class, 'verify'])->name('verify');
+Route::get('/verificación/{id}/{token}', [PasswordController::class, 'verify'])->middleware('throttle:10,1')->name('verify');
 
 // Reseterar contraseña
-Route::prefix('restablecer')->name('restart.')->group(function () {
+Route::prefix('restablecer')->name('restart.')->middleware('throttle:10,1')->group(function () {
     Route::controller(PasswordController::class)->prefix('contraseña')->name('password.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/restablecer', 'restart')->name('restart');
@@ -1922,6 +1271,7 @@ Route::middleware(['auth', 'aviso'])->group(function () {
                 Route::delete('/eliminar-pago/{id}', 'eliminarPago')->name('eliminarPago');
                 Route::delete('/eliminar-mainpago/{id}', 'eliminarMainPago')->name('eliminarMainPago');
                 Route::post('/actualizar-pago/{id}', 'actualizarPago')->name('actualizarPago');
+                Route::post('/exonerar-recargo/{id}', 'exonerarRecargo')->name('exonerarRecargo');
                 Route::post('/agregar-usuario', 'agregarUsuario')->name('agregarUsuario');
             });
         });
@@ -1948,17 +1298,17 @@ Route::middleware(['auth', 'aviso'])->group(function () {
         Route::controller(UsuariosController::class)->prefix('usuarios')->name('usuarios.')->group(function () {
             Route::get('/', 'listaUsuarios')->name('listaUsuarios');
             Route::get('/obtener-usuarios', 'obtenerUsuarios')->name('obtenerUsuarios');
-            Route::get('/bloquear-usuario/{id}', 'bloquearUsuario')->name('bloquearUsuario');
-            Route::get('/desbloquear-usuario/{id}', 'desbloquearUsuario')->name('desbloquearUsuario');
+            Route::post('/bloquear-usuario/{id}', 'bloquearUsuario')->name('bloquearUsuario');
+            Route::post('/desbloquear-usuario/{id}', 'desbloquearUsuario')->name('desbloquearUsuario');
             // Eliminar una cuenta y repartir roles son decisiones de quien
             // administra el sistema, no de la mesa directiva en turno. El
             // botón de eliminar ya solo se le mostraba al super-administrador;
             // esto lo hace valer también en el backend. Sin ello, cualquier
             // administrador podía nombrar administrador a otro vecino.
             Route::middleware('rol:super-administrador')->group(function () {
-                Route::get('/eliminar-usuario/{id}', 'eliminarUsuario')->name('eliminarUsuario');
-                Route::get('/administrador-usuario/{id}', 'administradorUsuario')->name('administradorUsuario');
-                Route::get('/usuario-usuario/{id}', 'usuarioUsuario')->name('usuarioUsuario');
+                Route::post('/eliminar-usuario/{id}', 'eliminarUsuario')->name('eliminarUsuario');
+                Route::post('/administrador-usuario/{id}', 'administradorUsuario')->name('administradorUsuario');
+                Route::post('/usuario-usuario/{id}', 'usuarioUsuario')->name('usuarioUsuario');
                 Route::post('/asignar-cargo/{id}', 'asignarCargo')->name('asignarCargo');
             });
             Route::post('/enviar-verificacion/{id}', 'enviarVerificacion')->name('enviarVerificacion');
@@ -2011,6 +1361,13 @@ Route::middleware(['auth', 'aviso'])->group(function () {
             Route::post('/cerrar/{id}', 'cerrar')->name('cerrar');
             Route::post('/punto/{puntoId}/toggle', 'togglePunto')->name('togglePunto');
             Route::post('/guardar-minuta/{id}', 'guardarMinuta')->name('guardarMinuta');
+            Route::post('/configurar/{id}', 'configurar')->name('configurar');
+            Route::post('/{id}/puntos', 'agregarPunto')->name('agregarPunto');
+            Route::delete('/punto/{puntoId}', 'eliminarPunto')->name('eliminarPunto');
+            Route::post('/punto/{puntoId}/resolucion', 'guardarResolucion')->name('guardarResolucion');
+            Route::post('/{id}/votos-mesa', 'registrarVotosMesa')->name('registrarVotosMesa');
+            Route::post('/{id}/unanimidad', 'unanimidad')->name('unanimidad');
+            Route::delete('/{id}/voto-mesa', 'quitarVotoMesa')->name('quitarVotoMesa');
             Route::delete('/eliminar/{id}', 'eliminar')->name('eliminar');
             Route::get('/acta/{id}', 'acta')->name('acta');
         });

@@ -104,7 +104,7 @@
                             <label class="form-label">Foto de evidencia *</label>
 
                             <div class="upload-area" id="upload-area-evidencia">
-                                <input type="file" name="evidencia" accept="image/*" id="evidencia-input" hidden>
+                                <input type="file" name="evidencia" accept="image/*" id="evidencia-input" hidden required>
 
                                 <label for="evidencia-input" class="upload-label">
                                     <div class="upload-placeholder" id="upload-placeholder-evidencia">
@@ -264,7 +264,7 @@
     </div>
 
     <div class="content evidencia-modal-content">
-        <img id="imagen-evidencia" src="" alt="Evidencia">
+        <img id="imagen-evidencia" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Evidencia">
     </div>
 </div>
 
@@ -365,18 +365,18 @@
 
 <style>
     :root {
-        --sancion-primary: #ef4444;
-        --sancion-primary-dark: #dc2626;
-        --sancion-secondary: #667eea;
-        --sancion-success: #10b981;
-        --sancion-warning: #f59e0b;
-        --sancion-info: #3b82f6;
-        --sancion-text-main: #0f172a;
-        --sancion-text-muted: #64748b;
-        --sancion-text-soft: #94a3b8;
-        --sancion-border: #e2e8f0;
+        --sancion-primary: var(--danger);
+        --sancion-primary-dark: var(--danger);
+        --sancion-secondary: var(--brand-600);
+        --sancion-success: var(--brand-500);
+        --sancion-warning: var(--oro-700);
+        --sancion-info: var(--brand-500);
+        --sancion-text-main: var(--ink);
+        --sancion-text-muted: var(--ink-3);
+        --sancion-text-soft: var(--ink-4);
+        --sancion-border: var(--arena);
         --sancion-surface: #ffffff;
-        --sancion-soft-bg: #f8fafc;
+        --sancion-soft-bg: var(--crema-50);
     }
 
     .sanciones-admin-page {
@@ -393,7 +393,7 @@
         padding: 26px;
         color: white;
         margin-bottom: 22px;
-        box-shadow: 0 12px 30px rgba(220, 38, 38, 0.18);
+        box-shadow: 0 12px 30px rgba(169,64,42, 0.18);
         overflow: hidden;
     }
 
@@ -477,7 +477,7 @@
         background: var(--sancion-surface);
         border: 1px solid var(--sancion-border);
         border-radius: 22px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         overflow: hidden;
     }
 
@@ -488,8 +488,8 @@
 
     .sancion-card-header {
         padding: 18px 20px;
-        border-bottom: 1px solid #f1f5f9;
-        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        border-bottom: 1px solid var(--crema-100);
+        background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
     }
 
     .sancion-card-title-wrap {
@@ -509,7 +509,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(239, 68, 68, 0.24);
+        box-shadow: 0 8px 18px rgba(192,67,44, 0.24);
     }
 
     .sancion-card-icon.secondary {
@@ -569,8 +569,8 @@
     }
 
     .sancion-input:focus {
-        border-color: rgba(239, 68, 68, 0.65) !important;
-        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12) !important;
+        border-color: rgba(192,67,44, 0.65) !important;
+        box-shadow: 0 0 0 4px rgba(192,67,44, 0.12) !important;
         outline: none;
         background: white;
     }
@@ -605,7 +605,7 @@
         width: 100%;
         min-height: 220px;
         border-radius: 18px;
-        border: 2px dashed #cbd5e1;
+        border: 2px dashed var(--arena-2);
         background: var(--sancion-soft-bg);
         transition: border-color 0.2s ease, background 0.2s ease;
         overflow: hidden;
@@ -614,7 +614,7 @@
     .upload-area:hover,
     .upload-area.dragover {
         border-color: var(--sancion-primary);
-        background: #fef2f2;
+        background: var(--danger-bg);
     }
 
     .upload-label {
@@ -643,7 +643,7 @@
         align-items: center;
         justify-content: center;
         margin-bottom: 14px;
-        box-shadow: 0 8px 18px rgba(239, 68, 68, 0.24);
+        box-shadow: 0 8px 18px rgba(192,67,44, 0.24);
     }
 
     .upload-icon i {
@@ -692,7 +692,7 @@
         max-width: 100%;
         max-height: 210px;
         border-radius: 14px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.12);
         object-fit: contain;
     }
 
@@ -711,12 +711,12 @@
         align-items: center;
         justify-content: center;
         transition: background 0.2s ease, transform 0.2s ease;
-        box-shadow: 0 8px 18px rgba(239, 68, 68, 0.28);
+        box-shadow: 0 8px 18px rgba(192,67,44, 0.28);
         z-index: 10;
     }
 
     .remove-preview-btn-evidencia:hover {
-        transform: scale(1.08);
+        
         background: var(--sancion-primary-dark);
     }
 
@@ -729,8 +729,8 @@
         align-items: center;
         gap: 6px;
         padding: 7px 12px;
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
         border-radius: 999px;
         font-size: 0.78rem;
         font-weight: 900;
@@ -750,7 +750,7 @@
         justify-content: center;
         gap: 8px;
         font-weight: 900;
-        box-shadow: 0 8px 18px rgba(239, 68, 68, 0.22);
+        box-shadow: 0 8px 18px rgba(192,67,44, 0.22);
     }
 
     .btn-submit-sancion i {
@@ -763,7 +763,7 @@
         grid-template-columns: minmax(0, 1fr) minmax(200px, 240px) auto;
         gap: 14px;
         align-items: end;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
     }
 
     .filter-field {
@@ -802,7 +802,7 @@
         align-items: center;
         gap: 12px;
         background: var(--sancion-soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 16px;
         padding: 12px 14px;
     }
@@ -811,7 +811,7 @@
         width: 42px;
         height: 42px;
         border-radius: 14px;
-        background: #fee2e2;
+        background: var(--danger-bg);
         color: var(--sancion-primary-dark);
         display: flex;
         align-items: center;
@@ -856,7 +856,7 @@
         border: 1px solid var(--sancion-border);
         border-radius: 18px;
         background: white;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+        box-shadow: 0 6px 18px rgba(20,32,26, 0.05);
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -864,14 +864,14 @@
     }
 
     .sancion-item-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(239, 68, 68, 0.35);
-        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        
+        border-color: rgba(192,67,44, 0.35);
+        box-shadow: 0 10px 24px rgba(20,32,26, 0.08);
     }
 
     .sancion-item-header {
         padding: 16px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
         display: flex;
         align-items: flex-start;
         gap: 12px;
@@ -881,7 +881,7 @@
         width: 46px;
         height: 46px;
         border-radius: 14px;
-        background: #fee2e2;
+        background: var(--danger-bg);
         color: var(--sancion-primary-dark);
         display: flex;
         align-items: center;
@@ -934,23 +934,23 @@
     }
 
     .sancion-badge.pendiente {
-        background: #fef3c7;
-        color: #92400e;
+        background: var(--warn-bg);
+        color: var(--warn);
     }
 
     .sancion-badge.pagado {
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
     }
 
     .sancion-badge.rechazado {
-        background: #fee2e2;
-        color: #991b1b;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .sancion-badge.incidencia {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: var(--info-bg);
+        color: var(--info);
     }
 
     .sancion-item-body {
@@ -989,8 +989,8 @@
 
     .sancion-item-footer {
         padding: 14px 16px 16px;
-        border-top: 1px solid #f1f5f9;
-        background: #fbfdff;
+        border-top: 1px solid var(--crema-100);
+        background: var(--crema-50);
     }
 
     .sancion-actions {
@@ -1029,21 +1029,21 @@
     }
 
     .sancion-actions .btn-ver-evidencia {
-        background: #f8fafc !important;
-        color: #475569 !important;
-        border: 1px solid #cbd5e1 !important;
+        background: var(--crema-50) !important;
+        color: var(--ink-2) !important;
+        border: 1px solid var(--arena-2) !important;
     }
 
     .sancion-actions .btn-editar {
-        background: #eff6ff !important;
-        color: #1d4ed8 !important;
-        border: 1px solid #bfdbfe !important;
+        background: var(--info-bg) !important;
+        color: var(--info) !important;
+        border: 1px solid var(--info-bg) !important;
     }
 
     .sancion-actions .btn-eliminar {
-        background: #fef2f2 !important;
-        color: #b91c1c !important;
-        border: 1px solid #fecaca !important;
+        background: var(--danger-bg) !important;
+        color: var(--danger) !important;
+        border: 1px solid var(--danger-bg) !important;
     }
 
     .sanciones-pagination {
@@ -1068,16 +1068,16 @@
     }
 
     .pagination-btn:hover {
-        background: #fef2f2;
+        background: var(--danger-bg);
         color: var(--sancion-primary-dark);
-        border-color: rgba(239, 68, 68, 0.35);
+        border-color: rgba(192,67,44, 0.35);
     }
 
     .pagination-btn.active {
         background: linear-gradient(135deg, var(--sancion-primary) 0%, var(--sancion-primary-dark) 100%);
         color: #ffffff;
         border-color: transparent;
-        box-shadow: 0 8px 18px rgba(239, 68, 68, 0.22);
+        box-shadow: 0 8px 18px rgba(192,67,44, 0.22);
     }
 
     .pagination-btn:disabled {
@@ -1105,7 +1105,7 @@
         height: 78px;
         border-radius: 24px;
         margin: 0 auto 18px;
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(220, 38, 38, 0.16));
+        background: linear-gradient(135deg, rgba(192,67,44, 0.12), rgba(169,64,42, 0.16));
         color: var(--sancion-primary-dark);
         display: flex;
         align-items: center;
@@ -1113,7 +1113,7 @@
     }
 
     .empty-sanciones-icon.error {
-        background: #fee2e2;
+        background: var(--danger-bg);
         color: var(--sancion-primary);
     }
 
@@ -1124,7 +1124,7 @@
 
     .empty-sanciones-card h3 {
         margin: 0 0 8px 0;
-        color: #475569;
+        color: var(--ink-2);
         font-weight: 900;
     }
 
@@ -1166,7 +1166,7 @@
         max-width: 100%;
         max-height: 72vh;
         border-radius: 14px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.18);
         object-fit: contain;
     }
 
@@ -1181,7 +1181,7 @@
         flex-wrap: wrap;
         padding: 16px 20px !important;
         background: var(--sancion-soft-bg) !important;
-        border-top: 1px solid #f1f5f9 !important;
+        border-top: 1px solid var(--crema-100) !important;
     }
 
     .sancion-modal-actions .button,
@@ -2089,9 +2089,10 @@
     }
 
     function extraerTexto(valor) {
-        const temporal = document.createElement('div');
-        temporal.innerHTML = valor || '';
-        return temporal.textContent || temporal.innerText || '';
+        // DOMParser crea un documento INERTE: no carga imagenes ni ejecuta
+        // onerror/onload. Un div.innerHTML sobre un elemento suelto SI los ejecuta,
+        // y por eso un nombre como <img src=x onerror=...> corria codigo aqui.
+        return new DOMParser().parseFromString(String(valor || ''), 'text/html').body.textContent || '';
     }
 
     function escapeHtml(text) {

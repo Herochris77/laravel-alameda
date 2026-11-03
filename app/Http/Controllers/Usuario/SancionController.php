@@ -96,8 +96,8 @@ class SancionController extends Controller
             foreach ($administradores as $admin) {
                 $subject = '💰 Nuevo pago de sanción';
                 $titulo = 'Pago de sanción recibido';
-                $mensaje = 'El usuario <strong>'.$usuario->nombre.'</strong> (Casa #'.$usuario->casa.') ha realizado el pago de su sanción.<br><br>
-                    <strong>Motivo:</strong> '.$sancion->motivo.'<br>
+                $mensaje = 'El usuario <strong>'.e($usuario->nombre).'</strong> (Casa #'.e($usuario->casa).') ha realizado el pago de su sanción.<br><br>
+                    <strong>Motivo:</strong> '.e($sancion->motivo).'<br>
                     <strong>Monto aplicado:</strong> $'.number_format($montoAnterior, 2).'<br>
                     <strong>Monto pagado:</strong> $'.number_format($montoNuevo, 2).'<br><br>
                     Por favor verifica el comprobante en el panel de administración.';
@@ -106,8 +106,8 @@ class SancionController extends Controller
 
                 $admin->notify(new NotificacionGenerica(
                     '💰 Pago de sanción',
-                    $usuario->nombre.' (Casa #'.$usuario->casa.') ha subido el pago de su sanción.<br>
-                    <strong>Motivo:</strong> '.$sancion->motivo.'<br>
+                    e($usuario->nombre).' (Casa #'.e($usuario->casa).') ha subido el pago de su sanción.<br>
+                    <strong>Motivo:</strong> '.e($sancion->motivo).'<br>
                     <strong>Monto:</strong> $'.number_format($montoNuevo, 2),
                     'sanciones',
                     'administrador/sancion/nueva-sancion',

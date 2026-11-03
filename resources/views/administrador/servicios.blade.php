@@ -2,7 +2,7 @@
 
     <div class="page-header">
         <div class="page-header-left">
-            <div class="page-icon" style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);">
+            <div class="page-icon" style="background: linear-gradient(135deg, var(--brand-700) 0%, var(--brand-800) 100%);">
                 <i class="calendar alternate icon"></i>
             </div>
             <div>
@@ -256,9 +256,9 @@
         .page-header-right { display: flex; gap: 10px; flex-wrap: wrap; }
 
         .sv-aviso-rol {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            color: #075985;
+            background: var(--info-bg);
+            border: 1px solid var(--info-bg);
+            color: var(--info);
             border-radius: 10px;
             padding: 10px 14px;
             margin-bottom: 16px;
@@ -274,7 +274,7 @@
 
         .sv-kpi {
             background: #fff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--arena);
             border-radius: 12px;
             padding: 12px 14px;
             display: flex;
@@ -282,25 +282,25 @@
             gap: 2px;
         }
 
-        .sv-kpi.alerta { border-color: #fcd34d; background: #fffbeb; }
-        .sv-kpi.peligro { border-color: #fca5a5; background: #fef2f2; }
+        .sv-kpi.alerta { border-color: var(--oro-300); background: var(--warn-bg); }
+        .sv-kpi.peligro { border-color: var(--danger-bg); background: var(--danger-bg); }
 
         .sv-kpi-label {
             font-size: .72rem;
             text-transform: uppercase;
             letter-spacing: .05em;
-            color: #64748b;
+            color: var(--ink-3);
             font-weight: 700;
         }
 
         .sv-kpi-valor {
             font-size: 1.45rem;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--ink);
             font-variant-numeric: tabular-nums;
         }
 
-        .sv-kpi-nota { font-size: .74rem; color: #94a3b8; line-height: 1.35; }
+        .sv-kpi-nota { font-size: .74rem; color: var(--ink-4); line-height: 1.35; }
 
         .sv-toolbar {
             display: flex;
@@ -313,8 +313,8 @@
         .sv-filtro { width: auto; min-width: 170px; }
 
         .sv-item {
-            border: 1px solid #e2e8f0;
-            border-left: 4px solid #cbd5e1;
+            border: 1px solid var(--arena);
+            border-left: 4px solid var(--arena-2);
             border-radius: 10px;
             padding: 12px 14px;
             margin-bottom: 10px;
@@ -324,18 +324,18 @@
             align-items: center;
         }
 
-        .sv-item.vencido { border-left-color: #dc2626; background: #fef2f2; }
-        .sv-item.hoy { border-left-color: #ea580c; background: #fff7ed; }
-        .sv-item.por_vencer { border-left-color: #d97706; background: #fffbeb; }
-        .sv-item.al_corriente { border-left-color: #16a34a; }
-        .sv-item.inactivo { border-left-color: #cbd5e1; opacity: .62; }
-        .sv-item.sin_fecha { border-left-color: #94a3b8; }
+        .sv-item.vencido { border-left-color: var(--danger); background: var(--danger-bg); }
+        .sv-item.hoy { border-left-color: var(--oro-700); background: var(--warn-bg); }
+        .sv-item.por_vencer { border-left-color: var(--oro-700); background: var(--warn-bg); }
+        .sv-item.al_corriente { border-left-color: var(--brand-600); }
+        .sv-item.inactivo { border-left-color: var(--arena-2); opacity: .62; }
+        .sv-item.sin_fecha { border-left-color: var(--ink-4); }
 
-        .sv-nombre { font-weight: 700; color: #0f172a; }
+        .sv-nombre { font-weight: 700; color: var(--ink); }
 
         .sv-meta {
             font-size: .8rem;
-            color: #64748b;
+            color: var(--ink-3);
             margin-top: 3px;
             display: flex;
             gap: 10px;
@@ -344,7 +344,7 @@
 
         .sv-ref {
             font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
-            background: #f1f5f9;
+            background: var(--crema-100);
             padding: 1px 6px;
             border-radius: 5px;
             font-size: .76rem;
@@ -358,12 +358,12 @@
             font-weight: 700;
         }
 
-        .sv-badge.vencido { background: #fee2e2; color: #991b1b; }
-        .sv-badge.hoy { background: #ffedd5; color: #9a3412; }
-        .sv-badge.por_vencer { background: #fef3c7; color: #92400e; }
-        .sv-badge.al_corriente { background: #dcfce7; color: #166534; }
-        .sv-badge.inactivo { background: #f1f5f9; color: #475569; }
-        .sv-badge.sin_fecha { background: #f1f5f9; color: #475569; }
+        .sv-badge.vencido { background: var(--danger-bg); color: var(--danger); }
+        .sv-badge.hoy { background: var(--warn-bg); color: var(--warn); }
+        .sv-badge.por_vencer { background: var(--warn-bg); color: var(--warn); }
+        .sv-badge.al_corriente { background: var(--ok-bg); color: var(--brand-800); }
+        .sv-badge.inactivo { background: var(--crema-100); color: var(--ink-2); }
+        .sv-badge.sin_fecha { background: var(--crema-100); color: var(--ink-2); }
 
         .sv-derecha { text-align: right; display: flex; align-items: center; gap: 14px; }
 
@@ -374,12 +374,12 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .sv-periodicidad { font-size: .74rem; color: #94a3b8; }
+        .sv-periodicidad { font-size: .74rem; color: var(--ink-4); }
 
         .sv-vacio {
             text-align: center;
             padding: 36px 16px;
-            color: #94a3b8;
+            color: var(--ink-4);
         }
 
         .sv-grid {
@@ -390,21 +390,21 @@
 
         .sv-col-2 { grid-column: 1 / -1; }
 
-        .sv-hint { margin: 5px 0 0; color: #94a3b8; font-size: .76rem; line-height: 1.4; }
+        .sv-hint { margin: 5px 0 0; color: var(--ink-4); font-size: .76rem; line-height: 1.4; }
 
         .sv-dias { display: flex; align-items: center; gap: 8px; }
         .sv-dias input { width: 90px; }
-        .sv-dias span { color: #64748b; font-size: .85rem; }
+        .sv-dias span { color: var(--ink-3); font-size: .85rem; }
 
         .sv-check { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: .88rem; }
 
         .sv-pago-encabezado {
-            background: #f8fafc;
+            background: var(--crema-50);
             border-radius: 10px;
             padding: 10px 12px;
             margin-bottom: 14px;
             font-size: .85rem;
-            color: #475569;
+            color: var(--ink-2);
             line-height: 1.55;
         }
 
@@ -412,13 +412,13 @@
         .sv-tabla-hist th {
             text-align: left;
             padding: 7px 9px;
-            background: #f8fafc;
+            background: var(--crema-50);
             font-size: .74rem;
             text-transform: uppercase;
-            color: #475569;
+            color: var(--ink-2);
             letter-spacing: .04em;
         }
-        .sv-tabla-hist td { padding: 7px 9px; border-bottom: 1px solid #f1f5f9; }
+        .sv-tabla-hist td { padding: 7px 9px; border-bottom: 1px solid var(--crema-100); }
         .sv-tabla-hist .num { text-align: right; font-variant-numeric: tabular-nums; }
 
         @media (max-width: 720px) {

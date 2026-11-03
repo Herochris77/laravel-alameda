@@ -3,7 +3,7 @@
     @php
         $usuarioFoto = auth()->user()->foto
             ? asset('storage/perfil/' . auth()->user()->foto)
-            : 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
+            : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiI+PHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiBmaWxsPSIjZTFlZWU1Ii8+PGNpcmNsZSBjeD0iNDgiIGN5PSIzNyIgcj0iMTciIGZpbGw9IiMwYjZiNDUiLz48cGF0aCBkPSJNMTQgOTZjMC0yMCAxNS0zMyAzNC0zM3MzNCAxMyAzNCAzM3oiIGZpbGw9IiMwYjZiNDUiLz48L3N2Zz4=';
 
         $tipoUsuario = ucfirst($user->tipo ?? 'residente');
         $casaUsuario = $user->casa ?: 'Sin asignar';
@@ -11,28 +11,27 @@
 
     <style>
         .perfil-page {
-            --primary: #667eea;
-            --primary-dark: #764ba2;
-            --primary-soft: #eef2ff;
+            --primary: var(--brand-600);
+            --primary-dark: var(--brand-800);
+            --primary-soft: var(--brand-50);
 
-            --success: #10b981;
-            --success-dark: #059669;
+            --success: var(--brand-500);
+            --success-dark: var(--brand-600);
 
-            --danger: #ef4444;
-            --danger-dark: #dc2626;
+            --danger-dark: var(--danger);
 
-            --warning: #f59e0b;
-            --warning-dark: #d97706;
+            --warning: var(--oro-700);
+            --warning-dark: var(--oro-700);
 
-            --info: #3b82f6;
+            --info: var(--brand-500);
 
-            --text: #0f172a;
-            --muted: #64748b;
-            --soft: #94a3b8;
+            --text: var(--ink);
+            --muted: var(--ink-3);
+            --soft: var(--ink-4);
 
-            --border: #e2e8f0;
+            --border: var(--arena);
             --surface: #ffffff;
-            --background: #f8fafc;
+            --background: var(--crema-50);
 
             width: 100%;
             padding-bottom: 32px;
@@ -83,7 +82,7 @@
                 );
 
             box-shadow:
-                0 14px 34px rgba(102,126,234,.19);
+                0 14px 34px rgba(11,107,69,.19);
         }
 
         .perfil-hero::after {
@@ -191,7 +190,7 @@
                 var(--surface);
 
             box-shadow:
-                0 5px 18px rgba(15,23,42,.045);
+                0 5px 18px rgba(20,32,26,.045);
         }
 
         .account-summary-icon {
@@ -277,7 +276,7 @@
                 var(--surface);
 
             box-shadow:
-                0 7px 22px rgba(15,23,42,.05);
+                0 7px 22px rgba(20,32,26,.05);
         }
 
         .perfil-card-header {
@@ -290,7 +289,7 @@
             padding: 16px 18px;
 
             border-bottom:
-                1px solid #f1f5f9;
+                1px solid var(--crema-100);
         }
 
         .perfil-card-title-wrap {
@@ -322,13 +321,13 @@
         }
 
         .perfil-card-icon.info {
-            color: #2563eb;
-            background: #eff6ff;
+            color: var(--info);
+            background: var(--info-bg);
         }
 
         .perfil-card-icon.tenant {
-            color: #0f766e;
-            background: #ccfbf1;
+            color: var(--brand-700);
+            background: var(--brand-100);
         }
 
         .perfil-card-icon i {
@@ -396,7 +395,7 @@
                 var(--background);
 
             box-shadow:
-                0 11px 28px rgba(15,23,42,.15);
+                0 11px 28px rgba(20,32,26,.15);
         }
 
         .avatar-badge {
@@ -427,7 +426,7 @@
                 );
 
             box-shadow:
-                0 6px 15px rgba(102,126,234,.25);
+                0 6px 15px rgba(11,107,69,.25);
         }
 
         .avatar-badge i {
@@ -458,7 +457,7 @@
                 var(--primary);
 
             background:
-                #f5f3ff;
+                var(--brand-50);
         }
 
         .upload-label {
@@ -586,7 +585,7 @@
             margin-bottom: 5px;
 
             color:
-                #475569;
+                var(--ink-2);
 
             font-size: .69rem;
 
@@ -624,7 +623,7 @@
                 9px 11px;
 
             border:
-                1px solid #dbe2ea !important;
+                1px solid var(--arena) !important;
 
             border-radius:
                 12px !important;
@@ -645,10 +644,10 @@
 
         .perfil-input:focus {
             border-color:
-                rgba(102,126,234,.6) !important;
+                rgba(11,107,69,.6) !important;
 
             box-shadow:
-                0 0 0 3px rgba(102,126,234,.08) !important;
+                0 0 0 3px rgba(11,107,69,.08) !important;
         }
 
         .input-with-icon {
@@ -787,7 +786,7 @@
         .setting-card.checked .setting-content,
         .setting-card input:checked + .setting-content {
             border-color:
-                rgba(102,126,234,.45);
+                rgba(11,107,69,.45);
 
             background:
                 #f7f7ff;
@@ -862,7 +861,7 @@
 
             border-radius: 999px;
 
-            background: #cbd5e1;
+            background: var(--arena-2);
 
             transition:
                 .18s ease;
@@ -884,7 +883,7 @@
             background: #fff;
 
             box-shadow:
-                0 2px 5px rgba(15,23,42,.15);
+                0 2px 5px rgba(20,32,26,.15);
 
             transition:
                 transform .18s ease;
@@ -927,7 +926,7 @@
             padding-top: 16px;
 
             border-top:
-                1px solid #f1f5f9;
+                1px solid var(--crema-100);
         }
 
         .perfil-btn {
@@ -970,14 +969,14 @@
                 );
 
             box-shadow:
-                0 7px 17px rgba(102,126,234,.18);
+                0 7px 17px rgba(11,107,69,.18);
         }
 
         .perfil-btn.secondary {
-            color: #475569;
+            color: var(--ink-2);
 
             background:
-                #f1f5f9;
+                var(--crema-100);
         }
 
         .perfil-btn.success {
@@ -988,17 +987,17 @@
         }
 
         .perfil-btn.info {
-            color: #1d4ed8;
+            color: var(--info);
 
             background:
-                #eff6ff;
+                var(--info-bg);
         }
 
         .perfil-btn.danger {
-            color: #b91c1c;
+            color: var(--danger);
 
             background:
-                #fef2f2;
+                var(--danger-bg);
         }
 
         .perfil-btn.loading,
@@ -1055,7 +1054,7 @@
             background: #fff;
 
             border-bottom:
-                1px solid #f1f5f9;
+                1px solid var(--crema-100);
         }
 
         .tenant-avatar {
@@ -1072,7 +1071,7 @@
             object-fit: cover;
 
             box-shadow:
-                0 7px 16px rgba(15,23,42,.10);
+                0 7px 16px rgba(20,32,26,.10);
         }
 
         .tenant-name {
@@ -1115,27 +1114,27 @@
         }
 
         .tenant-badge.type {
-            color: #0f766e;
+            color: var(--brand-700);
 
-            background: #ccfbf1;
+            background: var(--brand-100);
         }
 
         .tenant-badge.active {
-            color: #166534;
+            color: var(--brand-800);
 
-            background: #dcfce7;
+            background: var(--ok-bg);
         }
 
         .tenant-badge.pending {
-            color: #92400e;
+            color: var(--warn);
 
-            background: #fef3c7;
+            background: var(--warn-bg);
         }
 
         .tenant-badge.inactive {
-            color: #991b1b;
+            color: var(--danger);
 
-            background: #fee2e2;
+            background: var(--danger-bg);
         }
 
         .tenant-details {
@@ -1209,11 +1208,11 @@
             padding: 14px;
 
             border:
-                1px solid #fde68a;
+                1px solid var(--warn-bg);
 
             border-radius: 14px;
 
-            background: #fffbeb;
+            background: var(--warn-bg);
         }
 
         .permission-info-head {
@@ -1225,7 +1224,7 @@
 
             margin-bottom: 6px;
 
-            color: #92400e;
+            color: var(--warn);
 
             font-size: .75rem;
 
@@ -1239,7 +1238,7 @@
         .permission-info p {
             margin: 0;
 
-            color: #92400e;
+            color: var(--warn);
 
             font-size: .68rem;
 
@@ -1292,15 +1291,15 @@
             padding: 10px 11px;
 
             border:
-                1px solid #dbeafe;
+                1px solid var(--info-bg);
 
             border-radius: 11px;
 
             background:
-                #eff6ff;
+                var(--info-bg);
 
             color:
-                #1e40af;
+                var(--info);
 
             font-size: .7rem;
 
@@ -2242,7 +2241,7 @@
                                                     'storage/perfil/'
                                                     .$inquilino->foto
                                                 )
-                                                : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'
+                                                : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiI+PHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiBmaWxsPSIjZTFlZWU1Ii8+PGNpcmNsZSBjeD0iNDgiIGN5PSIzNyIgcj0iMTciIGZpbGw9IiMwYjZiNDUiLz48cGF0aCBkPSJNMTQgOTZjMC0yMCAxNS0zMyAzNC0zM3MzNCAxMyAzNCAzM3oiIGZpbGw9IiMwYjZiNDUiLz48L3N2Zz4='
                                         }}"
                                         class="tenant-avatar"
                                         alt="Foto de {{ $inquilino->nombre }}"
@@ -2946,21 +2945,25 @@
                 }
 
 
-                if (
-                    file.size
-                    >
-                    5 * 1024 * 1024
-                ) {
+                // El servidor acepta hasta 2 MB: una foto más pesada se reduce sola.
+                if (file.size > 2 * 1024 * 1024) {
 
-                    alertify.error(
-                        'La imagen no puede superar los 5 MB.'
-                    );
+                    window.comprimirImagen(file, 2 * 1024 * 1024).then(function (reducida) {
 
+                        if (!reducida) {
+                            alertify.error('No pudimos reducir esa foto. Prueba con otra.');
+                            if (fileInput) { fileInput.value = ''; }
+                            return;
+                        }
 
-                    if (fileInput) {
-                        fileInput.value = '';
-                    }
+                        if (fileInput) {
+                            var lista = new DataTransfer();
+                            lista.items.add(reducida);
+                            fileInput.files = lista.files;
+                        }
 
+                        previewSelectedPhoto(reducida);
+                    });
 
                     return;
                 }

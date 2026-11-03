@@ -1,0 +1,1 @@
+@include('errors.layout', ['titulo' => 'No encontramos esa página', 'mensaje' => 'Puede que el enlace esté incompleto o que la página ya no exista. Regresa al inicio y busca desde ahí.', 'icono' => 'search', 'codigo' => '404', 'destino' => url('/inicio')])

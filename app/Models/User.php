@@ -86,7 +86,10 @@ class User extends Authenticatable
      */
     public function haAceptadoAviso(): bool
     {
-        if (! \Illuminate\Support\Facades\Schema::hasColumn('users', 'acepto_aviso_en')) {
+        static $tieneColumna = null;
+        $tieneColumna ??= \Illuminate\Support\Facades\Schema::hasColumn('users', 'acepto_aviso_en');
+
+        if (! $tieneColumna) {
             // Todavía no se corre /migrar: no se puede exigir lo que no se
             // puede registrar, y bloquear el sistema entero sería peor.
             return true;

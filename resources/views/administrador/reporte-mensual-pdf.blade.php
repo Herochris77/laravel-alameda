@@ -40,7 +40,7 @@
 
         .tabla th {
             background: #e8eef5;
-            border: 1px solid #9bb0c4;
+            border: 1px solid #d6cba8;
             padding: 5px 7px;
             font-size: 9.5px;
             text-align: left;
@@ -54,7 +54,7 @@
         .monto { text-align: right; white-space: nowrap; }
 
         .seccion td {
-            background: #f2f6fa;
+            background: #f3eee0;
             font-weight: bold;
             text-transform: uppercase;
             font-size: 9.5px;
@@ -63,7 +63,7 @@
         .total td {
             background: #dce7f1;
             font-weight: bold;
-            border-top: 2px solid #9bb0c4;
+            border-top: 2px solid #d6cba8;
         }
 
         .saldo td {
@@ -106,8 +106,8 @@
         }
 
         .anexo-ficha {
-            border: 1px solid #9bb0c4;
-            background: #f2f6fa;
+            border: 1px solid #d6cba8;
+            background: #f3eee0;
             padding: 6px 8px;
             margin-bottom: 8px;
             font-size: 9px;

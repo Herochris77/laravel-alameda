@@ -2,7 +2,7 @@
 
     <div class="page-header">
         <div class="page-header-left">
-            <div class="page-icon" style="background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);">
+            <div class="page-icon" style="background: linear-gradient(135deg, var(--brand-700) 0%, var(--brand-800) 100%);">
                 <i class="file alternate icon"></i>
             </div>
             <div>
@@ -234,7 +234,7 @@
         .rm-campo { flex: 1; min-width: 200px; }
 
         .rm-btn-pdf { white-space: nowrap; }
-        .rm-comprobantes { margin-top: 12px; font-size: .86rem; color: #475569; line-height: 1.5; }
+        .rm-comprobantes { margin-top: 12px; font-size: .86rem; color: var(--ink-2); line-height: 1.5; }
 
         .rm-columnas {
             display: grid;
@@ -247,7 +247,7 @@
 
         .rm-tabla td {
             padding: 7px 10px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--crema-100);
         }
 
         .rm-monto {
@@ -257,57 +257,57 @@
         }
 
         .rm-seccion td {
-            background: #f8fafc;
+            background: var(--crema-50);
             font-weight: 700;
             text-transform: uppercase;
             font-size: .76rem;
             letter-spacing: .04em;
-            color: #475569;
+            color: var(--ink-2);
         }
 
         .rm-total td {
             font-weight: 700;
-            background: #f1f5f9;
-            border-top: 2px solid #e2e8f0;
+            background: var(--crema-100);
+            border-top: 2px solid var(--arena);
         }
 
         .rm-saldo td { font-weight: 700; }
 
         .rm-saldo-final td {
-            background: #ecfdf5;
-            color: #065f46;
-            border-top: 2px solid #a7f3d0;
+            background: var(--brand-50);
+            color: var(--brand-700);
+            border-top: 2px solid var(--brand-100);
         }
 
-        .rm-cat { color: #94a3b8; font-size: .78rem; }
+        .rm-cat { color: var(--ink-4); font-size: .78rem; }
 
         .rm-aprox {
             display: inline-block;
             margin-left: 6px;
             padding: 1px 7px;
             border-radius: 999px;
-            background: #fef3c7;
-            color: #92400e;
+            background: var(--warn-bg);
+            color: var(--warn);
             font-size: .68rem;
             font-weight: 700;
             cursor: help;
         }
 
-        .rm-nota { color: #64748b; font-size: .8rem; }
+        .rm-nota { color: var(--ink-3); font-size: .8rem; }
 
-        .rm-aviso-nota { color: #92400e; background: #fffbeb; }
+        .rm-aviso-nota { color: var(--warn); background: var(--warn-bg); }
 
         .rm-titulo { margin: 0 0 6px; font-size: 1.02rem; }
 
         .rm-hint {
             margin: 5px 0 0;
-            color: #94a3b8;
+            color: var(--ink-4);
             font-size: .78rem;
             line-height: 1.45;
         }
 
         .rm-ayuda {
-            color: #64748b;
+            color: var(--ink-3);
             font-size: .85rem;
             line-height: 1.5;
             margin-bottom: 14px;
@@ -322,34 +322,34 @@
         }
 
         .rm-comparativo.cuadra {
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
-            color: #065f46;
+            background: var(--brand-50);
+            border: 1px solid var(--brand-100);
+            color: var(--brand-700);
         }
 
         .rm-comparativo.primero {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            color: #075985;
+            background: var(--info-bg);
+            border: 1px solid var(--info-bg);
+            color: var(--info);
         }
 
         .rm-comparativo.difiere {
-            background: #fffbeb;
-            border: 1px solid #fcd34d;
-            color: #92400e;
+            background: var(--warn-bg);
+            border: 1px solid var(--oro-300);
+            color: var(--warn);
         }
 
         .rm-guardado {
             margin-top: 14px;
             padding: 10px 12px;
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
+            background: var(--info-bg);
+            border: 1px solid var(--info-bg);
             border-radius: 10px;
-            color: #075985;
+            color: var(--info);
             font-size: .85rem;
         }
 
-        .rm-descuadre { margin-top: 4px; color: #92400e; }
+        .rm-descuadre { margin-top: 4px; color: var(--warn); }
 
         @media (max-width: 900px) {
             .rm-columnas { grid-template-columns: 1fr; }

@@ -2,7 +2,7 @@
 
     <div class="page-header">
         <div class="page-header-left">
-            <div class="page-icon" style="background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);">
+            <div class="page-icon" style="background: linear-gradient(135deg, var(--brand-700) 0%, var(--brand-800) 100%);">
                 <i class="pen fancy icon"></i>
             </div>
             <div>
@@ -127,7 +127,7 @@
         .fr-titulo { margin: 0 0 14px; font-size: 1.02rem; }
 
         .fr-lienzo {
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--arena);
             border-radius: 12px;
             padding: 22px 26px 16px;
             background: #fff;
@@ -142,7 +142,7 @@
         }
 
         .fr-linea {
-            border-top: 1px solid #334155;
+            border-top: 1px solid var(--ink);
             margin: 0 auto;
             max-width: 280px;
         }
@@ -150,15 +150,15 @@
         .fr-cargo {
             margin-top: 6px;
             font-size: .84rem;
-            color: #0f172a;
+            color: var(--ink);
             font-weight: 600;
         }
 
-        .fr-cargo span { font-weight: 400; color: #64748b; font-size: .76rem; }
+        .fr-cargo span { font-weight: 400; color: var(--ink-3); font-size: .76rem; }
 
         .fr-nota {
             text-align: center;
-            color: #94a3b8;
+            color: var(--ink-4);
             font-size: .78rem;
             margin: 10px 0 16px;
         }
@@ -166,36 +166,36 @@
         .fr-vacio {
             text-align: center;
             padding: 34px 16px;
-            color: #94a3b8;
-            border: 2px dashed #e2e8f0;
+            color: var(--ink-4);
+            border: 2px dashed var(--arena);
             border-radius: 12px;
         }
 
         .fr-vacio i { font-size: 2.2rem; margin-bottom: 8px; }
 
-        .fr-vacio p { margin: 0 0 4px; font-weight: 600; color: #64748b; }
+        .fr-vacio p { margin: 0 0 4px; font-weight: 600; color: var(--ink-3); }
 
         .fr-vacio small { font-size: .78rem; line-height: 1.45; display: block; }
 
         .fr-alcance {
             margin-top: 14px;
             padding: 10px 12px;
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
+            background: var(--info-bg);
+            border: 1px solid var(--info-bg);
             border-radius: 10px;
-            color: #075985;
+            color: var(--info);
             font-size: .83rem;
         }
 
-        .fr-hint { margin: 5px 0 0; color: #94a3b8; font-size: .77rem; }
+        .fr-hint { margin: 5px 0 0; color: var(--ink-4); font-size: .77rem; }
 
         .fr-previa {
             margin: 14px 0;
             padding: 14px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--arena);
             border-radius: 10px;
             text-align: center;
-            background: #f8fafc;
+            background: var(--crema-50);
         }
 
         .fr-previa-titulo {
@@ -203,7 +203,7 @@
             font-size: .72rem;
             text-transform: uppercase;
             letter-spacing: .05em;
-            color: #64748b;
+            color: var(--ink-3);
             font-weight: 700;
             margin-bottom: 8px;
         }
@@ -213,13 +213,13 @@
         .fr-consejo {
             margin-top: 18px;
             padding: 13px 15px;
-            background: #f8fafc;
+            background: var(--crema-50);
             border-radius: 10px;
             font-size: .83rem;
-            color: #475569;
+            color: var(--ink-2);
         }
 
-        .fr-consejo strong { display: block; margin-bottom: 6px; color: #0f172a; }
+        .fr-consejo strong { display: block; margin-bottom: 6px; color: var(--ink); }
 
         .fr-consejo ul { margin: 0; padding-left: 18px; }
 
@@ -228,10 +228,10 @@
         .fr-aviso {
             margin-top: 14px;
             padding: 11px 13px;
-            background: #fffbeb;
-            border: 1px solid #fcd34d;
+            background: var(--warn-bg);
+            border: 1px solid var(--oro-300);
             border-radius: 10px;
-            color: #92400e;
+            color: var(--warn);
             font-size: .82rem;
             line-height: 1.5;
         }

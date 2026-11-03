@@ -9,19 +9,12 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
     
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- Fuente, jQuery, Fomantic y Alertify: locales, con respaldo a CDN. --}}
+    @include('layouts.partials.vendor-core')
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.2/dist/semantic.min.css">
     
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css" />
-    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     
-    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.2/dist/semantic.min.js"></script>
     
     <style>
         * {
@@ -50,19 +43,9 @@
             border-radius: 24px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             overflow: hidden;
-            animation: slideUp 0.5s ease-out;
         }
         
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        
         
         .auth-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -80,13 +63,9 @@
             width: 200%;
             height: 200%;
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-            animation: pulse 4s ease-in-out infinite;
         }
         
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
+        
         
         .auth-logo {
             position: relative;
@@ -228,12 +207,12 @@
         }
         
         .btn-submit:hover {
-            transform: translateY(-2px);
+            
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
         
         .btn-submit:active {
-            transform: translateY(0);
+            
         }
         
         .btn-submit:disabled {

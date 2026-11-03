@@ -1,0 +1,1 @@
+@include('errors.layout', ['titulo' => 'No tienes acceso aquí', 'mensaje' => 'Esta sección no está disponible para tu cuenta. Si crees que es un error, avisa a la mesa directiva.', 'animacion' => 'acceso', 'codigo' => '403', 'destino' => url('/inicio')])

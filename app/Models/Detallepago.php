@@ -22,6 +22,10 @@ class Detallepago extends Model
         'forma_pago',
         'validado_por',
         'folio_recibo',
+        'recargo_exonerado',
+        'recargo_exonerado_motivo',
+        'recargo_exonerado_por',
+        'recargo_exonerado_en',
         'updated_at',
         'deleted_by',
     ];
@@ -60,6 +64,8 @@ class Detallepago extends Model
 
     protected $casts = [
         'fecha_pago' => 'date',
+        'recargo_exonerado' => 'boolean',
+        'recargo_exonerado_en' => 'datetime',
     ];
 
     /**
@@ -142,6 +148,40 @@ class Detallepago extends Model
      * que es lo que necesita el formulario del vecino antes de guardar nada.
      */
     public function recargoAplicable($fechaSupuesta = null): float
+    {
+        // Acuerdo con la mesa directiva: no se cobra recargo. Todo lo que
+        // depende de este método (monto esperado, excedente, saldo a favor,
+        // reportes, estado de cuenta) lo respeta sin tocar nada más.
+        if ($this->recargoExonerado()) {
+            return 0.0;
+        }
+
+        return $this->calcularRecargo($fechaSupuesta);
+    }
+
+    /**
+     * ¿La mesa directiva exoneró el recargo de este recibo?
+     *
+     * Tolera que la columna aún no exista (código subido antes de /migrar).
+     */
+    public function recargoExonerado(): bool
+    {
+        return (bool) ($this->attributes['recargo_exonerado'] ?? false);
+    }
+
+    /**
+     * Lo que se habría cobrado de recargo de no existir el acuerdo. Sirve para
+     * mostrar cuánto se condonó; vale 0 si el recibo no está exonerado.
+     */
+    public function recargoCondonado($fechaSupuesta = null): float
+    {
+        return $this->recargoExonerado() ? $this->calcularRecargo($fechaSupuesta) : 0.0;
+    }
+
+    /**
+     * Cálculo puro del recargo según concepto y fecha, sin considerar acuerdos.
+     */
+    private function calcularRecargo($fechaSupuesta = null): float
     {
         if (! $this->pago || ! $this->pago->vencimiento) {
             return 0.0;

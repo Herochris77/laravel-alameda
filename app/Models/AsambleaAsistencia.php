@@ -8,7 +8,7 @@ class AsambleaAsistencia extends Model
 {
     protected $table = 'asamblea_asistencias';
 
-    protected $fillable = ['asamblea_id', 'casa', 'user_id', 'confirmada', 'registrada_por'];
+    protected $fillable = ['asamblea_id', 'casa', 'user_id', 'confirmada', 'registrada_por', 'modo', 'nota'];
 
     protected $casts = ['confirmada' => 'boolean'];
 }

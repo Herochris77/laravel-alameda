@@ -198,18 +198,18 @@
 
     <style>
         :root {
-            --usuarios-primary: #2563eb;
-            --usuarios-primary-dark: #1d4ed8;
-            --usuarios-secondary: #667eea;
-            --usuarios-success: #10b981;
-            --usuarios-danger: #ef4444;
-            --usuarios-warning: #f59e0b;
-            --usuarios-text-main: #0f172a;
-            --usuarios-text-muted: #64748b;
-            --usuarios-text-soft: #94a3b8;
-            --usuarios-border: #e2e8f0;
+            --usuarios-primary: var(--brand-600);
+            --usuarios-primary-dark: var(--brand-700);
+            --usuarios-secondary: var(--brand-600);
+            --usuarios-success: var(--brand-500);
+            --usuarios-danger: var(--danger);
+            --usuarios-warning: var(--oro-700);
+            --usuarios-text-main: var(--ink);
+            --usuarios-text-muted: var(--ink-3);
+            --usuarios-text-soft: var(--ink-4);
+            --usuarios-border: var(--arena);
             --usuarios-surface: #ffffff;
-            --usuarios-soft-bg: #f8fafc;
+            --usuarios-soft-bg: var(--crema-50);
         }
 
         .usuarios-page {
@@ -226,7 +226,7 @@
             padding: 26px;
             color: white;
             margin-bottom: 22px;
-            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.18);
+            box-shadow: 0 12px 30px rgba(11,107,69, 0.18);
             overflow: hidden;
         }
 
@@ -303,7 +303,7 @@
             background: var(--usuarios-surface);
             border: 1px solid var(--usuarios-border);
             border-radius: 22px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
             overflow: hidden;
         }
 
@@ -323,8 +323,8 @@
 
         .usuarios-list-header {
             padding: 18px 20px;
-            border-bottom: 1px solid #f1f5f9;
-            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border-bottom: 1px solid var(--crema-100);
+            background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
         }
 
         .usuarios-toolbar-title-wrap {
@@ -344,7 +344,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 8px 18px rgba(59, 130, 246, 0.24);
+            box-shadow: 0 8px 18px rgba(23,137,92, 0.24);
         }
 
         .usuarios-toolbar-icon.secondary {
@@ -436,7 +436,7 @@
             align-items: center;
             gap: 12px;
             background: var(--usuarios-soft-bg);
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--crema-100);
             border-radius: 16px;
             padding: 12px 14px;
         }
@@ -445,7 +445,7 @@
             width: 42px;
             height: 42px;
             border-radius: 14px;
-            background: #dbeafe;
+            background: var(--info-bg);
             color: var(--usuarios-primary-dark);
             display: flex;
             align-items: center;
@@ -491,7 +491,7 @@
             border: 1px solid var(--usuarios-border);
             border-radius: 20px;
             background: white;
-            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 6px 18px rgba(20,32,26, 0.05);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -499,14 +499,14 @@
         }
 
         .usuario-item-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(37, 99, 235, 0.35);
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            
+            border-color: rgba(11,107,69, 0.35);
+            box-shadow: 0 10px 24px rgba(20,32,26, 0.08);
         }
 
         .usuario-item-header {
             padding: 16px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--crema-100);
             display: flex;
             align-items: flex-start;
             gap: 12px;
@@ -516,7 +516,7 @@
             width: 48px;
             height: 48px;
             border-radius: 16px;
-            background: #dbeafe;
+            background: var(--info-bg);
             color: var(--usuarios-primary-dark);
             display: flex;
             align-items: center;
@@ -570,40 +570,40 @@
         }
 
         .usuario-badge.casa {
-            background: #dbeafe;
-            color: #1d4ed8;
+            background: var(--info-bg);
+            color: var(--info);
         }
 
         .usuario-badge.tipo {
-            background: #f1f5f9;
-            color: #475569;
+            background: var(--crema-100);
+            color: var(--ink-2);
         }
 
         /* Aviso de privacidad: verde aceptado, ámbar pendiente,
            morado si aceptó una versión que ya cambió. */
         .usuario-badge.aviso-si {
-            background: #ecfdf5;
-            color: #047857;
+            background: var(--brand-50);
+            color: var(--brand-600);
         }
 
         .usuario-badge.aviso-no {
-            background: #fffbeb;
-            color: #b45309;
+            background: var(--warn-bg);
+            color: var(--warn);
         }
 
         .usuario-badge.aviso-viejo {
-            background: #f5f3ff;
-            color: #6d28d9;
+            background: var(--brand-50);
+            color: var(--brand-700);
         }
 
         .usuario-badge.activo {
-            background: #dcfce7;
-            color: #166534;
+            background: var(--ok-bg);
+            color: var(--brand-800);
         }
 
         .usuario-badge.bloqueado {
-            background: #fee2e2;
-            color: #991b1b;
+            background: var(--danger-bg);
+            color: var(--danger);
         }
 
         .usuario-body {
@@ -649,8 +649,8 @@
 
         .usuario-footer {
             padding: 14px;
-            border-top: 1px solid #f1f5f9;
-            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border-top: 1px solid var(--crema-100);
+            background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
         }
 
         .usuario-actions {
@@ -698,68 +698,68 @@
         }
 
         .usuario-actions .btn-block {
-            background: #fffbeb !important;
-            color: #92400e !important;
-            border: 1px solid #fde68a !important;
+            background: var(--warn-bg) !important;
+            color: var(--warn) !important;
+            border: 1px solid var(--warn-bg) !important;
         }
 
         .usuario-actions .btn-block:hover {
-            background: #fef3c7 !important;
+            background: var(--warn-bg) !important;
         }
 
         .usuario-actions .btn-unblock {
-            background: #ecfdf5 !important;
-            color: #166534 !important;
-            border: 1px solid #bbf7d0 !important;
+            background: var(--brand-50) !important;
+            color: var(--brand-800) !important;
+            border: 1px solid var(--brand-100) !important;
         }
 
         .usuario-actions .btn-unblock:hover {
-            background: #dcfce7 !important;
+            background: var(--ok-bg) !important;
         }
 
         .usuario-actions .btn-eliminar {
-            background: #fef2f2 !important;
-            color: #b91c1c !important;
-            border: 1px solid #fecaca !important;
+            background: var(--danger-bg) !important;
+            color: var(--danger) !important;
+            border: 1px solid var(--danger-bg) !important;
         }
 
         .usuario-actions .btn-eliminar:hover {
-            background: #fee2e2 !important;
+            background: var(--danger-bg) !important;
         }
 
         .usuario-actions .btn-cargo {
-            background: #f5f3ff;
-            border: 1px solid #ddd6fe;
-            color: #6d28d9;
+            background: var(--brand-50);
+            border: 1px solid var(--brand-100);
+            color: var(--brand-700);
         }
 
         .usuario-actions .btn-cargo:hover {
-            background: #ede9fe;
-            color: #5b21b6;
+            background: var(--brand-100);
+            color: var(--brand-800);
         }
 
         .usuario-actions .btn-admin,
         .usuario-actions .btn-user,
         .usuario-actions .btn-enviar-verificacion {
-            background: #eff6ff !important;
-            color: #1d4ed8 !important;
-            border: 1px solid #bfdbfe !important;
+            background: var(--info-bg) !important;
+            color: var(--info) !important;
+            border: 1px solid var(--info-bg) !important;
         }
 
         .usuario-actions .btn-admin:hover,
         .usuario-actions .btn-user:hover,
         .usuario-actions .btn-enviar-verificacion:hover {
-            background: #dbeafe !important;
+            background: var(--info-bg) !important;
         }
 
         .usuario-actions .btn-regresar-pago {
-            background: #f0fdfa !important;
-            color: #0f766e !important;
-            border: 1px solid #99f6e4 !important;
+            background: var(--brand-50) !important;
+            color: var(--brand-700) !important;
+            border: 1px solid var(--brand-100) !important;
         }
 
         .usuario-actions .btn-regresar-pago:hover {
-            background: #ccfbf1 !important;
+            background: var(--brand-100) !important;
         }
 
         .usuarios-pagination {
@@ -784,16 +784,16 @@
         }
 
         .pagination-btn:hover {
-            background: #eff6ff;
+            background: var(--info-bg);
             color: var(--usuarios-primary-dark);
-            border-color: rgba(59, 130, 246, 0.35);
+            border-color: rgba(23,137,92, 0.35);
         }
 
         .pagination-btn.active {
             background: linear-gradient(135deg, var(--usuarios-primary) 0%, var(--usuarios-primary-dark) 100%);
             color: #ffffff;
             border-color: transparent;
-            box-shadow: 0 8px 18px rgba(59, 130, 246, 0.22);
+            box-shadow: 0 8px 18px rgba(23,137,92, 0.22);
         }
 
         .pagination-btn:disabled {
@@ -821,7 +821,7 @@
             height: 78px;
             border-radius: 24px;
             margin: 0 auto 18px;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(37, 99, 235, 0.16));
+            background: linear-gradient(135deg, rgba(23,137,92, 0.12), rgba(11,107,69, 0.16));
             color: var(--usuarios-primary-dark);
             display: flex;
             align-items: center;
@@ -829,7 +829,7 @@
         }
 
         .empty-usuarios-icon.error {
-            background: #fee2e2;
+            background: var(--danger-bg);
             color: var(--usuarios-danger);
         }
 
@@ -840,7 +840,7 @@
 
         .empty-usuarios-card h3 {
             margin: 0 0 8px 0;
-            color: #475569;
+            color: var(--ink-2);
             font-weight: 900;
         }
 
@@ -1043,7 +1043,7 @@
         <div class="content">
             <input type="hidden" id="cargo-user-id">
 
-            <p style="margin-bottom:14px; color:#475569;">
+            <p style="margin-bottom:14px; color:var(--ink-2);">
                 Asignando cargo a <strong id="cargo-nombre"></strong>.
             </p>
 
@@ -1057,9 +1057,9 @@
                 </select>
             </div>
 
-            <div style="margin-top:14px; padding:12px 14px; background:#f0f9ff;
-                        border:1px solid #bae6fd; border-radius:10px;
-                        color:#075985; font-size:.88rem; line-height:1.55;">
+            <div style="margin-top:14px; padding:12px 14px; background:var(--info-bg);
+                        border:1px solid var(--info-bg); border-radius:10px;
+                        color:var(--info); font-size:.88rem; line-height:1.55;">
                 <i class="info circle icon"></i>
                 Solo el <strong>Tesorero</strong> puede registrar recibos, validar pagos y
                 eliminarlos. Los demás cargos consultan la cobranza y descargan el reporte,
@@ -1682,7 +1682,7 @@
                     setTimeout(function() {
                         $.ajax({
                             url: `${BASE_URL}/administrador/usuarios/bloquear-usuario/${id}`,
-                            method: 'GET',
+                            method: 'POST',
                             data: {
                                 _token: '{{ csrf_token() }}'
                             },
@@ -1718,7 +1718,7 @@
                     setTimeout(function() {
                         $.ajax({
                             url: `${BASE_URL}/administrador/usuarios/desbloquear-usuario/${id}`,
-                            method: 'GET',
+                            method: 'POST',
                             data: {
                                 _token: '{{ csrf_token() }}'
                             },
@@ -1754,7 +1754,7 @@
                     setTimeout(function() {
                         $.ajax({
                             url: `${BASE_URL}/administrador/usuarios/eliminar-usuario/${id}`,
-                            method: 'GET',
+                            method: 'POST',
                             data: {
                                 _token: '{{ csrf_token() }}'
                             },
@@ -1842,7 +1842,7 @@
                     setTimeout(function() {
                         $.ajax({
                             url: `${BASE_URL}/administrador/usuarios/administrador-usuario/${id}`,
-                            method: 'GET',
+                            method: 'POST',
                             data: {
                                 _token: '{{ csrf_token() }}'
                             },
@@ -1878,7 +1878,7 @@
                     setTimeout(function() {
                         $.ajax({
                             url: `${BASE_URL}/administrador/usuarios/usuario-usuario/${id}`,
-                            method: 'GET',
+                            method: 'POST',
                             data: {
                                 _token: '{{ csrf_token() }}'
                             },
@@ -1991,9 +1991,10 @@
         }
 
         function extraerTexto(valor) {
-            const temporal = document.createElement('div');
-            temporal.innerHTML = valor || '';
-            return temporal.textContent || temporal.innerText || '';
+            // DOMParser crea un documento INERTE: no carga imagenes ni ejecuta
+        // onerror/onload. Un div.innerHTML sobre un elemento suelto SI los ejecuta,
+        // y por eso un nombre como <img src=x onerror=...> corria codigo aqui.
+        return new DOMParser().parseFromString(String(valor || ''), 'text/html').body.textContent || '';
         }
 
         function escapeHtml(text) {

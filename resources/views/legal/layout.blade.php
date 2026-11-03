@@ -14,14 +14,16 @@
 
     <link rel="icon" href="{{ asset('favicon.ico') }}">
 
+    @include('layouts.partials.fuentes')
+
     <style>
         :root {
-            --lg-tinta: #0f172a;
-            --lg-texto: #334155;
-            --lg-suave: #64748b;
-            --lg-borde: #e2e8f0;
-            --lg-acento: #667eea;
-            --lg-fondo: #f8fafc;
+            --lg-tinta: #1d2a23;
+            --lg-texto: #46544c;
+            --lg-suave: #5d695f;
+            --lg-borde: #e4dabd;
+            --lg-acento: #0b6b45;
+            --lg-fondo: #f7f3e8;
         }
 
         * { box-sizing: border-box; }
@@ -30,13 +32,13 @@
             margin: 0;
             background: var(--lg-fondo);
             color: var(--lg-texto);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             font-size: 15px;
             line-height: 1.65;
         }
 
         .lg-barra {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(160deg, #0b6b45 0%, #0c2f22 100%);
             color: #fff;
             padding: 26px 20px;
         }
@@ -77,6 +79,7 @@
         }
 
         .lg-titulo {
+            font-family: 'Fraunces', Georgia, serif;
             margin: 0 0 4px;
             font-size: 1.7rem;
             color: var(--lg-tinta);
@@ -145,23 +148,23 @@
         }
 
         .lg-nota {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
+            background: #e1eee5;
+            border: 1px solid #b9d6c4;
             border-radius: 10px;
             padding: 13px 16px;
             margin: 18px 0;
             font-size: .91rem;
-            color: #075985;
+            color: #0a4a31;
         }
 
         .lg-ojo {
-            background: #fffbeb;
-            border: 1px solid #fcd34d;
+            background: #fbefd0;
+            border: 1px solid #e4cc84;
             border-radius: 10px;
             padding: 13px 16px;
             margin: 18px 0;
             font-size: .91rem;
-            color: #92400e;
+            color: #6b4306;
         }
 
         .lg-indice {

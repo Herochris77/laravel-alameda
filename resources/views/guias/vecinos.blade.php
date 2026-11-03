@@ -213,9 +213,8 @@
 </div>
 
 <p>
-    ¿La imagen pesa más de 2 MB? En la misma pantalla hay un botón
-    <span class="boton claro">Comprimir imagen</span> que te lleva a una herramienta para
-    reducirla.
+    ¿La imagen pesa más de 2 MB? No tienes que hacer nada: el sistema la reduce sola
+    al elegirla y te avisa cuando lo hace.
 </p>
 
 {{-- ================= 4 ================= --}}

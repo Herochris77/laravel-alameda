@@ -39,7 +39,6 @@
         width: 30px;
         border-radius: 50%;
         background: #2a9d8f;
-        animation: loading-bounce 0.5s ease-in-out infinite alternate;
     }
 
     .loader:after {
@@ -51,42 +50,11 @@
         width: 45px;
         border-radius: 4px;
         box-shadow: 0 5px 0 #f2f2f2, -35px 50px 0 #f2f2f2, -70px 95px 0 #f2f2f2;
-        animation: loading-step 1s ease-in-out infinite;
     }
 
-    @keyframes loading-bounce {
-        0% {
-            transform: scale(1, 0.7);
-        }
+    
 
-        40% {
-            transform: scale(0.8, 1.2);
-        }
-
-        60% {
-            transform: scale(1, 1);
-        }
-
-        100% {
-            bottom: 140px;
-        }
-    }
-
-    @keyframes loading-step {
-        0% {
-            box-shadow: 0 10px 0 rgba(0, 0, 0, 0),
-                0 10px 0 #f2f2f2,
-                -35px 50px 0 #f2f2f2,
-                -70px 90px 0 #f2f2f2;
-        }
-
-        100% {
-            box-shadow: 0 10px 0 #f2f2f2,
-                -35px 50px 0 #f2f2f2,
-                -70px 90px 0 #f2f2f2,
-                -70px 90px 0 rgba(0, 0, 0, 0);
-        }
-    }
+    
 
     /* Notificaciones */
 

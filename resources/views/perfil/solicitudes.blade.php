@@ -1,20 +1,19 @@
 <x-app-layout>
     <style>
         :root {
-            --primary: #667eea;
-            --primary-dark: #764ba2;
-            --success: #10b981;
-            --success-dark: #059669;
-            --danger: #ef4444;
-            --danger-dark: #dc2626;
-            --warning: #f59e0b;
-            --info: #3b82f6;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --text-soft: #94a3b8;
-            --border: #e2e8f0;
+            --primary: var(--brand-600);
+            --primary-dark: var(--brand-800);
+            --success: var(--brand-500);
+            --success-dark: var(--brand-600);
+            --danger-dark: var(--danger);
+            --warning: var(--oro-700);
+            --info: var(--brand-500);
+            --text-main: var(--ink);
+            --text-muted: var(--ink-3);
+            --text-soft: var(--ink-4);
+            --border: var(--arena);
             --surface: #ffffff;
-            --soft-bg: #f8fafc;
+            --soft-bg: var(--crema-50);
         }
 
         .dueno-solicitudes-page {
@@ -33,7 +32,7 @@
             margin-bottom: 24px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 10px 30px rgba(20,32,26, 0.08);
         }
 
         .page-hero::before {
@@ -78,7 +77,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 12px 28px rgba(20,32,26, 0.12);
         }
 
         .hero-icon i {
@@ -115,7 +114,7 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 22px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
             overflow: hidden;
             margin-bottom: 22px;
         }
@@ -126,8 +125,8 @@
 
         .section-card-header {
             padding: 18px 22px;
-            border-bottom: 1px solid #f1f5f9;
-            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border-bottom: 1px solid var(--crema-100);
+            background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -170,13 +169,13 @@
         }
 
         .badge-count.warning {
-            background: #fef3c7;
-            color: #92400e;
+            background: var(--warn-bg);
+            color: var(--warn);
         }
 
         .badge-count.success {
-            background: #d1fae5;
-            color: #065f46;
+            background: var(--ok-bg);
+            color: var(--brand-700);
         }
 
         .solicitudes-table {
@@ -192,7 +191,7 @@
             letter-spacing: 0.06em;
             color: var(--text-soft);
             background: var(--soft-bg);
-            border-bottom: 1px solid #eef2f7;
+            border-bottom: 1px solid var(--crema-100);
             text-align: left;
             white-space: nowrap;
         }
@@ -202,12 +201,12 @@
         }
 
         .solicitudes-table tbody tr:hover {
-            background: #fafbff;
+            background: var(--crema-50);
         }
 
         .solicitudes-table tbody td {
             padding: 16px 22px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--crema-100);
             color: var(--text-main);
             font-size: 0.92rem;
             vertical-align: middle;
@@ -265,23 +264,23 @@
         }
 
         .btn-aprobar {
-            background: #d1fae5;
-            color: #065f46;
+            background: var(--ok-bg);
+            color: var(--brand-700);
         }
 
         .btn-aprobar:hover {
-            background: #a7f3d0;
-            transform: translateY(-2px);
+            background: var(--brand-100);
+            
         }
 
         .btn-rechazar {
-            background: #fee2e2;
-            color: #991b1b;
+            background: var(--danger-bg);
+            color: var(--danger);
         }
 
         .btn-rechazar:hover {
-            background: #fecaca;
-            transform: translateY(-2px);
+            background: var(--danger-bg);
+            
         }
 
         .btn-ver-mensaje {
@@ -291,7 +290,7 @@
         }
 
         .btn-ver-mensaje:hover {
-            background: #eef2f7;
+            background: var(--crema-100);
             color: var(--text-main);
         }
 
@@ -310,13 +309,13 @@
         }
 
         .estado-badge.aprobado {
-            background: #d1fae5;
-            color: #065f46;
+            background: var(--ok-bg);
+            color: var(--brand-700);
         }
 
         .estado-badge.rechazado {
-            background: #fee2e2;
-            color: #991b1b;
+            background: var(--danger-bg);
+            color: var(--danger);
         }
 
         .estado-badge i {
@@ -333,7 +332,7 @@
             width: 72px;
             height: 72px;
             border-radius: 50%;
-            background: #f1f5f9;
+            background: var(--crema-100);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -392,8 +391,8 @@
         }
 
         .btn-volver:hover {
-            background: #eef2f7;
-            border-color: #cbd5e1;
+            background: var(--crema-100);
+            border-color: var(--arena-2);
             color: var(--text-main);
         }
 
@@ -453,7 +452,7 @@
             .solicitudes-table tbody tr {
                 display: block;
                 padding: 0;
-                border-bottom: 2px solid #f1f5f9;
+                border-bottom: 2px solid var(--crema-100);
             }
 
             .solicitudes-table tbody tr:last-child {
@@ -623,7 +622,7 @@
     </div>
 
     <div class="ui modal" id="modal-ver-mensaje">
-        <div class="header" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white">
+        <div class="header" style="background:linear-gradient(135deg,var(--brand-600),var(--brand-800));color:white">
             <i class="file alternate outline icon"></i> Mensaje de solicitud
         </div>
         <div class="content">

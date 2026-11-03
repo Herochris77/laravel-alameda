@@ -327,19 +327,18 @@
 
 <style>
     :root {
-        --primary: #667eea;
-        --primary-dark: #4f46e5;
-        --secondary: #764ba2;
-        --success: #10b981;
-        --success-dark: #059669;
-        --danger: #ef4444;
-        --danger-dark: #dc2626;
-        --warning: #f59e0b;
-        --text-main: #0f172a;
-        --text-muted: #64748b;
-        --border: #e2e8f0;
+        --primary: var(--brand-600);
+        --primary-dark: var(--brand-700);
+        --secondary: var(--brand-800);
+        --success: var(--brand-500);
+        --success-dark: var(--brand-600);
+        --danger-dark: var(--danger);
+        --warning: var(--oro-700);
+        --text-main: var(--ink);
+        --text-muted: var(--ink-3);
+        --border: var(--arena);
         --surface: #ffffff;
-        --soft-bg: #f8fafc;
+        --soft-bg: var(--crema-50);
     }
 
     .mascota-page {
@@ -407,7 +406,7 @@
         border: 1px solid var(--border);
         border-radius: 22px;
         overflow: hidden;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         min-width: 0;
     }
 
@@ -418,8 +417,8 @@
 
     .mascota-card-header {
         padding: 18px 20px;
-        border-bottom: 1px solid #f1f5f9;
-        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        border-bottom: 1px solid var(--crema-100);
+        background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
     }
 
     .mascota-card-title-wrap {
@@ -439,11 +438,11 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(102, 126, 234, 0.24);
+        box-shadow: 0 8px 18px rgba(11,107,69, 0.24);
     }
 
     .mascota-card-icon.secondary {
-        background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+        background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-600) 100%);
     }
 
     .mascota-card-icon i {
@@ -554,7 +553,7 @@
         align-items: center;
         justify-content: center;
         background: var(--soft-bg);
-        color: #94a3b8;
+        color: var(--ink-4);
         transition: all 0.2s ease;
         flex-shrink: 0;
     }
@@ -582,9 +581,9 @@
 
     .checkbox-card.checked input + .checkbox-content,
     .checkbox-card input:checked + .checkbox-content {
-        border-color: rgba(102, 126, 234, 0.65);
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.10) 0%, rgba(118, 75, 162, 0.10) 100%);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.12);
+        border-color: rgba(11,107,69, 0.65);
+        background: linear-gradient(135deg, rgba(11,107,69, 0.10) 0%, rgba(10,74,49, 0.10) 100%);
+        box-shadow: 0 8px 20px rgba(11,107,69, 0.12);
     }
 
     .checkbox-card.checked input + .checkbox-content .checkbox-icon,
@@ -594,15 +593,15 @@
     }
 
     .checkbox-card:hover .checkbox-content {
-        border-color: rgba(102, 126, 234, 0.65);
-        transform: translateY(-2px);
+        border-color: rgba(11,107,69, 0.65);
+        
     }
 
     .responsive-upload-area {
         width: 100%;
         min-height: 230px;
         border-radius: 18px;
-        border: 2px dashed #cbd5e1;
+        border: 2px dashed var(--arena-2);
         background: var(--soft-bg);
         transition: all 0.2s ease;
         overflow: hidden;
@@ -611,7 +610,7 @@
     .responsive-upload-area:hover,
     .responsive-upload-area.dragover {
         border-color: var(--primary);
-        background: #f0f4ff;
+        background: var(--brand-50);
     }
 
     .upload-label {
@@ -640,7 +639,7 @@
         align-items: center;
         justify-content: center;
         margin-bottom: 14px;
-        box-shadow: 0 8px 18px rgba(102, 126, 234, 0.24);
+        box-shadow: 0 8px 18px rgba(11,107,69, 0.24);
     }
 
     .upload-icon i {
@@ -667,7 +666,7 @@
     }
 
     .upload-formats {
-        color: #94a3b8;
+        color: var(--ink-4);
         font-size: 0.82rem;
         margin-top: 8px;
         text-align: center;
@@ -696,7 +695,7 @@
         max-height: 250px;
         object-fit: contain;
         border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.12);
     }
 
     .remove-preview-btn {
@@ -713,7 +712,7 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        box-shadow: 0 8px 18px rgba(239, 68, 68, 0.24);
+        box-shadow: 0 8px 18px rgba(192,67,44, 0.24);
         z-index: 2;
     }
 
@@ -730,8 +729,8 @@
         align-items: center;
         gap: 6px;
         padding: 7px 12px;
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
         border-radius: 999px;
         font-size: 0.78rem;
         font-weight: 800;
@@ -768,7 +767,7 @@
 
     .foto-actual-box {
         background: var(--soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 18px;
         padding: 18px;
         text-align: center;
@@ -781,7 +780,7 @@
         max-height: 300px;
         object-fit: contain;
         border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.12);
     }
 
     .foto-placeholder-actual {
@@ -804,7 +803,7 @@
     .mascota-resumen {
         margin-top: 22px;
         padding-top: 22px;
-        border-top: 1px solid #f1f5f9;
+        border-top: 1px solid var(--crema-100);
     }
 
     .mascota-resumen h4 {
@@ -852,33 +851,33 @@
     }
 
     .pet-type-badge.perro {
-        background: #fef3c7;
-        color: #92400e;
+        background: var(--warn-bg);
+        color: var(--warn);
     }
 
     .pet-type-badge.gato {
-        background: #ffedd5;
-        color: #9a3412;
+        background: var(--warn-bg);
+        color: var(--warn);
     }
 
     .pet-type-badge.otro {
-        background: #e2e8f0;
-        color: #475569;
+        background: var(--arena);
+        color: var(--ink-2);
     }
 
     .pet-age-badge {
-        background: #ede9fe;
-        color: #5b21b6;
+        background: var(--brand-100);
+        color: var(--brand-800);
     }
 
     .pet-gender-badge.macho {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: var(--info-bg);
+        color: var(--info);
     }
 
     .pet-gender-badge.hembra {
-        background: #fce7f3;
-        color: #be185d;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .status-summary {
@@ -889,23 +888,23 @@
     }
 
     .status-summary-item.ok {
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
     }
 
     .status-summary-item.bad {
-        background: #fee2e2;
-        color: #991b1b;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .status-summary-item.friendly {
-        background: #fce7f3;
-        color: #be185d;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .status-summary-item.neutral {
-        background: #f1f5f9;
-        color: #64748b;
+        background: var(--crema-100);
+        color: var(--ink-3);
     }
 
     .responsive-alert {
@@ -914,9 +913,9 @@
         align-items: flex-start;
         gap: 9px;
         line-height: 1.5;
-        background: #fef3c7;
-        border: 1px solid #fde68a;
-        color: #92400e;
+        background: var(--warn-bg);
+        border: 1px solid var(--warn-bg);
+        color: var(--warn);
         border-radius: 16px;
         padding: 13px 14px;
         font-size: 0.9rem;

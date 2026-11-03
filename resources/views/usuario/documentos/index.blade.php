@@ -99,19 +99,18 @@
 
 <style>
     :root {
-        --primary: #8b5cf6;
-        --primary-dark: #7c3aed;
-        --secondary: #6366f1;
-        --success: #10b981;
-        --danger: #ef4444;
-        --warning: #f59e0b;
-        --info: #3b82f6;
-        --text-main: #0f172a;
-        --text-muted: #64748b;
-        --text-soft: #94a3b8;
-        --border: #e2e8f0;
+        --primary: var(--brand-500);
+        --primary-dark: var(--brand-700);
+        --secondary: var(--brand-600);
+        --success: var(--brand-500);
+        --warning: var(--oro-700);
+        --info: var(--brand-500);
+        --text-main: var(--ink);
+        --text-muted: var(--ink-3);
+        --text-soft: var(--ink-4);
+        --border: var(--arena);
         --surface: #ffffff;
-        --soft-bg: #f8fafc;
+        --soft-bg: var(--crema-50);
     }
 
     .documentos-page {
@@ -134,7 +133,7 @@
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 22px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
     }
 
     .documentos-info-card {
@@ -144,7 +143,7 @@
         padding: 18px 20px;
         margin-bottom: 20px;
         background:
-            linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(124, 58, 237, 0.05) 100%),
+            linear-gradient(135deg, rgba(23,137,92, 0.08) 0%, rgba(124, 58, 237, 0.05) 100%),
             #ffffff;
     }
 
@@ -158,7 +157,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(139, 92, 246, 0.24);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.24);
     }
 
     .documentos-info-card .info-icon i {
@@ -204,7 +203,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(139, 92, 246, 0.24);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.24);
     }
 
     .summary-icon.total {
@@ -291,7 +290,7 @@
         border: 1px solid var(--border);
         border-radius: 22px;
         overflow: hidden;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         display: flex;
         flex-direction: column;
         min-height: 100%;
@@ -299,9 +298,9 @@
     }
 
     .documento-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
-        border-color: rgba(139, 92, 246, 0.35);
+        
+        box-shadow: 0 16px 34px rgba(20,32,26, 0.12);
+        border-color: rgba(23,137,92, 0.35);
     }
 
     .documento-card-header {
@@ -309,7 +308,7 @@
         display: flex;
         align-items: flex-start;
         gap: 14px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
     }
 
     .documento-icon {
@@ -322,7 +321,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(139, 92, 246, 0.24);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.24);
     }
 
     .documento-icon i {
@@ -351,8 +350,8 @@
         margin-top: 9px;
         padding: 6px 10px;
         border-radius: 999px;
-        background: #ede9fe;
-        color: #5b21b6;
+        background: var(--brand-100);
+        color: var(--brand-800);
         font-size: 0.75rem;
         font-weight: 800;
     }
@@ -384,7 +383,7 @@
         align-items: center;
         gap: 10px;
         background: var(--soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 14px;
         padding: 11px 12px;
         color: var(--text-main);
@@ -404,7 +403,7 @@
 
     .documento-card-footer {
         padding: 16px 18px 18px;
-        border-top: 1px solid #f1f5f9;
+        border-top: 1px solid var(--crema-100);
     }
 
     .documento-action-wrap {
@@ -454,7 +453,7 @@
         height: 78px;
         border-radius: 24px;
         margin: 0 auto 18px;
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(124, 58, 237, 0.16));
+        background: linear-gradient(135deg, rgba(23,137,92, 0.12), rgba(124, 58, 237, 0.16));
         color: var(--primary);
         display: flex;
         align-items: center;
@@ -462,7 +461,7 @@
     }
 
     .documentos-empty-card .empty-state-icon.error {
-        background: #fee2e2;
+        background: var(--danger-bg);
         color: var(--danger);
     }
 
@@ -779,9 +778,10 @@
     }
 
     function extraerTexto(valor) {
-        const temporal = document.createElement('div');
-        temporal.innerHTML = valor || '';
-        return temporal.textContent || temporal.innerText || '';
+        // DOMParser crea un documento INERTE: no carga imagenes ni ejecuta
+        // onerror/onload. Un div.innerHTML sobre un elemento suelto SI los ejecuta,
+        // y por eso un nombre como <img src=x onerror=...> corria codigo aqui.
+        return new DOMParser().parseFromString(String(valor || ''), 'text/html').body.textContent || '';
     }
 
     function escapeHtml(text) {

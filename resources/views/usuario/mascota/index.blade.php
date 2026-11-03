@@ -223,7 +223,7 @@
                 <div class="mascota-modal-content">
                     <img
                         id="modalMascotaImagenSrc"
-                        src=""
+                        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
                         alt=""
                         class="mascota-modal-image"
                     >
@@ -247,19 +247,18 @@
 
 <style>
     :root {
-        --primary: #667eea;
-        --primary-dark: #4f46e5;
-        --secondary: #764ba2;
-        --success: #10b981;
-        --success-dark: #059669;
-        --danger: #ef4444;
-        --danger-dark: #dc2626;
-        --warning: #f59e0b;
-        --text-main: #0f172a;
-        --text-muted: #64748b;
-        --border: #e2e8f0;
+        --primary: var(--brand-600);
+        --primary-dark: var(--brand-700);
+        --secondary: var(--brand-800);
+        --success: var(--brand-500);
+        --success-dark: var(--brand-600);
+        --danger-dark: var(--danger);
+        --warning: var(--oro-700);
+        --text-main: var(--ink);
+        --text-muted: var(--ink-3);
+        --border: var(--arena);
         --surface: #ffffff;
-        --soft-bg: #f8fafc;
+        --soft-bg: var(--crema-50);
     }
 
     .mascotas-page {
@@ -314,7 +313,7 @@
         border-radius: 20px;
         padding: 18px 20px;
         margin-bottom: 22px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -337,7 +336,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(102, 126, 234, 0.25);
+        box-shadow: 0 8px 18px rgba(11,107,69, 0.25);
     }
 
     .summary-icon i {
@@ -385,7 +384,7 @@
         border: 1px solid var(--border);
         border-radius: 22px;
         overflow: hidden;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         display: flex;
         flex-direction: column;
         min-height: 100%;
@@ -393,9 +392,9 @@
     }
 
     .mascota-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
-        border-color: rgba(102, 126, 234, 0.35);
+        
+        box-shadow: 0 16px 34px rgba(20,32,26, 0.12);
+        border-color: rgba(11,107,69, 0.35);
     }
 
     .mascota-image-wrap {
@@ -415,7 +414,7 @@
     }
 
     .mascota-card:hover .mascota-image {
-        transform: scale(1.04);
+        
     }
 
     .mascota-placeholder {
@@ -442,7 +441,7 @@
         height: 38px;
         border: none;
         border-radius: 999px;
-        background: rgba(15, 23, 42, 0.72);
+        background: rgba(20,32,26, 0.72);
         color: white;
         display: inline-flex;
         align-items: center;
@@ -453,8 +452,8 @@
     }
 
     .zoom-photo-btn:hover {
-        transform: scale(1.06);
-        background: rgba(15, 23, 42, 0.9);
+        
+        background: rgba(20,32,26, 0.9);
     }
 
     .zoom-photo-btn i {
@@ -475,13 +474,13 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: var(--info-bg);
+        color: var(--info);
         border-radius: 999px;
         padding: 7px 11px;
         font-size: 0.75rem;
         font-weight: 800;
-        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+        box-shadow: 0 8px 18px rgba(20,32,26, 0.12);
     }
 
     .owner-badge i {
@@ -533,7 +532,7 @@
         color: var(--text-muted);
         font-size: 0.88rem;
         background: var(--soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 999px;
         padding: 7px 11px;
         margin-bottom: 14px;
@@ -566,33 +565,33 @@
     }
 
     .pet-type-badge.perro {
-        background: #fef3c7;
-        color: #92400e;
+        background: var(--warn-bg);
+        color: var(--warn);
     }
 
     .pet-type-badge.gato {
-        background: #ffedd5;
-        color: #9a3412;
+        background: var(--warn-bg);
+        color: var(--warn);
     }
 
     .pet-type-badge.otro {
-        background: #e2e8f0;
-        color: #475569;
+        background: var(--arena);
+        color: var(--ink-2);
     }
 
     .pet-age-badge {
-        background: #ede9fe;
-        color: #5b21b6;
+        background: var(--brand-100);
+        color: var(--brand-800);
     }
 
     .pet-gender-badge.macho {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: var(--info-bg);
+        color: var(--info);
     }
 
     .pet-gender-badge.hembra {
-        background: #fce7f3;
-        color: #be185d;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .pet-status-list {
@@ -617,23 +616,23 @@
     }
 
     .pet-status.ok {
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
     }
 
     .pet-status.bad {
-        background: #fee2e2;
-        color: #991b1b;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .pet-status.friendly {
-        background: #fce7f3;
-        color: #be185d;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .pet-status.neutral {
-        background: #f1f5f9;
-        color: #64748b;
+        background: var(--crema-100);
+        color: var(--ink-3);
     }
 
     .pet-description {
@@ -644,7 +643,7 @@
         font-size: 0.87rem;
         line-height: 1.45;
         background: var(--soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 14px;
         padding: 11px 12px;
     }
@@ -656,12 +655,12 @@
     }
 
     .pet-description.muted {
-        color: #94a3b8;
+        color: var(--ink-4);
     }
 
     .mascota-card-footer {
         padding: 16px 18px 18px;
-        border-top: 1px solid #f1f5f9;
+        border-top: 1px solid var(--crema-100);
         display: grid;
         grid-template-columns: 1fr auto;
         gap: 10px;
@@ -714,7 +713,7 @@
         position: fixed;
         z-index: 9999;
         inset: 0;
-        background: rgba(15, 23, 42, 0.88);
+        background: rgba(20,32,26, 0.88);
         align-items: center;
         justify-content: center;
         padding: 24px;
@@ -742,7 +741,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 12px 24px rgba(239, 68, 68, 0.25);
+        box-shadow: 0 12px 24px rgba(192,67,44, 0.25);
     }
 
     .mascota-modal-close:hover {
@@ -765,7 +764,7 @@
         max-height: 78vh;
         object-fit: contain;
         display: block;
-        background: #0f172a;
+        background: var(--ink);
     }
 
     .mascota-modal-footer {
@@ -774,7 +773,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        border-top: 1px solid #f1f5f9;
+        border-top: 1px solid var(--crema-100);
     }
 
     .modal-label {

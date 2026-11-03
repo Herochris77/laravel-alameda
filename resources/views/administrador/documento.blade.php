@@ -181,7 +181,7 @@
                             <label class="form-label">Archivo del documento *</label>
 
                             <div class="upload-area" id="upload-area-archivo">
-                                <input type="file" name="doc_path" id="doc-path-input" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" hidden>
+                                <input type="file" name="doc_path" id="doc-path-input" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" hidden required>
 
                                 <label for="doc-path-input" class="upload-label">
                                     <div class="upload-placeholder" id="upload-placeholder">
@@ -367,11 +367,11 @@
 
     <style>
         .gasto-modal-titulo {
-            background: #f8fafc;
+            background: var(--crema-50);
             border-radius: 8px;
             padding: 8px 11px;
             font-weight: 600;
-            color: #0f172a;
+            color: var(--ink);
             font-size: .9rem;
             margin-bottom: 14px;
         }
@@ -428,11 +428,11 @@
 
     <div class="content">
         <div id="contenedor-imagen" class="preview-modal-body">
-            <img id="archivo-preview-img" src="" alt="Vista previa">
+            <img id="archivo-preview-img" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Vista previa">
         </div>
 
         <div id="contenedor-pdf" class="preview-modal-body">
-            <iframe id="archivo-preview-pdf" src=""></iframe>
+            <iframe id="archivo-preview-pdf" src="about:blank" title="Vista previa del documento"></iframe>
         </div>
 
         <div id="contenedor-download" class="preview-modal-download">
@@ -453,20 +453,19 @@
 
 <style>
     :root {
-        --primary: #8b5cf6;
-        --primary-dark: #7c3aed;
-        --secondary: #667eea;
-        --success: #10b981;
-        --danger: #ef4444;
-        --danger-dark: #dc2626;
-        --warning: #f59e0b;
-        --info: #3b82f6;
-        --text-main: #0f172a;
-        --text-muted: #64748b;
-        --text-soft: #94a3b8;
-        --border: #e2e8f0;
+        --primary: var(--brand-500);
+        --primary-dark: var(--brand-700);
+        --secondary: var(--brand-600);
+        --success: var(--brand-500);
+        --danger-dark: var(--danger);
+        --warning: var(--oro-700);
+        --info: var(--brand-500);
+        --text-main: var(--ink);
+        --text-muted: var(--ink-3);
+        --text-soft: var(--ink-4);
+        --border: var(--arena);
         --surface: #ffffff;
-        --soft-bg: #f8fafc;
+        --soft-bg: var(--crema-50);
     }
 
     .documentos-admin-page {
@@ -567,7 +566,7 @@
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 22px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         overflow: hidden;
     }
 
@@ -578,8 +577,8 @@
 
     .documento-card-header {
         padding: 18px 20px;
-        border-bottom: 1px solid #f1f5f9;
-        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        border-bottom: 1px solid var(--crema-100);
+        background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
     }
 
     .documento-card-title-wrap {
@@ -599,7 +598,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(139, 92, 246, 0.24);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.24);
     }
 
     .documento-card-icon.secondary {
@@ -673,7 +672,7 @@
 
     .gasto-fields {
         background: var(--soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 18px;
         padding: 16px;
         margin-bottom: 18px;
@@ -690,7 +689,7 @@
         width: 42px;
         height: 42px;
         border-radius: 14px;
-        background: #ede9fe;
+        background: var(--brand-100);
         color: var(--primary-dark);
         display: flex;
         align-items: center;
@@ -720,7 +719,7 @@
         width: 100%;
         min-height: 220px;
         border-radius: 18px;
-        border: 2px dashed #cbd5e1;
+        border: 2px dashed var(--arena-2);
         background: var(--soft-bg);
         transition: border-color 0.2s ease, background 0.2s ease;
         overflow: hidden;
@@ -729,7 +728,7 @@
     .upload-area:hover,
     .upload-area.dragover {
         border-color: var(--primary);
-        background: #f5f3ff;
+        background: var(--brand-50);
     }
 
     .upload-label {
@@ -758,7 +757,7 @@
         align-items: center;
         justify-content: center;
         margin-bottom: 14px;
-        box-shadow: 0 8px 18px rgba(139, 92, 246, 0.24);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.24);
     }
 
     .upload-icon i {
@@ -807,7 +806,7 @@
         max-width: 100%;
         max-height: 210px;
         border-radius: 14px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.12);
         object-fit: contain;
     }
 
@@ -816,9 +815,9 @@
         align-items: center;
         gap: 14px;
         padding: 14px;
-        background: #f5f3ff;
+        background: var(--brand-50);
         border-radius: 16px;
-        border: 1px solid rgba(139, 92, 246, 0.24);
+        border: 1px solid rgba(23,137,92, 0.24);
         width: 100%;
         box-sizing: border-box;
     }
@@ -839,23 +838,23 @@
     }
 
     .preview-file-icon.pdf {
-        background: #fee2e2;
-        color: #dc2626;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .preview-file-icon.doc {
-        background: #dbeafe;
-        color: #2563eb;
+        background: var(--info-bg);
+        color: var(--info);
     }
 
     .preview-file-icon.xls {
-        background: #d1fae5;
-        color: #059669;
+        background: var(--ok-bg);
+        color: var(--brand-600);
     }
 
     .preview-file-icon.default {
-        background: #e2e8f0;
-        color: #475569;
+        background: var(--arena);
+        color: var(--ink-2);
     }
 
     .preview-file-info {
@@ -882,8 +881,8 @@
         align-items: center;
         gap: 6px;
         padding: 7px 12px;
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
         border-radius: 999px;
         font-size: 0.78rem;
         font-weight: 900;
@@ -908,12 +907,12 @@
         align-items: center;
         justify-content: center;
         transition: background 0.2s ease, transform 0.2s ease;
-        box-shadow: 0 8px 18px rgba(239, 68, 68, 0.28);
+        box-shadow: 0 8px 18px rgba(192,67,44, 0.28);
         z-index: 10;
     }
 
     .remove-preview-btn:hover {
-        transform: scale(1.08);
+        
         background: var(--danger-dark);
     }
 
@@ -938,7 +937,7 @@
         grid-template-columns: minmax(0, 1fr) minmax(200px, 240px) auto;
         gap: 14px;
         align-items: end;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
     }
 
     .filter-field {
@@ -973,7 +972,7 @@
         align-items: center;
         gap: 12px;
         background: var(--soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 16px;
         padding: 12px 14px;
     }
@@ -982,7 +981,7 @@
         width: 42px;
         height: 42px;
         border-radius: 14px;
-        background: #ede9fe;
+        background: var(--brand-100);
         color: var(--primary-dark);
         display: flex;
         align-items: center;
@@ -1027,7 +1026,7 @@
         border: 1px solid var(--border);
         border-radius: 18px;
         background: white;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+        box-shadow: 0 6px 18px rgba(20,32,26, 0.05);
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -1035,7 +1034,7 @@
 
     .documento-item-header {
         padding: 16px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
         display: flex;
         align-items: flex-start;
         gap: 12px;
@@ -1045,7 +1044,7 @@
         width: 46px;
         height: 46px;
         border-radius: 14px;
-        background: #ede9fe;
+        background: var(--brand-100);
         color: var(--primary-dark);
         display: flex;
         align-items: center;
@@ -1090,18 +1089,18 @@
     }
 
     .doc-badge.tipo-general {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: var(--info-bg);
+        color: var(--info);
     }
 
     .doc-badge.tipo-referencia {
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
     }
 
     .doc-badge.categoria {
-        background: #fef3c7;
-        color: #92400e;
+        background: var(--warn-bg);
+        color: var(--warn);
     }
 
     .documento-item-body {
@@ -1129,7 +1128,7 @@
 
     .documento-item-footer {
         padding: 14px 16px 16px;
-        border-top: 1px solid #f1f5f9;
+        border-top: 1px solid var(--crema-100);
         display: grid;
         grid-template-columns: 1fr auto;
         gap: 10px;
@@ -1191,16 +1190,16 @@
     }
 
     .pagination-btn:hover {
-        background: #f5f3ff;
+        background: var(--brand-50);
         color: var(--primary-dark);
-        border-color: rgba(139, 92, 246, 0.35);
+        border-color: rgba(23,137,92, 0.35);
     }
 
     .pagination-btn.active {
         background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
         color: #ffffff;
         border-color: transparent;
-        box-shadow: 0 8px 18px rgba(139, 92, 246, 0.22);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.22);
     }
 
     .pagination-btn:disabled {
@@ -1228,7 +1227,7 @@
         height: 78px;
         border-radius: 24px;
         margin: 0 auto 18px;
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(124, 58, 237, 0.16));
+        background: linear-gradient(135deg, rgba(23,137,92, 0.12), rgba(124, 58, 237, 0.16));
         color: var(--primary);
         display: flex;
         align-items: center;
@@ -1236,7 +1235,7 @@
     }
 
     .empty-documentos-icon.error {
-        background: #fee2e2;
+        background: var(--danger-bg);
         color: var(--danger);
     }
 
@@ -1247,7 +1246,7 @@
 
     .empty-documentos-card h3 {
         margin: 0 0 8px 0;
-        color: #475569;
+        color: var(--ink-2);
         font-weight: 900;
     }
 
@@ -1279,7 +1278,7 @@
         max-width: 90%;
         max-height: 70vh;
         border-radius: 14px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.18);
     }
 
     #archivo-preview-pdf {
@@ -1299,7 +1298,7 @@
         height: 78px;
         border-radius: 24px;
         margin: 0 auto 18px;
-        background: #ede9fe;
+        background: var(--brand-100);
         color: var(--primary-dark);
         display: flex;
         align-items: center;
@@ -2279,7 +2278,6 @@
 
         return 'file alternate';
     }
-ca
     function normalizarTexto(texto) {
         return String(texto || '')
             .toLowerCase()
@@ -2289,9 +2287,10 @@ ca
     }
 
     function extraerTexto(valor) {
-        const temporal = document.createElement('div');
-        temporal.innerHTML = valor || '';
-        return temporal.textContent || temporal.innerText || '';
+        // DOMParser crea un documento INERTE: no carga imagenes ni ejecuta
+        // onerror/onload. Un div.innerHTML sobre un elemento suelto SI los ejecuta,
+        // y por eso un nombre como <img src=x onerror=...> corria codigo aqui.
+        return new DOMParser().parseFromString(String(valor || ''), 'text/html').body.textContent || '';
     }
 
     function escapeHtml(text) {

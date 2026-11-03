@@ -1,15 +1,15 @@
 <x-app-layout>
     <style>
         :root {
-            --primary: #14b8a6;
-            --primary-dark: #0f766e;
-            --success: #10b981;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --text-soft: #94a3b8;
-            --border: #e2e8f0;
+            --primary: var(--brand-500);
+            --primary-dark: var(--brand-700);
+            --success: var(--brand-500);
+            --text-main: var(--ink);
+            --text-muted: var(--ink-3);
+            --text-soft: var(--ink-4);
+            --border: var(--arena);
             --surface: #ffffff;
-            --soft-bg: #f8fafc;
+            --soft-bg: var(--crema-50);
         }
 
         .solicitud-create-page {
@@ -28,7 +28,7 @@
             margin-bottom: 24px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 10px 30px rgba(20,32,26, 0.08);
         }
 
         .page-hero::before {
@@ -73,7 +73,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 12px 28px rgba(20,32,26, 0.12);
         }
 
         .hero-icon i {
@@ -114,14 +114,14 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 22px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
             overflow: hidden;
         }
 
         .form-card-header {
             padding: 18px 22px;
-            border-bottom: 1px solid #f1f5f9;
-            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border-bottom: 1px solid var(--crema-100);
+            background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
             display: flex;
             align-items: center;
             gap: 14px;
@@ -136,7 +136,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 8px 18px rgba(20, 184, 166, 0.20);
+            box-shadow: 0 8px 18px rgba(23,137,92, 0.20);
         }
 
         .form-card-header-icon i {
@@ -207,7 +207,7 @@
         .form-input-custom:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.10);
+            box-shadow: 0 0 0 3px rgba(23,137,92, 0.10);
         }
 
         .form-input-custom.readonly {
@@ -233,7 +233,7 @@
         .form-textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.10);
+            box-shadow: 0 0 0 3px rgba(23,137,92, 0.10);
         }
 
         .form-hint {
@@ -249,7 +249,7 @@
             gap: 12px;
             margin-top: 26px;
             padding-top: 22px;
-            border-top: 1px solid #f1f5f9;
+            border-top: 1px solid var(--crema-100);
         }
 
         .btn-submit {
@@ -266,13 +266,13 @@
             cursor: pointer;
             text-decoration: none;
             transition: all 0.2s ease;
-            box-shadow: 0 8px 20px rgba(20, 184, 166, 0.24);
+            box-shadow: 0 8px 20px rgba(23,137,92, 0.24);
             min-height: 48px;
         }
 
         .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(20, 184, 166, 0.30);
+            
+            box-shadow: 0 12px 28px rgba(23,137,92, 0.30);
         }
 
         .btn-submit.loading {
@@ -299,8 +299,8 @@
         }
 
         .btn-back:hover {
-            background: #eef2f7;
-            border-color: #cbd5e1;
+            background: var(--crema-100);
+            border-color: var(--arena-2);
             color: var(--text-main);
         }
 
@@ -313,8 +313,8 @@
             align-items: center;
             gap: 12px;
             padding: 14px 16px;
-            background: rgba(20, 184, 166, 0.06);
-            border: 1px solid rgba(20, 184, 166, 0.18);
+            background: rgba(23,137,92, 0.06);
+            border: 1px solid rgba(23,137,92, 0.18);
             border-radius: 14px;
             margin-bottom: 22px;
         }

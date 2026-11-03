@@ -10,20 +10,20 @@
         }
         
         .cajon-card:hover {
-            transform: translateY(-2px);
+            
             box-shadow: 0 8px 25px rgba(0,0,0,0.12);
         }
         
         .cajon-card.disponible {
-            border-color: #10b981;
+            border-color: var(--brand-500);
         }
         
         .cajon-card.ocupado {
-            border-color: #ef4444;
+            border-color: var(--danger);
         }
         
         .cajon-card.reservado {
-            border-color: #f59e0b;
+            border-color: var(--oro-700);
         }
         
         .cajon-header {
@@ -36,7 +36,7 @@
         .cajon-nombre {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #1e293b;
+            color: var(--ink);
         }
         
         .cajon-estado {
@@ -47,37 +47,37 @@
         }
         
         .cajon-estado.disponible {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
+            background: rgba(23,137,92, 0.1);
+            color: var(--brand-500);
         }
         
         .cajon-estado.ocupado {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
+            background: rgba(192,67,44, 0.1);
+            color: var(--danger);
         }
         
         .cajon-estado.reservado {
             background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
+            color: var(--oro-700);
         }
         
         .cajon-info {
             padding: 12px;
-            background: #f8fafc;
+            background: var(--crema-50);
             border-radius: 12px;
             margin-top: 12px;
         }
         
         .cajon-info-label {
             font-size: 0.75rem;
-            color: #64748b;
+            color: var(--ink-3);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
         .cajon-info-valor {
             font-weight: 600;
-            color: #1e293b;
+            color: var(--ink);
             margin-top: 4px;
         }
         
@@ -92,13 +92,13 @@
         }
         
         .cajon-ubicacion.entrada {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
+            background: rgba(23,137,92, 0.1);
+            color: var(--info);
         }
         
         .cajon-ubicacion.central {
-            background: rgba(139, 92, 246, 0.1);
-            color: #8b5cf6;
+            background: rgba(23,137,92, 0.1);
+            color: var(--brand-500);
         }
         
         .btn-liberar {
@@ -122,7 +122,7 @@
 
     <div class="page-header">
         <div class="page-header-left">
-            <div class="page-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+            <div class="page-icon" style="background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-600) 100%);">
                 <i class="car icon"></i>
             </div>
             <div>
@@ -134,16 +134,16 @@
 
     <div class="stats-grid">
         <div class="stat-card" style="text-align: center;">
-            <div style="font-size: 2rem; font-weight: 700; color: #10b981;" id="stats-disponibles">0</div>
-            <div style="color: #64748b; font-size: 0.9rem;">Disponibles</div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--brand-500);" id="stats-disponibles">0</div>
+            <div style="color: var(--ink-3); font-size: 0.9rem;">Disponibles</div>
         </div>
         <div class="stat-card" style="text-align: center;">
-            <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;" id="stats-reservados">0</div>
-            <div style="color: #64748b; font-size: 0.9rem;">Reservados</div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--oro-700);" id="stats-reservados">0</div>
+            <div style="color: var(--ink-3); font-size: 0.9rem;">Reservados</div>
         </div>
         <div class="stat-card" style="text-align: center;">
-            <div style="font-size: 2rem; font-weight: 700; color: #ef4444;" id="stats-ocupados">0</div>
-            <div style="color: #64748b; font-size: 0.9rem;">Ocupados</div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--danger);" id="stats-ocupados">0</div>
+            <div style="color: var(--ink-3); font-size: 0.9rem;">Ocupados</div>
         </div>
     </div>
 
@@ -169,11 +169,11 @@
         $('.menu .item').tab();
         cargarEstacionamientos();
         
-        setInterval(cargarEstacionamientos, 30000);
+        setInterval(function () { cargarEstacionamientos(true); }, 30000);
     });
 
-    function cargarEstacionamientos() {
-        $.get('{{ route("admin.estacionamiento.obtener") }}', function(response) {
+    function cargarEstacionamientos(silencioso) {
+        $.ajax({ url: '{{ route("admin.estacionamiento.obtener") }}', global: !silencioso, success: function(response) {
             const datos = response.data;
             
             let entradaHtml = '';
@@ -238,7 +238,7 @@
             $('#stats-disponibles').text(disponibles);
             $('#stats-reservados').text(reservados);
             $('#stats-ocupados').text(ocupados);
-        });
+        } });
     }
     
     window.liberarCajon = function(id) {

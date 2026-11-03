@@ -318,7 +318,7 @@ class UsuariosController extends Controller
 
             $mensaje = 'El usuario a partir de ahora no tendrá acceso';
             if ($dueno) {
-                $mensaje .= '. El pago de la casa '.$usuario->casa.' se regresó al dueño '.$dueno->nombre.'.';
+                $mensaje .= '. El pago de la casa '.e($usuario->casa).' se regresó al dueño '.e($dueno->nombre).'.';
             }
 
             return response()->json(
@@ -397,7 +397,7 @@ class UsuariosController extends Controller
 
             $mensaje = 'El usuario fue eliminado correctamente. Los datos históricos se mantendrán.';
             if ($dueno) {
-                $mensaje .= ' El pago de la casa '.$usuario->casa.' se regresó al dueño '.$dueno->nombre.'.';
+                $mensaje .= ' El pago de la casa '.e($usuario->casa).' se regresó al dueño '.e($dueno->nombre).'.';
             }
 
             return response()->json(
@@ -454,7 +454,7 @@ class UsuariosController extends Controller
             return response()->json([
                 'header' => 'Cargo actualizado ✅',
                 'success' => true,
-                'message' => $usuario->nombre.' quedó como '.$nombreCargo.'.',
+                'message' => e($usuario->nombre).' quedó como '.$nombreCargo.'.',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -617,13 +617,13 @@ class UsuariosController extends Controller
             return response()->json([
                 'header' => '✅ Pago devuelto al dueño',
                 'success' => true,
-                'message' => 'A partir de ahora los recibos de la casa '.$inquilino->casa.' se generarán para '.$dueno->nombre.' (dueño), no para '.$inquilino->nombre.'.',
+                'message' => 'A partir de ahora los recibos de la casa '.e($inquilino->casa).' se generarán para '.e($dueno->nombre).' (dueño), no para '.e($inquilino->nombre).'.',
             ]);
         } catch (Exception $e) {
             return response()->json([
                 'header' => '❌ Error',
                 'success' => false,
-                'message' => 'No se pudo regresar el pago al dueño: '.$e->getMessage(),
+                'message' => \App\Support\Errores::mensaje($e, 'No se pudo regresar el pago al dueño'),
             ]);
         }
     }
@@ -689,7 +689,7 @@ class UsuariosController extends Controller
             return response()->json([
                 'header' => '❌ Error',
                 'success' => false,
-                'message' => 'Error al enviar el correo: '.$e->getMessage(),
+                'message' => \App\Support\Errores::mensaje($e, 'Error al enviar el correo'),
             ]);
         }
     }

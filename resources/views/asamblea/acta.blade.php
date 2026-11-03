@@ -3,20 +3,20 @@
 <head>
     <meta charset="utf-8">
     <style>
-        body { font-family: DejaVu Sans, sans-serif; color: #1e293b; font-size: 12px; }
-        h1 { font-size: 18px; margin: 0 0 4px; color: #0f766e; }
-        h2 { font-size: 14px; margin: 18px 0 6px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; }
-        .muted { color: #64748b; }
+        body { font-family: DejaVu Sans, sans-serif; color: #1d2a23; font-size: 12px; }
+        h1 { font-size: 18px; margin: 0 0 4px; color: #095a3a; }
+        h2 { font-size: 14px; margin: 18px 0 6px; border-bottom: 1px solid #d6cba8; padding-bottom: 4px; }
+        .muted { color: #5d695f; }
         table { width: 100%; border-collapse: collapse; margin-top: 6px; }
-        th, td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; }
-        th { background: #f1f5f9; }
+        th, td { border: 1px solid #d6cba8; padding: 6px 8px; text-align: left; }
+        th { background: #f3eee0; }
         .badge { padding: 2px 8px; border-radius: 4px; font-size: 11px; }
-        .aprobado { background: #dcfce7; color: #166534; }
-        .rechazado { background: #fee2e2; color: #991b1b; }
+        .aprobado { background: #e1eee5; color: #0a4a31; }
+        .rechazado { background: #f8e3dc; color: #a9402a; }
 
         .membrete { text-align: center; margin-bottom: 14px; }
-        .membrete .condominio { font-size: 13px; font-weight: bold; letter-spacing: .04em; color: #0f172a; }
-        .membrete .direccion { font-size: 8.5px; color: #64748b; line-height: 1.4; }
+        .membrete .condominio { font-size: 13px; font-weight: bold; letter-spacing: .04em; color: #1d2a23; }
+        .membrete .direccion { font-size: 8.5px; color: #5d695f; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -36,6 +36,7 @@
         @if($asamblea->hora) · {{ $asamblea->hora }} @endif
         @if($asamblea->lugar) · {{ $asamblea->lugar }} @endif
     </div>
+    <div class="muted">Modalidad: {{ $modalidades[$modalidad] ?? $modalidad }}</div>
 
     <h2>Quórum</h2>
     <p>
@@ -46,12 +47,32 @@
         </span>
     </p>
 
+    @php
+        $presentes = collect($casas)->where('presente', true);
+        $enSala = $presentes->where('modo', 'mesa')->count();
+        $sinAcceso = collect($casas)->where('acceso', false)->count();
+    @endphp
+    <p>
+        <strong>Casas presentes o representadas:</strong>
+        {{ $presentes->pluck('casa')->implode(', ') ?: 'ninguna registrada' }}.
+        @if($enSala > 0)
+            <br><span class="muted">{{ $enSala }} casa(s) con asistencia registrada por la mesa directiva en la sala.</span>
+        @endif
+        @if($sinAcceso > 0)
+            <br><span class="muted">{{ $sinAcceso }} casa(s) no tienen acceso a la plataforma; su asistencia y votos, cuando los hubo, los registró la mesa directiva.</span>
+        @endif
+    </p>
+
     <h2>Orden del día y resultados</h2>
-    @foreach($puntos as $i => $p)
+    @if(count($puntos) === 0)
+        <p class="muted">Esta asamblea no llevó puntos a votación.</p>
+    @endif    @foreach($puntos as $i => $p)
         <p><strong>{{ $i + 1 }}. {{ $p['titulo'] }}</strong></p>
         @php $r = $p['resultados']; @endphp
 
-        @if($p['tipo'] === 'si_no')
+        @if($p['tipo'] === 'informativo')
+            <p style="white-space: pre-wrap;">{{ $p['resolucion'] ?: 'Punto informativo, sin votación.' }}</p>
+        @elseif($p['tipo'] === 'si_no')
             <table>
                 <tr><th>A favor</th><th>En contra</th><th>Abstención</th><th>Resultado</th></tr>
                 <tr>
@@ -76,6 +97,12 @@
                     <tr><td>{{ $k + 1 }}</td><td>{{ $fila['opcion'] }}</td><td>{{ $fila['puntos'] }}</td></tr>
                 @endforeach
             </table>
+        @endif
+        @if(isset($r['origen']) && ($r['origen']['mesa'] ?? 0) > 0)
+            <p class="muted">Votos por la plataforma: {{ $r['origen']['plataforma'] }} · registrados por la mesa directiva en la sala: {{ $r['origen']['mesa'] }}.</p>
+        @endif
+        @if($p['tipo'] !== 'informativo' && !empty($p['resolucion']))
+            <p style="white-space: pre-wrap;"><strong>Acuerdo:</strong> {{ $p['resolucion'] }}</p>
         @endif
     @endforeach
 

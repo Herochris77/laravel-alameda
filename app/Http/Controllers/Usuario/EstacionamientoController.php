@@ -114,7 +114,7 @@ class EstacionamientoController extends Controller
                 return response()->json([
                     'success' => false,
                     'header' => $esEscalera ? '❌ Escalera ocupada' : '❌ Cajón ocupado',
-                    'message' => "{$recurso} ya está en uso por {$otroUsuario->nombre} #{$otroUsuario->casa}",
+                    'message' => "{$recurso} ya está en uso por ".e($otroUsuario->nombre)." #".e($otroUsuario->casa)."",
                 ]);
             }
 
@@ -205,7 +205,7 @@ class EstacionamientoController extends Controller
                     'success' => true,
                     'header' => '✅ Lugar desocupado',
                     'message' => $ocupante
-                        ? "Liberaste {$estacionamiento->nombre} (lo ocupaba {$ocupante->nombre} #{$ocupante->casa})."
+                        ? "Liberaste {$estacionamiento->nombre} (lo ocupaba ".e($ocupante->nombre)." #".e($ocupante->casa).")."
                         : "{$estacionamiento->nombre} ha sido marcado como disponible.",
                 ]);
             }

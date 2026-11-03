@@ -1,18 +1,17 @@
 <x-app-layout>
     <style>
         :root {
-            --primary: #14b8a6;
-            --primary-dark: #0f766e;
-            --success: #10b981;
-            --success-dark: #059669;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --text-soft: #94a3b8;
-            --border: #e2e8f0;
+            --primary: var(--brand-500);
+            --primary-dark: var(--brand-700);
+            --success: var(--brand-500);
+            --success-dark: var(--brand-600);
+            --warning: var(--oro-700);
+            --text-main: var(--ink);
+            --text-muted: var(--ink-3);
+            --text-soft: var(--ink-4);
+            --border: var(--arena);
             --surface: #ffffff;
-            --soft-bg: #f8fafc;
+            --soft-bg: var(--crema-50);
         }
 
         .solicitudes-page {
@@ -31,7 +30,7 @@
             margin-bottom: 24px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 10px 30px rgba(20,32,26, 0.08);
         }
 
         .solicitudes-hero::before {
@@ -76,7 +75,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 12px 28px rgba(20,32,26, 0.12);
         }
 
         .hero-icon i {
@@ -117,14 +116,14 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 22px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
             overflow: hidden;
         }
 
         .solicitudes-card-header {
             padding: 18px 22px;
-            border-bottom: 1px solid #f1f5f9;
-            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border-bottom: 1px solid var(--crema-100);
+            background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -155,7 +154,7 @@
             letter-spacing: 0.06em;
             color: var(--text-soft);
             background: var(--soft-bg);
-            border-bottom: 1px solid #eef2f7;
+            border-bottom: 1px solid var(--crema-100);
             text-align: left;
             white-space: nowrap;
         }
@@ -165,12 +164,12 @@
         }
 
         .solicitudes-table tbody tr:hover {
-            background: #fafbff;
+            background: var(--crema-50);
         }
 
         .solicitudes-table tbody td {
             padding: 16px 22px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--crema-100);
             color: var(--text-main);
             font-size: 0.92rem;
             vertical-align: top;
@@ -242,18 +241,18 @@
         }
 
         .estado-label.pendiente {
-            background: #fef3c7;
-            color: #92400e;
+            background: var(--warn-bg);
+            color: var(--warn);
         }
 
         .estado-label.aprobado {
-            background: #d1fae5;
-            color: #065f46;
+            background: var(--ok-bg);
+            color: var(--brand-700);
         }
 
         .estado-label.rechazado {
-            background: #fee2e2;
-            color: #991b1b;
+            background: var(--danger-bg);
+            color: var(--danger);
         }
 
         .estado-label i {
@@ -281,7 +280,7 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: #f1f5f9;
+            background: var(--crema-100);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -335,12 +334,12 @@
             cursor: pointer;
             text-decoration: none;
             transition: all 0.2s ease;
-            box-shadow: 0 8px 20px rgba(20, 184, 166, 0.24);
+            box-shadow: 0 8px 20px rgba(23,137,92, 0.24);
         }
 
         .btn-crear:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(20, 184, 166, 0.30);
+            
+            box-shadow: 0 12px 28px rgba(23,137,92, 0.30);
             color: white;
         }
 
@@ -404,7 +403,7 @@
             .solicitudes-table tbody tr {
                 display: block;
                 padding: 0;
-                border-bottom: 2px solid #f1f5f9;
+                border-bottom: 2px solid var(--crema-100);
             }
 
             .solicitudes-table tbody tr:last-child {
@@ -522,7 +521,7 @@
                                     </td>
                                     <td data-label="Acción">
                                         @if($s->estado === 'pendiente')
-                                            <button class="ui mini circular icon button btn-eliminar-solicitud" data-id="{{ $s->id }}" title="Eliminar solicitud" style="background:transparent;color:#ef4444;border:1px solid #fee2e2;">
+                                            <button class="ui mini circular icon button btn-eliminar-solicitud" data-id="{{ $s->id }}" title="Eliminar solicitud" style="background:transparent;color:var(--danger);border:1px solid var(--danger-bg);">
                                                 <i class="trash alternate icon"></i>
                                             </button>
                                         @else

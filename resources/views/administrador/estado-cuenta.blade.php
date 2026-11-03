@@ -2,7 +2,7 @@
 
     <div class="page-header">
         <div class="page-header-left">
-            <div class="page-icon" style="background: linear-gradient(135deg, #0369a1 0%, #075985 100%);">
+            <div class="page-icon" style="background: linear-gradient(135deg, var(--brand-700) 0%, var(--info) 100%);">
                 <i class="home icon"></i>
             </div>
             <div>
@@ -84,7 +84,7 @@
 
         .ec-kpi {
             background: #fff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--arena);
             border-radius: 12px;
             padding: 12px 14px;
             display: flex;
@@ -92,25 +92,25 @@
             gap: 2px;
         }
 
-        .ec-kpi.ok { border-color: #a7f3d0; background: #ecfdf5; }
-        .ec-kpi.alerta { border-color: #fca5a5; background: #fef2f2; }
+        .ec-kpi.ok { border-color: var(--brand-100); background: var(--brand-50); }
+        .ec-kpi.alerta { border-color: var(--danger-bg); background: var(--danger-bg); }
 
         .ec-kpi-label {
             font-size: .71rem;
             text-transform: uppercase;
             letter-spacing: .05em;
-            color: #64748b;
+            color: var(--ink-3);
             font-weight: 700;
         }
 
         .ec-kpi-valor {
             font-size: 1.4rem;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--ink);
             font-variant-numeric: tabular-nums;
         }
 
-        .ec-kpi-nota { font-size: .72rem; color: #94a3b8; line-height: 1.35; }
+        .ec-kpi-nota { font-size: .72rem; color: var(--ink-4); line-height: 1.35; }
 
         .ec-toolbar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
         .ec-buscador { flex: 1; min-width: 220px; }
@@ -123,15 +123,15 @@
         .ec-tabla th {
             text-align: left;
             padding: 9px 10px;
-            background: #f8fafc;
+            background: var(--crema-50);
             font-size: .72rem;
             text-transform: uppercase;
             letter-spacing: .04em;
-            color: #475569;
+            color: var(--ink-2);
             white-space: nowrap;
         }
 
-        .ec-tabla td { padding: 9px 10px; border-bottom: 1px solid #f1f5f9; }
+        .ec-tabla td { padding: 9px 10px; border-bottom: 1px solid var(--crema-100); }
 
         .ec-tabla .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
         .ec-tabla .acc { text-align: right; }
@@ -144,8 +144,8 @@
             height: 26px;
             padding: 0 7px;
             border-radius: 7px;
-            background: #eff6ff;
-            color: #1d4ed8;
+            background: var(--info-bg);
+            color: var(--info);
             font-weight: 700;
             font-size: .82rem;
         }
@@ -159,21 +159,21 @@
             white-space: nowrap;
         }
 
-        .ec-pill.ok { background: #dcfce7; color: #166534; }
-        .ec-pill.debe { background: #fee2e2; color: #991b1b; }
-        .ec-pill.favor { background: #dbeafe; color: #1e40af; }
+        .ec-pill.ok { background: var(--ok-bg); color: var(--brand-800); }
+        .ec-pill.debe { background: var(--danger-bg); color: var(--danger); }
+        .ec-pill.favor { background: var(--info-bg); color: var(--info); }
 
-        .ec-neto-debe { color: #b91c1c; font-weight: 700; }
-        .ec-neto-favor { color: #1d4ed8; font-weight: 700; }
+        .ec-neto-debe { color: var(--danger); font-weight: 700; }
+        .ec-neto-favor { color: var(--info); font-weight: 700; }
 
         .ec-tarde {
             display: block;
             font-size: .7rem;
-            color: #b45309;
+            color: var(--warn);
             margin-top: 2px;
         }
 
-        .ec-vacio { text-align: center; padding: 30px; color: #94a3b8; }
+        .ec-vacio { text-align: center; padding: 30px; color: var(--ink-4); }
     </style>
 
     <script>

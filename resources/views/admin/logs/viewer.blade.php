@@ -5,23 +5,26 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Laravel Log Viewer</title>
+    <title>Registros del sistema · Alameda</title>
+
+    {{-- Es una página suelta (sin el layout): necesita cargar fuentes y colores del sistema de diseño. --}}
+    @include('layouts.partials.fuentes')
+    {!! \App\Support\Vendor::estilosSistema() !!}
 
     <style>
         :root {
-            --bg: #f4f6f8;
+            --bg: var(--crema-100);
             --card: #ffffff;
-            --text: #111827;
-            --muted: #6b7280;
-            --border: #e5e7eb;
-            --dark: #111827;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --danger: #dc2626;
-            --danger-hover: #b91c1c;
-            --success-bg: #d1fae5;
-            --success-text: #065f46;
-            --shadow: 0 8px 24px rgba(15, 23, 42, .08);
+            --text: var(--ink);
+            --muted: var(--ink-3);
+            --border: var(--arena);
+            --dark: var(--ink);
+            --primary: var(--brand-600);
+            --primary-hover: var(--brand-700);
+            --danger-hover: var(--danger);
+            --success-bg: var(--ok-bg);
+            --success-text: var(--brand-700);
+            --shadow: 0 8px 24px rgba(20,32,26, .08);
             --radius: 14px;
         }
 
@@ -31,7 +34,7 @@
 
         body {
             margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: var(--font-ui);
             background: var(--bg);
             color: var(--text);
         }
@@ -57,6 +60,8 @@
 
         .header-title h1 {
             margin: 0;
+            font-family: var(--font-display);
+            color: var(--brand-800);
             font-size: 28px;
             line-height: 1.2;
         }
@@ -85,7 +90,7 @@
             padding: 14px 16px;
             border-radius: var(--radius);
             margin-bottom: 16px;
-            border: 1px solid #a7f3d0;
+            border: 1px solid var(--brand-100);
         }
 
         .stats-grid {
@@ -163,7 +168,7 @@
 
         label {
             font-size: 13px;
-            color: #374151;
+            color: var(--ink);
             font-weight: 600;
         }
 
@@ -174,7 +179,7 @@
             width: 100%;
             padding: 11px 12px;
             border-radius: 10px;
-            border: 1px solid #d1d5db;
+            border: 1px solid var(--arena-2);
             background: #fff;
             color: var(--text);
             text-decoration: none;
@@ -184,7 +189,7 @@
 
         input:focus,
         select:focus {
-            outline: 2px solid rgba(37, 99, 235, .25);
+            outline: 2px solid rgba(11,107,69, .25);
             border-color: var(--primary);
         }
 
@@ -206,7 +211,7 @@
         }
 
         .button-secondary {
-            background: #f3f4f6;
+            background: var(--crema-100);
             color: var(--text);
             border: 1px solid var(--border);
         }
@@ -255,9 +260,9 @@
         }
 
         .filter-chip {
-            background: #eff6ff;
-            color: #1e40af;
-            border: 1px solid #bfdbfe;
+            background: var(--info-bg);
+            color: var(--info);
+            border: 1px solid var(--info-bg);
             padding: 7px 10px;
             border-radius: 999px;
             font-size: 13px;
@@ -286,8 +291,9 @@
 
         table {
             width: 100%;
+            table-layout: fixed;
             border-collapse: collapse;
-            min-width: 1100px;
+            min-width: 720px;
         }
 
         th {
@@ -310,7 +316,7 @@
         }
 
         tbody tr:hover {
-            background: #f9fafb;
+            background: var(--crema-50);
         }
 
         .badge {
@@ -329,23 +335,23 @@
         .badge-CRITICAL,
         .badge-ALERT,
         .badge-EMERGENCY {
-            background: #fee2e2;
-            color: #991b1b;
+            background: var(--danger-bg);
+            color: var(--danger);
         }
 
         .badge-WARNING {
-            background: #fef3c7;
-            color: #92400e;
+            background: var(--warn-bg);
+            color: var(--warn);
         }
 
         .badge-INFO {
-            background: #dbeafe;
-            color: #1e40af;
+            background: var(--info-bg);
+            color: var(--info);
         }
 
         .badge-DEBUG {
-            background: #e5e7eb;
-            color: #374151;
+            background: var(--arena);
+            color: var(--ink);
         }
 
         .message-preview {
@@ -353,7 +359,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            color: #1f2937;
+            color: var(--ink);
         }
 
         details {
@@ -368,11 +374,12 @@
         }
 
         .message-detail {
+            overflow-wrap: anywhere;
             white-space: pre-wrap;
             word-break: break-word;
             font-family: Consolas, Monaco, monospace;
-            background: #0f172a;
-            color: #e5e7eb;
+            background: var(--ink);
+            color: var(--arena);
             padding: 14px;
             border-radius: 12px;
             margin-top: 10px;
@@ -441,7 +448,7 @@
         }
 
         .log-card-message {
-            color: #1f2937;
+            color: var(--ink);
             font-size: 14px;
             line-height: 1.45;
             margin-bottom: 10px;
@@ -460,7 +467,7 @@
         }
 
         .metric {
-            background: #f9fafb;
+            background: var(--crema-50);
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 10px;
@@ -495,7 +502,7 @@
         .log-modal-backdrop {
             position: absolute;
             inset: 0;
-            background: rgba(15, 23, 42, .65);
+            background: rgba(20,32,26, .65);
         }
 
         .log-modal-panel {
@@ -515,19 +522,19 @@
             align-items: flex-start;
             gap: 12px;
             padding: 16px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--arena);
         }
 
         .log-modal-header strong {
             display: block;
             font-size: 16px;
-            color: #111827;
+            color: var(--ink);
         }
 
         .log-modal-header span {
             display: block;
             margin-top: 3px;
-            color: #6b7280;
+            color: var(--ink-3);
             font-size: 12px;
         }
 
@@ -536,8 +543,8 @@
             height: 38px;
             border-radius: 999px;
             border: none;
-            background: #f3f4f6;
-            color: #111827;
+            background: var(--crema-100);
+            color: var(--ink);
             font-size: 26px;
             line-height: 1;
             cursor: pointer;
@@ -545,8 +552,8 @@
 
         .log-modal-actions {
             padding: 12px 16px;
-            border-bottom: 1px solid #e5e7eb;
-            background: #f9fafb;
+            border-bottom: 1px solid var(--arena);
+            background: var(--crema-50);
             display: flex;
             gap: 10px;
         }
@@ -556,8 +563,8 @@
             padding: 16px;
             flex: 1;
             overflow: auto;
-            background: #0f172a;
-            color: #e5e7eb;
+            background: var(--ink);
+            color: var(--arena);
             font-family: Consolas, Monaco, monospace;
             font-size: 12px;
             line-height: 1.5;
@@ -676,8 +683,8 @@
 
     <div class="header">
         <div class="header-title">
-            <h1>Laravel Log Viewer</h1>
-            <p>Consulta, filtra y administra los logs de tu aplicación.</p>
+            <h1>Registros del sistema</h1>
+            <p>Consulta, filtra y administra los registros de la aplicación.</p>
         </div>
 
         <div class="file-pill">
@@ -821,7 +828,7 @@
         <div class="desktop-table">
             <div class="table-card">
                 <div class="table-scroll">
-                    <table>
+                    <table style="min-width: {{ $selected === 'cron-url.log' ? 1100 : 720 }}px;">
                         <thead>
                             <tr>
                                 <th style="width: 175px;">Fecha</th>

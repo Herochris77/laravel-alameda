@@ -4,26 +4,26 @@
 
         $badge = [
             'por_iniciar' => [
-                'bg' => '#eff6ff',
-                'color' => '#1d4ed8',
+                'bg' => '#f0f6fc',
+                'color' => '#095a3a',
                 'icon' => 'clock outline',
             ],
 
             'en_proceso' => [
-                'bg' => '#fffbeb',
-                'color' => '#92400e',
+                'bg' => '#fdf7e6',
+                'color' => '#7c4a06',
                 'icon' => 'spinner',
             ],
 
             'pausado' => [
-                'bg' => '#f1f5f9',
-                'color' => '#475569',
+                'bg' => '#f3eee0',
+                'color' => '#46544c',
                 'icon' => 'pause',
             ],
 
             'terminado' => [
-                'bg' => '#f0fdf4',
-                'color' => '#166534',
+                'bg' => '#f0f7f2',
+                'color' => '#0a4a31',
                 'icon' => 'check circle',
             ],
         ];
@@ -32,15 +32,15 @@
             $badge[$proyecto->estado]
             ??
             [
-                'bg' => '#f1f5f9',
-                'color' => '#475569',
+                'bg' => '#f3eee0',
+                'color' => '#46544c',
                 'icon' => 'info circle',
             ];
 
         $fill =
             $proyecto->estado === 'terminado'
-                ? '#10b981'
-                : '#0d9488';
+                ? '#17895c'
+                : '#0b6b45';
 
         $avance =
             max(
@@ -63,19 +63,19 @@
     <style>
 
         .pj-page {
-            --primary: #0d9488;
-            --primary-dark: #0f766e;
+            --primary: var(--brand-600);
+            --primary-dark: var(--brand-700);
 
-            --success: #10b981;
+            --success: var(--brand-500);
 
-            --text: #0f172a;
-            --muted: #64748b;
-            --soft: #94a3b8;
+            --text: var(--ink);
+            --muted: var(--ink-3);
+            --soft: var(--ink-4);
 
-            --border: #e2e8f0;
+            --border: var(--arena);
 
             --surface: #ffffff;
-            --bg: #f8fafc;
+            --bg: var(--crema-50);
 
             padding-bottom: 30px;
         }
@@ -146,7 +146,7 @@
                 var(--surface);
 
             box-shadow:
-                0 8px 24px rgba(15,23,42,.055);
+                0 8px 24px rgba(20,32,26,.055);
         }
 
 
@@ -236,7 +236,7 @@
                 0 0 18px;
 
             color:
-                #475569;
+                var(--ink-2);
 
             font-size: .88rem;
 
@@ -306,7 +306,7 @@
             border-radius: 999px;
 
             background:
-                #e2e8f0;
+                var(--arena);
         }
 
 
@@ -369,7 +369,7 @@
                 var(--primary);
 
             background:
-                rgba(13,148,136,.09);
+                rgba(11,107,69,.09);
         }
 
 
@@ -420,7 +420,7 @@
                 var(--surface);
 
             box-shadow:
-                0 6px 18px rgba(15,23,42,.045);
+                0 6px 18px rgba(20,32,26,.045);
         }
 
 
@@ -485,7 +485,7 @@
                 var(--primary-dark);
 
             background:
-                rgba(13,148,136,.08);
+                rgba(11,107,69,.08);
 
             font-size: .65rem;
 
@@ -536,7 +536,7 @@
             margin-top: 5px;
 
             border:
-                3px solid #ccfbf1;
+                3px solid var(--brand-100);
 
             border-radius: 999px;
 
@@ -600,7 +600,7 @@
 
         .timeline-comment {
             color:
-                #334155;
+                var(--ink);
 
             font-size: .86rem;
 
@@ -662,7 +662,7 @@
             color: #fff;
 
             background:
-                rgba(15,23,42,.72);
+                rgba(20,32,26,.72);
 
             font-size: .62rem;
 
@@ -702,7 +702,7 @@
             border-radius: 16px;
 
             background:
-                #f1f5f9;
+                var(--crema-100);
 
             color:
                 var(--soft);
@@ -756,7 +756,7 @@
             padding: 20px;
 
             background:
-                rgba(15,23,42,.94);
+                rgba(20,32,26,.94);
         }
 
 
@@ -1228,42 +1228,18 @@
                             @endif
 
 
-                            @if($a->foto)
-
-                                @php
-                                    $fotoUrl =
-                                        asset(
-                                            'storage/'
-                                            .$a->foto
-                                        );
-                                @endphp
-
-
-                                <div
-                                    class="timeline-photo"
-                                    onclick="abrirEvidencia(
-                                        '{{ $fotoUrl }}',
-                                        '{{ $a->porcentaje }}% · {{ \Carbon\Carbon::parse($a->created_at)->format('d/m/Y') }}'
-                                    )"
-                                >
-
-                                    <img
-                                        src="{{ $fotoUrl }}"
-                                        alt="Evidencia del avance del proyecto"
-                                        loading="lazy"
-                                    >
-
-
-                                    <span class="timeline-photo-overlay">
-
-                                        <i class="expand icon"></i>
-
-                                        Ver evidencia
-
-                                    </span>
-
+                            @php($evid = $a->evidencias())
+                            @if(count($evid))
+                                <div class="galeria-evidencias {{ count($evid) === 1 ? 'una' : '' }}">
+                                    @foreach($evid as $e)
+                                        @php($fotoUrl = asset('storage/'.$e['ruta']))
+                                        <button type="button"
+                                                onclick="abrirEvidencia('{{ $fotoUrl }}', '{{ $a->porcentaje }}% · {{ \Carbon\Carbon::parse($a->created_at)->format('d/m/Y') }}')"
+                                                aria-label="Ver evidencia {{ $loop->iteration }} de {{ count($evid) }}">
+                                            <img src="{{ $fotoUrl }}" alt="Evidencia del avance del proyecto" loading="lazy">
+                                        </button>
+                                    @endforeach
                                 </div>
-
                             @endif
 
                         </div>
@@ -1332,7 +1308,7 @@
 
         <img
             id="pj-lightbox-img"
-            src=""
+            src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
             alt="Evidencia del proyecto"
         >
 

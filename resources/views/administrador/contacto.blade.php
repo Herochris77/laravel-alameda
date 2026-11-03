@@ -292,19 +292,19 @@
 
 <style>
     :root {
-        --contact-primary: #10b981;
-        --contact-primary-dark: #059669;
-        --contact-secondary: #667eea;
-        --contact-danger: #ef4444;
-        --contact-danger-dark: #dc2626;
-        --contact-warning: #f59e0b;
-        --contact-info: #3b82f6;
-        --contact-text-main: #0f172a;
-        --contact-text-muted: #64748b;
-        --contact-text-soft: #94a3b8;
-        --contact-border: #e2e8f0;
+        --contact-primary: var(--brand-500);
+        --contact-primary-dark: var(--brand-600);
+        --contact-secondary: var(--brand-600);
+        --contact-danger: var(--danger);
+        --contact-danger-dark: var(--danger);
+        --contact-warning: var(--oro-700);
+        --contact-info: var(--brand-500);
+        --contact-text-main: var(--ink);
+        --contact-text-muted: var(--ink-3);
+        --contact-text-soft: var(--ink-4);
+        --contact-border: var(--arena);
         --contact-surface: #ffffff;
-        --contact-soft-bg: #f8fafc;
+        --contact-soft-bg: var(--crema-50);
     }
 
     .contactos-admin-page {
@@ -405,7 +405,7 @@
         background: var(--contact-surface);
         border: 1px solid var(--contact-border);
         border-radius: 22px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         overflow: hidden;
     }
 
@@ -416,8 +416,8 @@
 
     .contacto-card-header {
         padding: 18px 20px;
-        border-bottom: 1px solid #f1f5f9;
-        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        border-bottom: 1px solid var(--crema-100);
+        background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
     }
 
     .contacto-card-title-wrap {
@@ -437,7 +437,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(16, 185, 129, 0.24);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.24);
     }
 
     .contacto-card-icon.secondary {
@@ -491,8 +491,8 @@
     }
 
     .contacto-input:focus {
-        border-color: rgba(16, 185, 129, 0.65) !important;
-        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12) !important;
+        border-color: rgba(23,137,92, 0.65) !important;
+        box-shadow: 0 0 0 4px rgba(23,137,92, 0.12) !important;
         outline: none;
         background: white;
     }
@@ -535,7 +535,7 @@
         justify-content: center;
         gap: 8px;
         font-weight: 900;
-        box-shadow: 0 8px 18px rgba(16, 185, 129, 0.22);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.22);
     }
 
     .btn-submit-contacto i {
@@ -548,7 +548,7 @@
         grid-template-columns: minmax(0, 1fr) minmax(200px, 240px) auto;
         gap: 14px;
         align-items: end;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
     }
 
     .filter-field {
@@ -587,7 +587,7 @@
         align-items: center;
         gap: 12px;
         background: var(--contact-soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 16px;
         padding: 12px 14px;
     }
@@ -596,7 +596,7 @@
         width: 42px;
         height: 42px;
         border-radius: 14px;
-        background: #d1fae5;
+        background: var(--ok-bg);
         color: var(--contact-primary-dark);
         display: flex;
         align-items: center;
@@ -641,7 +641,7 @@
         border: 1px solid var(--contact-border);
         border-radius: 18px;
         background: white;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+        box-shadow: 0 6px 18px rgba(20,32,26, 0.05);
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -649,14 +649,14 @@
     }
 
     .contacto-item-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(16, 185, 129, 0.35);
-        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        
+        border-color: rgba(23,137,92, 0.35);
+        box-shadow: 0 10px 24px rgba(20,32,26, 0.08);
     }
 
     .contacto-item-header {
         padding: 16px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
         display: flex;
         align-items: flex-start;
         gap: 12px;
@@ -666,7 +666,7 @@
         width: 46px;
         height: 46px;
         border-radius: 14px;
-        background: #d1fae5;
+        background: var(--ok-bg);
         color: var(--contact-primary-dark);
         display: flex;
         align-items: center;
@@ -675,13 +675,13 @@
     }
 
     .contacto-item-icon.emergencia {
-        background: #fee2e2;
-        color: #dc2626;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .contacto-item-icon.recomendado {
-        background: #dbeafe;
-        color: #2563eb;
+        background: var(--info-bg);
+        color: var(--info);
     }
 
     .contacto-item-icon i {
@@ -721,13 +721,13 @@
     }
 
     .contact-badge.emergencia {
-        background: #fee2e2;
-        color: #991b1b;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .contact-badge.recomendado {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: var(--info-bg);
+        color: var(--info);
     }
 
     .contacto-item-body {
@@ -761,8 +761,8 @@
 
     .contacto-item-footer {
         padding: 14px 16px 16px;
-        border-top: 1px solid #f1f5f9;
-        background: #fbfdff;
+        border-top: 1px solid var(--crema-100);
+        background: var(--crema-50);
     }
     
     .contacto-actions {
@@ -801,23 +801,23 @@
     }
     
     .contacto-actions .btn-editar {
-        background: #eff6ff !important;
-        color: #1d4ed8 !important;
-        border: 1px solid #bfdbfe !important;
+        background: var(--info-bg) !important;
+        color: var(--info) !important;
+        border: 1px solid var(--info-bg) !important;
     }
     
     .contacto-actions .btn-eliminar {
-        background: #fef2f2 !important;
-        color: #b91c1c !important;
-        border: 1px solid #fecaca !important;
+        background: var(--danger-bg) !important;
+        color: var(--danger) !important;
+        border: 1px solid var(--danger-bg) !important;
     }
     
     .contacto-actions .btn-editar:hover {
-        background: #dbeafe !important;
+        background: var(--info-bg) !important;
     }
     
     .contacto-actions .btn-eliminar:hover {
-        background: #fee2e2 !important;
+        background: var(--danger-bg) !important;
     }
 
     .contactos-pagination {
@@ -842,16 +842,16 @@
     }
 
     .pagination-btn:hover {
-        background: #ecfdf5;
+        background: var(--brand-50);
         color: var(--contact-primary-dark);
-        border-color: rgba(16, 185, 129, 0.35);
+        border-color: rgba(23,137,92, 0.35);
     }
 
     .pagination-btn.active {
         background: linear-gradient(135deg, var(--contact-primary) 0%, var(--contact-primary-dark) 100%);
         color: #ffffff;
         border-color: transparent;
-        box-shadow: 0 8px 18px rgba(16, 185, 129, 0.22);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.22);
     }
 
     .pagination-btn:disabled {
@@ -879,7 +879,7 @@
         height: 78px;
         border-radius: 24px;
         margin: 0 auto 18px;
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(5, 150, 105, 0.16));
+        background: linear-gradient(135deg, rgba(23,137,92, 0.12), rgba(5, 150, 105, 0.16));
         color: var(--contact-primary-dark);
         display: flex;
         align-items: center;
@@ -887,7 +887,7 @@
     }
 
     .empty-contactos-icon.error {
-        background: #fee2e2;
+        background: var(--danger-bg);
         color: var(--contact-danger);
     }
 
@@ -898,7 +898,7 @@
 
     .empty-contactos-card h3 {
         margin: 0 0 8px 0;
-        color: #475569;
+        color: var(--ink-2);
         font-weight: 900;
     }
 
@@ -934,7 +934,7 @@
         flex-wrap: wrap;
         padding: 16px 20px !important;
         background: var(--contact-soft-bg) !important;
-        border-top: 1px solid #f1f5f9 !important;
+        border-top: 1px solid var(--crema-100) !important;
     }
 
     .contacto-modal-actions .button,
@@ -1049,7 +1049,7 @@
             position: sticky;
             bottom: 0;
             background: #ffffff;
-            box-shadow: 0 -8px 18px rgba(15, 23, 42, 0.04);
+            box-shadow: 0 -8px 18px rgba(20,32,26, 0.04);
         }
 
         .contacto-actions {
@@ -1649,9 +1649,10 @@
     }
 
     function extraerTexto(valor) {
-        const temporal = document.createElement('div');
-        temporal.innerHTML = valor || '';
-        return temporal.textContent || temporal.innerText || '';
+        // DOMParser crea un documento INERTE: no carga imagenes ni ejecuta
+        // onerror/onload. Un div.innerHTML sobre un elemento suelto SI los ejecuta,
+        // y por eso un nombre como <img src=x onerror=...> corria codigo aqui.
+        return new DOMParser().parseFromString(String(valor || ''), 'text/html').body.textContent || '';
     }
 
     function escapeHtml(text) {

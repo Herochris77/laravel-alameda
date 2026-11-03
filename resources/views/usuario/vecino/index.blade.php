@@ -3,35 +3,34 @@
     <style>
 
         .vecinos-page {
-            --primary: #667eea;
-            --primary-dark: #764ba2;
+            --primary: var(--brand-600);
+            --primary-dark: var(--brand-800);
 
-            --success: #22c55e;
-            --success-dark: #16a34a;
+            --success: var(--brand-500);
+            --success-dark: var(--brand-600);
 
-            --info: #3b82f6;
-            --info-dark: #2563eb;
+            --info: var(--brand-500);
+            --info-dark: var(--brand-600);
 
-            --danger: #ef4444;
-            --danger-dark: #dc2626;
+            --danger-dark: var(--danger);
 
-            --warning: #f59e0b;
+            --warning: var(--oro-700);
 
-            --text: #0f172a;
-            --muted: #64748b;
-            --soft: #94a3b8;
+            --text: var(--ink);
+            --muted: var(--ink-3);
+            --soft: var(--ink-4);
 
             --surface: #ffffff;
-            --surface-soft: #f8fafc;
-            --surface-muted: #f1f5f9;
+            --surface-soft: var(--crema-50);
+            --surface-muted: var(--crema-100);
 
-            --border: rgba(148,163,184,.24);
+            --border: rgba(111,106,88,.24);
 
             --shadow-sm:
-                0 5px 18px rgba(15,23,42,.05);
+                0 5px 18px rgba(20,32,26,.05);
 
             --shadow-md:
-                0 12px 30px rgba(15,23,42,.09);
+                0 12px 30px rgba(20,32,26,.09);
 
             width: 100%;
 
@@ -91,7 +90,7 @@
                 );
 
             box-shadow:
-                0 14px 34px rgba(102,126,234,.18);
+                0 14px 34px rgba(11,107,69,.18);
         }
 
 
@@ -269,7 +268,7 @@
             cursor: pointer;
 
             box-shadow:
-                0 8px 19px rgba(15,23,42,.10);
+                0 8px 19px rgba(20,32,26,.10);
         }
 
 
@@ -426,13 +425,13 @@
             padding: 17px 19px;
 
             border-bottom:
-                1px solid #eef2f7;
+                1px solid var(--crema-100);
 
             background:
                 linear-gradient(
                     180deg,
                     #fff,
-                    #fbfdff
+                    var(--crema-50)
                 );
         }
 
@@ -522,7 +521,7 @@
                 9px 38px 9px 38px;
 
             border:
-                1px solid #dbe2eb;
+                1px solid var(--arena);
 
             border-radius: 13px;
 
@@ -545,10 +544,10 @@
 
         .directory-search input:focus {
             border-color:
-                rgba(102,126,234,.55);
+                rgba(11,107,69,.55);
 
             box-shadow:
-                0 0 0 3px rgba(102,126,234,.09);
+                0 0 0 3px rgba(11,107,69,.09);
         }
 
 
@@ -642,13 +641,13 @@
                 11px 14px !important;
 
             border-bottom:
-                1px solid #e9eef5 !important;
+                1px solid var(--crema-100) !important;
 
             color:
                 var(--muted) !important;
 
             background:
-                #f8fafc !important;
+                var(--crema-50) !important;
 
             font-size:
                 .65rem !important;
@@ -672,7 +671,7 @@
                 13px 14px !important;
 
             border-top:
-                1px solid #f1f5f9 !important;
+                1px solid var(--crema-100) !important;
 
             vertical-align:
                 middle !important;
@@ -687,7 +686,7 @@
 
         #vecinos-table tbody tr:hover {
             background:
-                #fafaff !important;
+                var(--crema-50) !important;
         }
 
 
@@ -734,7 +733,7 @@
             object-fit: cover;
 
             box-shadow:
-                0 6px 15px rgba(15,23,42,.14);
+                0 6px 15px rgba(20,32,26,.14);
 
             cursor: zoom-in;
 
@@ -744,8 +743,7 @@
 
 
         .neighbor-avatar:hover {
-            transform:
-                scale(1.05);
+            
         }
 
 
@@ -811,7 +809,7 @@
             text-transform: uppercase;
 
             box-shadow:
-                0 6px 15px rgba(102,126,234,.20);
+                0 6px 15px rgba(11,107,69,.20);
         }
 
 
@@ -849,9 +847,9 @@
 
             border-radius: 999px;
 
-            color: #2563eb;
+            color: var(--info);
 
-            background: #eff6ff;
+            background: var(--info-bg);
 
             font-size: .57rem;
 
@@ -893,7 +891,7 @@
 
         .neighbor-house {
             color:
-                #475569;
+                var(--ink-2);
 
             background:
                 var(--surface-muted);
@@ -917,28 +915,28 @@
         .status-pill.active {
             color: #15803d;
 
-            background: #dcfce7;
+            background: var(--ok-bg);
         }
 
 
         .status-pill.inactive {
-            color: #b91c1c;
+            color: var(--danger);
 
-            background: #fee2e2;
+            background: var(--danger-bg);
         }
 
 
         .type-pill.owner {
-            color: #6d28d9;
+            color: var(--brand-700);
 
-            background: #ede9fe;
+            background: var(--brand-100);
         }
 
 
         .type-pill.tenant {
-            color: #0f766e;
+            color: var(--brand-700);
 
-            background: #ccfbf1;
+            background: var(--brand-100);
         }
 
 
@@ -1000,8 +998,7 @@
 
 
         .contact-action:hover {
-            transform:
-                translateY(-1px);
+            
 
             opacity: .94;
         }
@@ -1071,7 +1068,7 @@
                 6px 8px !important;
 
             border:
-                1px solid #dbe2eb !important;
+                1px solid var(--arena) !important;
 
             border-radius:
                 9px !important;
@@ -1147,7 +1144,7 @@
             background: #fff;
 
             box-shadow:
-                0 5px 16px rgba(15,23,42,.045);
+                0 5px 16px rgba(20,32,26,.045);
         }
 
 
@@ -1161,7 +1158,7 @@
             padding-bottom: 11px;
 
             border-bottom:
-                1px solid #f1f5f9;
+                1px solid var(--crema-100);
         }
 
 
@@ -1193,7 +1190,7 @@
                 3px solid #fff;
 
             box-shadow:
-                0 7px 16px rgba(15,23,42,.14);
+                0 7px 16px rgba(20,32,26,.14);
 
             cursor: zoom-in;
         }
@@ -1363,7 +1360,7 @@
                 var(--primary);
 
             background:
-                #eef2ff;
+                var(--brand-50);
         }
 
 
@@ -1419,7 +1416,7 @@
             padding: 20px;
 
             background:
-                rgba(15,23,42,.94);
+                rgba(20,32,26,.94);
 
             opacity: 0;
 
@@ -2856,7 +2853,7 @@
 
 
             <img
-                src=""
+                src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
                 id="neighbor-lightbox-img"
                 class="neighbor-lightbox-img"
                 alt=""
@@ -2890,6 +2887,7 @@
     </div>
 
 
+    @include('layouts.partials.vendor-datatables')
     <script>
 
         var vecinosDataTable =

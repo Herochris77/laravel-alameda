@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="page-header">
         <div class="page-header-left">
-            <div class="page-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+            <div class="page-icon" style="background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 100%);">
                 <i class="mail icon"></i>
             </div>
             <div>
@@ -81,7 +81,7 @@
 
         .cq-kpi {
             background: #fff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--arena);
             border-radius: 12px;
             padding: 12px 14px;
             display: flex;
@@ -89,19 +89,19 @@
             gap: 2px;
         }
 
-        .cq-kpi.mal { border-color: #fca5a5; background: #fef2f2; }
+        .cq-kpi.mal { border-color: var(--danger-bg); background: var(--danger-bg); }
 
         .cq-label {
             font-size: .71rem;
             text-transform: uppercase;
             letter-spacing: .05em;
-            color: #64748b;
+            color: var(--ink-3);
             font-weight: 700;
         }
 
-        .cq-valor { font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+        .cq-valor { font-size: 1.5rem; font-weight: 700; color: var(--ink); }
 
-        .cq-nota { font-size: .73rem; color: #94a3b8; line-height: 1.35; }
+        .cq-nota { font-size: .73rem; color: var(--ink-4); line-height: 1.35; }
 
         .cq-barras-card { margin-bottom: 16px; }
 
@@ -109,7 +109,7 @@
             font-size: .78rem;
             text-transform: uppercase;
             letter-spacing: .04em;
-            color: #475569;
+            color: var(--ink-2);
             font-weight: 700;
             margin-bottom: 10px;
         }
@@ -134,12 +134,12 @@
         .cq-barra {
             width: 100%;
             max-width: 26px;
-            background: linear-gradient(180deg, #8b5cf6, #7c3aed);
+            background: linear-gradient(180deg, var(--brand-500), var(--brand-700));
             border-radius: 5px 5px 0 0;
             min-height: 4px;
         }
 
-        .cq-dia { font-size: .64rem; color: #94a3b8; white-space: nowrap; }
+        .cq-dia { font-size: .64rem; color: var(--ink-4); white-space: nowrap; }
     </style>
 
     <div class="card">
@@ -176,7 +176,7 @@
 </x-app-layout>
 
 <div class="ui modal" id="modal-ver-correo">
-    <div class="header" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white;">
+    <div class="header" style="background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 100%); color: white;">
         <i class="mail icon"></i> Contenido del Correo
     </div>
     <div class="content" style="padding: 0;">
@@ -203,7 +203,7 @@
                     <td id="modal-fecha"></td>
                 </tr>
             </table>
-            <div style="border-top: 1px solid rgba(148,163,184,0.22); padding-top: 16px;">
+            <div style="border-top: 1px solid rgba(111,106,88,0.22); padding-top: 16px;">
                 <div id="modal-mensaje"></div>
             </div>
         </div>
@@ -213,6 +213,7 @@
     </div>
 </div>
 
+@include('layouts.partials.vendor-datatables')
 <script>
     const BASE_URL = "{{ url('/') }}";
 

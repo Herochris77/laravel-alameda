@@ -177,18 +177,17 @@
 
 <style>
     :root {
-        --primary: #667eea;
-        --primary-dark: #4f46e5;
-        --secondary: #764ba2;
-        --danger: #ef4444;
-        --danger-dark: #dc2626;
-        --success: #10b981;
-        --warning: #f59e0b;
-        --text-main: #0f172a;
-        --text-muted: #64748b;
-        --border: #e2e8f0;
+        --primary: var(--brand-600);
+        --primary-dark: var(--brand-700);
+        --secondary: var(--brand-800);
+        --danger-dark: var(--danger);
+        --success: var(--brand-500);
+        --warning: var(--oro-700);
+        --text-main: var(--ink);
+        --text-muted: var(--ink-3);
+        --border: var(--arena);
         --surface: #ffffff;
-        --soft-bg: #f8fafc;
+        --soft-bg: var(--crema-50);
     }
 
     .reservas-page {
@@ -243,7 +242,7 @@
         border-radius: 20px;
         padding: 18px 20px;
         margin-bottom: 22px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -266,7 +265,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(102, 126, 234, 0.25);
+        box-shadow: 0 8px 18px rgba(11,107,69, 0.25);
     }
 
     .summary-icon i {
@@ -313,7 +312,7 @@
         border: 1px solid var(--border);
         border-radius: 22px;
         overflow: hidden;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         display: flex;
         flex-direction: column;
         min-height: 100%;
@@ -321,9 +320,9 @@
     }
 
     .reserva-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
-        border-color: rgba(102, 126, 234, 0.35);
+        
+        box-shadow: 0 16px 34px rgba(20,32,26, 0.12);
+        border-color: rgba(11,107,69, 0.35);
     }
 
     .reserva-card-header {
@@ -331,7 +330,7 @@
         display: flex;
         align-items: flex-start;
         gap: 14px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
     }
 
     .reserva-icon {
@@ -344,7 +343,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(102, 126, 234, 0.25);
+        box-shadow: 0 8px 18px rgba(11,107,69, 0.25);
     }
 
     .reserva-icon i {
@@ -392,23 +391,23 @@
     }
 
     .reserva-status.hoy {
-        background: #fef3c7;
-        color: #92400e;
+        background: var(--warn-bg);
+        color: var(--warn);
     }
 
     .reserva-status.proxima {
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
     }
 
     .reserva-status.pasada {
-        background: #e2e8f0;
-        color: #475569;
+        background: var(--arena);
+        color: var(--ink-2);
     }
 
     .reserva-owner {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: var(--info-bg);
+        color: var(--info);
     }
 
     .reserva-card-body {
@@ -443,7 +442,7 @@
 
     .reserva-date-box {
         background: var(--soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 16px;
         padding: 14px;
         display: grid;
@@ -469,7 +468,7 @@
 
     .reserva-card-footer {
         padding: 16px 18px 18px;
-        border-top: 1px solid #f1f5f9;
+        border-top: 1px solid var(--crema-100);
         display: grid;
         grid-template-columns: 1fr auto;
         gap: 10px;

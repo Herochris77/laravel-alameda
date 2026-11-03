@@ -17,7 +17,7 @@ class ProyectoController extends Controller
 
     public function ver($id)
     {
-        $proyecto = Proyecto::with('avances')->findOrFail($id);
+        $proyecto = Proyecto::with(\App\Models\ProyectoAvance::tablaDeFotos() ? ['avances.fotos'] : ['avances'])->findOrFail($id);
         $estados = Proyecto::estados();
 
         return view('usuario.proyectos.ver', compact('proyecto', 'estados'));

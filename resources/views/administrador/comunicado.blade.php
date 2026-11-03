@@ -193,18 +193,18 @@
 
 <style>
     :root {
-        --com-primary: #f59e0b;
-        --com-primary-dark: #d97706;
-        --com-secondary: #667eea;
-        --com-success: #10b981;
-        --com-danger: #ef4444;
-        --com-danger-dark: #dc2626;
-        --com-text-main: #0f172a;
-        --com-text-muted: #64748b;
-        --com-text-soft: #94a3b8;
-        --com-border: #e2e8f0;
+        --com-primary: var(--oro-700);
+        --com-primary-dark: var(--oro-700);
+        --com-secondary: var(--brand-600);
+        --com-success: var(--brand-500);
+        --com-danger: var(--danger);
+        --com-danger-dark: var(--danger);
+        --com-text-main: var(--ink);
+        --com-text-muted: var(--ink-3);
+        --com-text-soft: var(--ink-4);
+        --com-border: var(--arena);
         --com-surface: #ffffff;
-        --com-soft-bg: #f8fafc;
+        --com-soft-bg: var(--crema-50);
     }
 
     .comunicados-admin-page {
@@ -305,7 +305,7 @@
         background: var(--com-surface);
         border: 1px solid var(--com-border);
         border-radius: 22px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         overflow: hidden;
     }
 
@@ -316,8 +316,8 @@
 
     .comunicado-card-header {
         padding: 18px 20px;
-        border-bottom: 1px solid #f1f5f9;
-        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        border-bottom: 1px solid var(--crema-100);
+        background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
     }
 
     .comunicado-card-title-wrap {
@@ -445,7 +445,7 @@
     }
 
     input[type="date"]::-webkit-calendar-picker-indicator:hover {
-        background: #fff7ed;
+        background: var(--warn-bg);
         opacity: 1;
     }
 
@@ -472,7 +472,7 @@
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 14px;
         align-items: end;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
     }
 
     .filter-field {
@@ -511,7 +511,7 @@
         align-items: center;
         gap: 12px;
         background: var(--com-soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 16px;
         padding: 12px 14px;
     }
@@ -520,7 +520,7 @@
         width: 42px;
         height: 42px;
         border-radius: 14px;
-        background: #fff7ed;
+        background: var(--warn-bg);
         color: var(--com-primary-dark);
         display: flex;
         align-items: center;
@@ -565,7 +565,7 @@
         border: 1px solid var(--com-border);
         border-radius: 18px;
         background: white;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+        box-shadow: 0 6px 18px rgba(20,32,26, 0.05);
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -573,14 +573,14 @@
     }
 
     .comunicado-item-card:hover {
-        transform: translateY(-2px);
+        
         border-color: rgba(245, 158, 11, 0.35);
-        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 10px 24px rgba(20,32,26, 0.08);
     }
 
     .comunicado-item-header {
         padding: 16px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
         display: flex;
         align-items: flex-start;
         gap: 12px;
@@ -590,7 +590,7 @@
         width: 46px;
         height: 46px;
         border-radius: 14px;
-        background: #fff7ed;
+        background: var(--warn-bg);
         color: var(--com-primary-dark);
         display: flex;
         align-items: center;
@@ -635,18 +635,18 @@
     }
 
     .com-badge.vigente {
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
     }
 
     .com-badge.vencido {
-        background: #fee2e2;
-        color: #991b1b;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .com-badge.autor {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: var(--info-bg);
+        color: var(--info);
     }
 
     .comunicado-item-body {
@@ -685,7 +685,7 @@
 
     .comunicado-item-footer {
         padding: 14px 16px 16px;
-        border-top: 1px solid #f1f5f9;
+        border-top: 1px solid var(--crema-100);
         display: flex;
         justify-content: flex-end;
         gap: 10px;
@@ -725,7 +725,7 @@
     }
 
     .pagination-btn:hover {
-        background: #fff7ed;
+        background: var(--warn-bg);
         color: var(--com-primary-dark);
         border-color: rgba(245, 158, 11, 0.35);
     }
@@ -770,7 +770,7 @@
     }
 
     .empty-comunicados-icon.error {
-        background: #fee2e2;
+        background: var(--danger-bg);
         color: var(--com-danger);
     }
 
@@ -781,7 +781,7 @@
 
     .empty-comunicados-card h3 {
         margin: 0 0 8px 0;
-        color: #475569;
+        color: var(--ink-2);
         font-weight: 900;
     }
 
@@ -1405,9 +1405,10 @@
     }
 
     function extraerTexto(valor) {
-        const temporal = document.createElement('div');
-        temporal.innerHTML = valor || '';
-        return temporal.textContent || temporal.innerText || '';
+        // DOMParser crea un documento INERTE: no carga imagenes ni ejecuta
+        // onerror/onload. Un div.innerHTML sobre un elemento suelto SI los ejecuta,
+        // y por eso un nombre como <img src=x onerror=...> corria codigo aqui.
+        return new DOMParser().parseFromString(String(valor || ''), 'text/html').body.textContent || '';
     }
 
     function escapeHtml(text) {

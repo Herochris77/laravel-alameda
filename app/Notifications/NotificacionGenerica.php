@@ -55,11 +55,14 @@ class NotificacionGenerica extends Notification
     {
         return [
             'titulo' => $this->titulo,
-            'mensaje' => $this->mensaje,
+            // El mensaje lleva HTML a proposito (<strong>, <br>), pero se arma con texto
+            // que escribio una persona. Se sanea AQUI, al guardar, para que ninguna
+            // notificacion nueva pueda cargar codigo sin importar quien la construya.
+            'mensaje' => \App\Support\HtmlSeguro::limpiar($this->mensaje),
             'tipo' => $this->tipo,
             'url' => $this->url,
             'parametros' => $this->parametros,
-            'icono' => $this->icono,
+            'icono' => \App\Support\HtmlSeguro::limpiar($this->icono),
         ];
     }
 

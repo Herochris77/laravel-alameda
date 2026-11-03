@@ -13,14 +13,14 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: #667eea;
+            color: var(--brand-600);
             text-decoration: none;
             font-weight: 600;
             margin-bottom: 16px;
             font-size: 0.9rem;
         }
         
-        .back-btn:hover { color: #5a67d8; }
+        .back-btn:hover { color: var(--brand-600); }
         
         .page-header {
             background: white;
@@ -42,21 +42,21 @@
             margin-bottom: 16px;
         }
         
-        .status-badge.pendiente { background: #fef3c7; color: #d97706; }
-        .status-badge.aprobado { background: #d1fae5; color: #059669; }
-        .status-badge.rechazado { background: #fee2e2; color: #dc2626; }
+        .status-badge.pendiente { background: var(--warn-bg); color: var(--oro-700); }
+        .status-badge.aprobado { background: var(--ok-bg); color: var(--brand-600); }
+        .status-badge.rechazado { background: var(--danger-bg); color: var(--danger); }
         
         .page-header h1 {
             font-size: 1.3rem;
             font-weight: 700;
-            color: #1e293b;
+            color: var(--ink);
             margin: 0 0 8px 0;
         }
         
         .amount-display {
             font-size: 2.5rem;
             font-weight: 800;
-            color: #1e293b;
+            color: var(--ink);
             margin: 16px 0;
         }
         
@@ -77,7 +77,7 @@
         .info-card h3 {
             font-size: 0.85rem;
             text-transform: uppercase;
-            color: #94a3b8;
+            color: var(--ink-4);
             margin: 0 0 16px 0;
             letter-spacing: 0.5px;
         }
@@ -86,19 +86,19 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--crema-100);
         }
         
         .info-row:last-child { border-bottom: none; }
         
         .info-row .label {
-            color: #64748b;
+            color: var(--ink-3);
             font-size: 0.9rem;
         }
         
         .info-row .value {
             font-weight: 600;
-            color: #1e293b;
+            color: var(--ink);
             font-size: 0.9rem;
         }
         
@@ -132,27 +132,27 @@
             transition: all 0.2s;
         }
         
-        .btn:active { transform: scale(0.98); }
+        .btn:active {  }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-800) 100%);
             color: white;
         }
         
         .btn-success {
-            background: #10b981;
+            background: var(--brand-500);
             color: white;
         }
         
         .btn-warning {
-            background: #f59e0b;
+            background: var(--oro-700);
             color: white;
         }
         
         .btn-outline {
             background: transparent;
-            border: 2px solid #e2e8f0;
-            color: #64748b;
+            border: 2px solid var(--arena);
+            color: var(--ink-3);
         }
         
         .btn.loading {
@@ -170,7 +170,7 @@
         .upload-form h3 {
             font-size: 1rem;
             font-weight: 700;
-            color: #1e293b;
+            color: var(--ink);
             margin: 0 0 16px 0;
         }
         
@@ -185,30 +185,30 @@
             align-items: center;
             justify-content: center;
             padding: 30px;
-            border: 2px dashed #cbd5e1;
+            border: 2px dashed var(--arena-2);
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
         }
         
         .file-input-label:hover {
-            border-color: #667eea;
-            background: #f8fafc;
+            border-color: var(--brand-600);
+            background: var(--crema-50);
         }
         
         .file-input-label i {
             font-size: 2rem;
-            color: #94a3b8;
+            color: var(--ink-4);
             margin-bottom: 8px;
         }
         
         .file-input-label span {
-            color: #64748b;
+            color: var(--ink-3);
             font-size: 0.9rem;
         }
         
         .file-input-label small {
-            color: #94a3b8;
+            color: var(--ink-4);
             font-size: 0.75rem;
         }
         
@@ -278,7 +278,7 @@
             @if($pago->cantidad_pago)
             <div class="info-row">
                 <span class="label">Monto pagado</span>
-                <span class="value" style="color: #059669;">${{ number_format($pago->cantidad_pago, 2) }}</span>
+                <span class="value" style="color: var(--brand-600);">${{ number_format($pago->cantidad_pago, 2) }}</span>
             </div>
             @endif
             @if($pago->estado == 'pagado')
@@ -291,7 +291,7 @@
         
         @if($pago->path_pago)
             <div class="comprobante-preview">
-                <h3 style="font-size: 0.85rem; text-transform: uppercase; color: #94a3b8; margin: 0 0 16px 0; letter-spacing: 0.5px;">Comprobante</h3>
+                <h3 style="font-size: 0.85rem; text-transform: uppercase; color: var(--ink-4); margin: 0 0 16px 0; letter-spacing: 0.5px;">Comprobante</h3>
                 <img src="{{ asset('storage/'.$pago->path_pago) }}" alt="Comprobante">
             </div>
             
@@ -325,7 +325,7 @@
                                    style="width: 100%;" required>
                         </div>
 
-                        <label for="fecha-pago-detalle" style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px;">
+                        <label for="fecha-pago-detalle" style="display: block; font-size: 0.85rem; color: var(--ink-3); margin-bottom: 6px;">
                             ¿Qué día realizaste el pago?
                         </label>
                         <div class="ui input" style="width: 100%; margin-bottom: 6px;">
@@ -334,7 +334,7 @@
                                    max="{{ now()->format('Y-m-d') }}"
                                    style="width: 100%;" required>
                         </div>
-                        <small style="display: block; color: #94a3b8; margin-bottom: 16px;">
+                        <small style="display: block; color: var(--ink-4); margin-bottom: 16px;">
                             Usa la fecha que aparece en tu comprobante, no la de hoy.
                         </small>
 
@@ -369,7 +369,7 @@
                                    style="width: 100%;" required>
                         </div>
 
-                        <label for="fecha-pago-detalle" style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px;">
+                        <label for="fecha-pago-detalle" style="display: block; font-size: 0.85rem; color: var(--ink-3); margin-bottom: 6px;">
                             ¿Qué día realizaste el pago?
                         </label>
                         <div class="ui input" style="width: 100%; margin-bottom: 6px;">
@@ -378,7 +378,7 @@
                                    max="{{ now()->format('Y-m-d') }}"
                                    style="width: 100%;" required>
                         </div>
-                        <small style="display: block; color: #94a3b8; margin-bottom: 16px;">
+                        <small style="display: block; color: var(--ink-4); margin-bottom: 16px;">
                             Usa la fecha que aparece en tu comprobante, no la de hoy.
                         </small>
 

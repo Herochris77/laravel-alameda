@@ -44,7 +44,7 @@ class RegisteredUserController extends Controller
             'pass' => ['required', 'confirmed', 'min:8'],
             'celular' => ['required', 'string', 'max:20'],
             'casa' => ['required', 'integer', 'between:1,42'],
-            'tipo' => ['required', 'string'],
+            'tipo' => ['required', 'string', 'in:dueño,inquilino'],
         ]);
 
         $validarmail = User::where('correo', $request->correo)->exists();
@@ -72,8 +72,6 @@ class RegisteredUserController extends Controller
         $token_auth = Str::random(60);
         $esInquilino = $request->tipo == 'inquilino';
 
-        Log::info('=== INICIO DE REGISTRO ===');
-
         $user = User::create([
             'nombre' => $request->nombre,
             'correo' => $request->correo,
@@ -87,17 +85,11 @@ class RegisteredUserController extends Controller
             'estado' => $esInquilino ? 3 : 0,
         ]);
 
-        Log::info("Usuario creado con ID: {$user->id}, tipo: {$user->tipo}, estado: {$user->estado}");
+        Log::info("Registro: usuario {$user->id}, tipo {$user->tipo}");
 
         if ($esInquilino) {
-            Log::info('Redirigiendo como INQUILINO a '. $request->nombre . ' de la casa '. $request->casa . ' con correo: ' . $request->correo);
-
             return redirect()->route('login')->with('registro_exitoso_inquilino', true);
         }
-
-        Log::info('Enviando correo de verificacion...');
-        Log::info("Correo a: {$request->correo}");
-        Log::info("Nombre: {$request->nombre}");
 
         $correo = $request->correo;
         $subject = '✔ Verificación de acceso';
@@ -108,8 +100,6 @@ class RegisteredUserController extends Controller
             <a href="'.$url.'"><strong>aquí</strong></a>
             <br><br><br><br>
             <strong>Si no fuiste tú, por favor ignora este correo</strong>';
-
-        Log::info("URL de verificacion: {$url}");
 
         try {
             $this->sendmail->enviarCorreoPersonal($correo, $subject, $titulo, $mensaje, true);

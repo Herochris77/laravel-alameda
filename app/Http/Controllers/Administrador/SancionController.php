@@ -57,12 +57,12 @@ class SancionController extends Controller
 
             $subjectmail = '🛑 Sanción Aplicada';
             $titulomail = 'Nueva sanción aplicada';
-            $mensajemail = 'Se aplicó una sanción a '.$data_user->nombre.' '.$data_user->tipo.' de la casa #'.$data_user->casa.' por el motivo: '.$request->motivo;
+            $mensajemail = 'Se aplicó una sanción a '.e($data_user->nombre).' '.e($data_user->tipo).' de la casa #'.e($data_user->casa).' por el motivo: '.e($request->motivo);
 
             // Notificación in-app Web
             $data_user->notify(new NotificacionGenerica(
                 'Sanción aplicada',
-                'Se te aplicó una sanción por el motivo:<br><b>'.$request->motivo.'</b>',
+                'Se te aplicó una sanción por el motivo:<br><b>'.e($request->motivo).'</b>',
                 'sanciones',
                 'usuario/sancion',
                 null,
@@ -131,8 +131,8 @@ class SancionController extends Controller
                     return '<a class="ui grey label">Pendiente</a>';
                 })
                 ->addColumn('motivo', function ($c) {
-                    $motivo = $c->motivo;
-                    $estado = $c->estado == 'pendiente' || $c->estado == 'rechazado' ? '<a class="ui red label">'.$c->estado.'</a>' : '<a class="ui green label">'.$c->estado.'</a>';
+                    $motivo = e($c->motivo);
+                    $estado = $c->estado == 'pendiente' || $c->estado == 'rechazado' ? '<a class="ui red label">'.e($c->estado).'</a>' : '<a class="ui green label">'.e($c->estado).'</a>';
 
                     return $motivo.'<br>'.$estado;
                 })
@@ -155,13 +155,13 @@ class SancionController extends Controller
             $correo = $sancion->sancionado->correo;
             $subject = 'Sanción eliminada';
             $titulo = 'Sanción eliminada por la Administración';
-            $mensaje = 'La administración eliminó la siguiente sanción que tenías aplicada: <br> <strong>Motivo:</strong> '.$sancion->motivo;
+            $mensaje = 'La administración eliminó la siguiente sanción que tenías aplicada: <br> <strong>Motivo:</strong> '.e($sancion->motivo);
 
             // Notificación in-app Web
             $usuario = User::withTrashed()->find($sancion->sancionado->id);
             $usuario->notify(new NotificacionGenerica(
                 'Sanción eliminada',
-                'La administración eliminó la siguiente sanción que tenías aplicada: <br> <strong>Motivo:</strong> '.$sancion->motivo.'',
+                'La administración eliminó la siguiente sanción que tenías aplicada: <br> <strong>Motivo:</strong> '.e($sancion->motivo),
                 'sanciones',
                 'usuario/sancion',
                 null,
@@ -196,6 +196,15 @@ class SancionController extends Controller
     public function actualizarSancion(Request $request, $id)
     {
         try {
+            // Antes no se validaba nada: el estado y el monto pasaban tal cual a la base.
+            $request->validate([
+                'motivo' => 'required|string|max:255',
+                'monto' => 'required|numeric|min:0',
+                'incidencia' => 'required|integer|min:1|max:99',
+                'comentario' => 'nullable|string|max:1000',
+                'estado' => 'required|in:pendiente,pagado,rechazado',
+            ]);
+
             $sancion = Sancion::findOrFail($id);
 
             $sancion->update([
@@ -211,10 +220,10 @@ class SancionController extends Controller
             $subject = '🔃 Actualización de tu sanción';
             $titulo = 'Sanción actualizada por la Administración';
             $mensaje = 'Se actualizó tu sanción y quedó de la siguiente forma: <br>
-            <strong>Motivo:</strong> '.$request->motivo.'<br>
-            <strong>Monto:</strong> $'.$request->monto.'<br>
-            <strong>Comentario:</strong> '.$request->comentario.'<br>
-            <strong>Estado:</strong> '.$request->estado;
+            <strong>Motivo:</strong> '.e($request->motivo).'<br>
+            <strong>Monto:</strong> $'.e($request->monto).'<br>
+            <strong>Comentario:</strong> '.e($request->comentario).'<br>
+            <strong>Estado:</strong> '.e($request->estado);
 
             $this->sendmail->enviarCorreoPersonal($correo, $subject, $titulo, $mensaje);
 
@@ -223,10 +232,10 @@ class SancionController extends Controller
             $usuario->notify(new NotificacionGenerica(
                 'Actualización de tu sanción',
                 'Se actualizó tu sanción y quedó de la siguiente forma:
-                <strong>Motivo:</strong> '.$request->motivo.'
-                <strong>Monto:</strong> $'.$request->monto.'
-                <strong>Comentario:</strong> '.$request->comentario.'
-                <strong>Estado:</strong> '.$request->estado.'',
+                <strong>Motivo:</strong> '.e($request->motivo).'
+                <strong>Monto:</strong> $'.e($request->monto).'
+                <strong>Comentario:</strong> '.e($request->comentario).'
+                <strong>Estado:</strong> '.e($request->estado),
                 'sanciones',
                 'usuario/sancion',
                 null,
@@ -237,6 +246,11 @@ class SancionController extends Controller
                 'header' => '✅ Editado correctamente',
                 'message' => 'Los datos de la sanción fueron actualizados',
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'header' => '⚠️ Revisa los datos',
+                'message' => implode(' ', $e->validator->errors()->all()),
+            ], 422);
         } catch (\Exception $e) {
             Log::error('Error al actualizar la sanción: '.$e->getMessage());
 

@@ -279,24 +279,24 @@
     </div>
 
     <div class="content evidencia-modal-content">
-        <img id="imagen-evidencia" src="" alt="Evidencia">
+        <img id="imagen-evidencia" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Evidencia">
     </div>
 </div>
 
 <style>
     :root {
-        --pago-primary: #3b82f6;
-        --pago-primary-dark: #2563eb;
-        --pago-secondary: #667eea;
-        --pago-success: #10b981;
-        --pago-danger: #ef4444;
-        --pago-warning: #f59e0b;
-        --pago-text-main: #0f172a;
-        --pago-text-muted: #64748b;
-        --pago-text-soft: #94a3b8;
-        --pago-border: #e2e8f0;
+        --pago-primary: var(--brand-500);
+        --pago-primary-dark: var(--brand-600);
+        --pago-secondary: var(--brand-600);
+        --pago-success: var(--brand-500);
+        --pago-danger: var(--danger);
+        --pago-warning: var(--oro-700);
+        --pago-text-main: var(--ink);
+        --pago-text-muted: var(--ink-3);
+        --pago-text-soft: var(--ink-4);
+        --pago-border: var(--arena);
         --pago-surface: #ffffff;
-        --pago-soft-bg: #f8fafc;
+        --pago-soft-bg: var(--crema-50);
     }
 
     .pagos-admin-page {
@@ -313,7 +313,7 @@
         padding: 26px;
         color: white;
         margin-bottom: 22px;
-        box-shadow: 0 12px 30px rgba(37, 99, 235, 0.18);
+        box-shadow: 0 12px 30px rgba(11,107,69, 0.18);
         overflow: hidden;
     }
 
@@ -397,7 +397,7 @@
         background: var(--pago-surface);
         border: 1px solid var(--pago-border);
         border-radius: 22px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         overflow: hidden;
     }
 
@@ -408,8 +408,8 @@
 
     .pago-card-header {
         padding: 18px 20px;
-        border-bottom: 1px solid #f1f5f9;
-        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        border-bottom: 1px solid var(--crema-100);
+        background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
     }
 
     /* El encabezado de la lista lleva el botón de exportar a la derecha. */
@@ -426,9 +426,9 @@
         align-items: center;
         gap: 8px;
         white-space: nowrap;
-        background: #ecfdf5;
-        color: #047857;
-        border: 1px solid #a7f3d0;
+        background: var(--brand-50);
+        color: var(--brand-600);
+        border: 1px solid var(--brand-100);
         border-radius: 10px;
         padding: 9px 14px;
         font-weight: 600;
@@ -438,8 +438,8 @@
     }
 
     .btn-exportar-consolidado:hover {
-        background: #d1fae5;
-        color: #065f46;
+        background: var(--ok-bg);
+        color: var(--brand-700);
     }
 
     .btn-exportar-consolidado i {
@@ -463,7 +463,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(59, 130, 246, 0.24);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.24);
     }
 
     .pago-card-icon.secondary {
@@ -517,8 +517,8 @@
     }
 
     .pago-input:focus {
-        border-color: rgba(59, 130, 246, 0.65) !important;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12) !important;
+        border-color: rgba(23,137,92, 0.65) !important;
+        box-shadow: 0 0 0 4px rgba(23,137,92, 0.12) !important;
         outline: none;
         background: white;
     }
@@ -544,9 +544,9 @@
     }
 
     .pago-badge-sinsaldo {
-        background: #fef3c7;
-        color: #92400e;
-        border: 1px solid #fcd34d;
+        background: var(--warn-bg);
+        color: var(--warn);
+        border: 1px solid var(--oro-300);
     }
 
     .saldo-opcion {
@@ -554,25 +554,25 @@
         align-items: flex-start;
         gap: 10px;
         padding: 11px 13px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--arena);
         border-radius: 10px;
         cursor: pointer;
         transition: border-color .15s, background .15s;
     }
 
-    .saldo-opcion:hover { border-color: #cbd5e1; background: #f8fafc; }
+    .saldo-opcion:hover { border-color: var(--arena-2); background: var(--crema-50); }
 
     .saldo-opcion input { margin-top: 3px; flex-shrink: 0; }
 
     .saldo-opcion span { display: flex; flex-direction: column; gap: 3px; }
 
-    .saldo-opcion strong { font-size: .88rem; color: #0f172a; font-weight: 600; }
+    .saldo-opcion strong { font-size: .88rem; color: var(--ink); font-weight: 600; }
 
-    .saldo-opcion small { font-size: .78rem; color: #64748b; line-height: 1.45; }
+    .saldo-opcion small { font-size: .78rem; color: var(--ink-3); line-height: 1.45; }
 
     .saldo-opcion:has(input:not(:checked)) {
-        border-color: #fcd34d;
-        background: #fffbeb;
+        border-color: var(--oro-300);
+        background: var(--warn-bg);
     }
 
     .form-help-text {
@@ -597,7 +597,7 @@
     }
 
     input[type="date"]::-webkit-calendar-picker-indicator:hover {
-        background: #eff6ff;
+        background: var(--info-bg);
         opacity: 1;
     }
 
@@ -611,7 +611,7 @@
         justify-content: center;
         gap: 8px;
         font-weight: 900;
-        box-shadow: 0 8px 18px rgba(59, 130, 246, 0.22);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.22);
     }
 
     .btn-submit-pago i {
@@ -624,7 +624,7 @@
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 14px;
         align-items: end;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
     }
 
     .filter-field {
@@ -663,7 +663,7 @@
         align-items: center;
         gap: 12px;
         background: var(--pago-soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 16px;
         padding: 12px 14px;
     }
@@ -672,7 +672,7 @@
         width: 42px;
         height: 42px;
         border-radius: 14px;
-        background: #dbeafe;
+        background: var(--info-bg);
         color: var(--pago-primary-dark);
         display: flex;
         align-items: center;
@@ -717,7 +717,7 @@
         border: 1px solid var(--pago-border);
         border-radius: 18px;
         background: white;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+        box-shadow: 0 6px 18px rgba(20,32,26, 0.05);
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -725,14 +725,14 @@
     }
 
     .pago-item-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(59, 130, 246, 0.35);
-        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        
+        border-color: rgba(23,137,92, 0.35);
+        box-shadow: 0 10px 24px rgba(20,32,26, 0.08);
     }
 
     .pago-item-header {
         padding: 16px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
         display: flex;
         align-items: flex-start;
         gap: 12px;
@@ -742,7 +742,7 @@
         width: 46px;
         height: 46px;
         border-radius: 14px;
-        background: #dbeafe;
+        background: var(--info-bg);
         color: var(--pago-primary-dark);
         display: flex;
         align-items: center;
@@ -787,18 +787,18 @@
     }
 
     .pago-badge.vigente {
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
     }
 
     .pago-badge.vencido {
-        background: #fee2e2;
-        color: #991b1b;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .pago-badge.progreso {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: var(--info-bg);
+        color: var(--info);
     }
 
     .pago-item-body {
@@ -826,7 +826,7 @@
 
     .pago-progreso-box {
         background: var(--pago-soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 14px;
         padding: 12px;
         overflow-wrap: anywhere;
@@ -838,8 +838,8 @@
 
     .pago-item-footer {
         padding: 14px 16px 16px;
-        border-top: 1px solid #f1f5f9;
-        background: #fbfdff;
+        border-top: 1px solid var(--crema-100);
+        background: var(--crema-50);
     }
 
     .pago-actions {
@@ -878,23 +878,23 @@
     }
 
     .pago-actions .btn-ver-detalles {
-        background: #eff6ff !important;
-        color: #1d4ed8 !important;
-        border: 1px solid #bfdbfe !important;
+        background: var(--info-bg) !important;
+        color: var(--info) !important;
+        border: 1px solid var(--info-bg) !important;
     }
 
     .pago-actions .btn-eliminar {
-        background: #fef2f2 !important;
-        color: #b91c1c !important;
-        border: 1px solid #fecaca !important;
+        background: var(--danger-bg) !important;
+        color: var(--danger) !important;
+        border: 1px solid var(--danger-bg) !important;
     }
 
     .pago-actions .btn-ver-detalles:hover {
-        background: #dbeafe !important;
+        background: var(--info-bg) !important;
     }
 
     .pago-actions .btn-eliminar:hover {
-        background: #fee2e2 !important;
+        background: var(--danger-bg) !important;
     }
 
     .pagos-pagination {
@@ -919,16 +919,16 @@
     }
 
     .pagination-btn:hover {
-        background: #eff6ff;
+        background: var(--info-bg);
         color: var(--pago-primary-dark);
-        border-color: rgba(59, 130, 246, 0.35);
+        border-color: rgba(23,137,92, 0.35);
     }
 
     .pagination-btn.active {
         background: linear-gradient(135deg, var(--pago-primary) 0%, var(--pago-primary-dark) 100%);
         color: #ffffff;
         border-color: transparent;
-        box-shadow: 0 8px 18px rgba(59, 130, 246, 0.22);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.22);
     }
 
     .pagination-btn:disabled {
@@ -956,7 +956,7 @@
         height: 78px;
         border-radius: 24px;
         margin: 0 auto 18px;
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(37, 99, 235, 0.16));
+        background: linear-gradient(135deg, rgba(23,137,92, 0.12), rgba(11,107,69, 0.16));
         color: var(--pago-primary-dark);
         display: flex;
         align-items: center;
@@ -964,7 +964,7 @@
     }
 
     .empty-pagos-icon.error {
-        background: #fee2e2;
+        background: var(--danger-bg);
         color: var(--pago-danger);
     }
 
@@ -975,7 +975,7 @@
 
     .empty-pagos-card h3 {
         margin: 0 0 8px 0;
-        color: #475569;
+        color: var(--ink-2);
         font-weight: 900;
     }
 
@@ -1009,7 +1009,7 @@
         max-width: 100%;
         max-height: 72vh;
         border-radius: 14px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.18);
         object-fit: contain;
     }
 
@@ -1744,9 +1744,10 @@
     }
 
     function extraerTexto(valor) {
-        const temporal = document.createElement('div');
-        temporal.innerHTML = valor || '';
-        return temporal.textContent || temporal.innerText || '';
+        // DOMParser crea un documento INERTE: no carga imagenes ni ejecuta
+        // onerror/onload. Un div.innerHTML sobre un elemento suelto SI los ejecuta,
+        // y por eso un nombre como <img src=x onerror=...> corria codigo aqui.
+        return new DOMParser().parseFromString(String(valor || ''), 'text/html').body.textContent || '';
     }
 
     function escapeHtml(text) {

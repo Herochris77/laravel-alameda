@@ -3,26 +3,26 @@
     @php
         $badge = [
             'por_iniciar' => [
-                'bg' => '#eff6ff',
-                'color' => '#1d4ed8',
+                'bg' => '#f0f6fc',
+                'color' => '#095a3a',
                 'icon' => 'clock outline',
             ],
 
             'en_proceso' => [
-                'bg' => '#fffbeb',
-                'color' => '#92400e',
+                'bg' => '#fdf7e6',
+                'color' => '#7c4a06',
                 'icon' => 'spinner',
             ],
 
             'pausado' => [
-                'bg' => '#f1f5f9',
-                'color' => '#475569',
+                'bg' => '#f3eee0',
+                'color' => '#46544c',
                 'icon' => 'pause',
             ],
 
             'terminado' => [
-                'bg' => '#f0fdf4',
-                'color' => '#166534',
+                'bg' => '#f0f7f2',
+                'color' => '#0a4a31',
                 'icon' => 'check circle',
             ],
         ];
@@ -46,22 +46,21 @@
     <style>
 
         .pj-page {
-            --primary: #0d9488;
-            --primary-dark: #0f766e;
-            --primary-light: #14b8a6;
+            --primary: var(--brand-600);
+            --primary-dark: var(--brand-700);
+            --primary-light: var(--brand-500);
 
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+            --success: var(--brand-500);
+            --warning: var(--oro-700);
 
-            --text: #0f172a;
-            --muted: #64748b;
-            --soft: #94a3b8;
+            --text: var(--ink);
+            --muted: var(--ink-3);
+            --soft: var(--ink-4);
 
-            --border: #e2e8f0;
+            --border: var(--arena);
 
             --surface: #ffffff;
-            --bg: #f8fafc;
+            --bg: var(--crema-50);
 
             padding-bottom: 30px;
         }
@@ -104,7 +103,7 @@
                 );
 
             box-shadow:
-                0 12px 30px rgba(13,148,136,.18);
+                0 12px 30px rgba(11,107,69,.18);
         }
 
 
@@ -225,7 +224,7 @@
                 var(--surface);
 
             box-shadow:
-                0 6px 18px rgba(15,23,42,.045);
+                0 6px 18px rgba(20,32,26,.045);
         }
 
 
@@ -244,7 +243,7 @@
             border-radius: 11px;
 
             background:
-                rgba(13,148,136,.10);
+                rgba(11,107,69,.10);
 
             color:
                 var(--primary);
@@ -377,7 +376,7 @@
             text-decoration: none !important;
 
             box-shadow:
-                0 6px 18px rgba(15,23,42,.05);
+                0 6px 18px rgba(20,32,26,.05);
 
             transition:
                 transform .16s ease,
@@ -410,19 +409,18 @@
 
         .pj-card.pausado::before {
             background:
-                #64748b;
+                var(--ink-3);
         }
 
 
         .pj-card:hover {
-            transform:
-                translateY(-2px);
+            
 
             border-color:
-                #99f6e4;
+                var(--brand-100);
 
             box-shadow:
-                0 12px 28px rgba(15,23,42,.09);
+                0 12px 28px rgba(20,32,26,.09);
         }
 
 
@@ -511,7 +509,7 @@
             border-radius: 9px;
 
             background:
-                #f1f5f9;
+                var(--crema-100);
 
             color:
                 var(--primary);
@@ -715,7 +713,7 @@
                 var(--primary);
 
             background:
-                rgba(13,148,136,.08);
+                rgba(11,107,69,.08);
         }
 
 
@@ -743,7 +741,7 @@
             padding: 30px;
 
             border:
-                1px dashed #cbd5e1;
+                1px dashed var(--arena-2);
 
             border-radius: 18px;
 
@@ -773,7 +771,7 @@
                 var(--soft);
 
             background:
-                #f1f5f9;
+                var(--crema-100);
         }
 
 
@@ -1085,8 +1083,8 @@
                             $badge[$p->estado]
                             ??
                             [
-                                'bg' => '#f1f5f9',
-                                'color' => '#475569',
+                                'bg' => '#f3eee0',
+                                'color' => '#46544c',
                                 'icon' => 'info circle',
                             ];
 

@@ -4,30 +4,27 @@
         .dash-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
         .dash-head h2 { margin:0; }
         .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:14px; margin-bottom:20px; }
-        .kpi { background:#f8fafc; border-radius:12px; padding:16px; }
-        .kpi .lbl { font-size:13px; color:#64748b; }
-        .kpi .val { font-size:26px; font-weight:700; color:#0f172a; margin-top:4px; }
+        .kpi { background:var(--crema-50); border-radius:12px; padding:16px; }
+        .kpi .lbl { font-size:13px; color:var(--ink-3); }
+        .kpi .val { font-size:26px; font-weight:700; color:var(--ink); margin-top:4px; }
         .kpi .sub { font-size:12px; margin-top:4px; }
-        .panel { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:18px; margin-bottom:16px; }
+        .panel { background:#fff; border:1px solid var(--arena); border-radius:14px; padding:18px; margin-bottom:16px; }
         .panel h3 { margin:0 0 14px; font-size:16px; }
-        .panel-sub { font-weight:400; font-size:13px; color:#64748b; }
-        .dbars { display:flex; align-items:flex-end; gap:12px; height:150px; }
-        .dbar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
-        .dbar { width:100%; background:#99f6e4; border-radius:6px 6px 0 0; }
-        .dbar.last { background:#0d9488; }
+        .panel-sub { font-weight:400; font-size:13px; color:var(--ink-3); }
+        .dbars { display:flex; align-items:stretch; gap:12px; height:170px; }
+        .dbar-col { flex:1; height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:6px; }
+        .dbar { width:100%; background:var(--brand-100); border-radius:6px 6px 0 0; }
+        .dbar.last { background:var(--brand-600); }
         .estado-row { margin-bottom:12px; }
-        .estado-bar { height:10px; background:#f1f5f9; border-radius:20px; overflow:hidden; margin-top:4px; }
+        .estado-bar { height:10px; background:var(--crema-100); border-radius:20px; overflow:hidden; margin-top:4px; }
         .estado-fill { height:100%; }
-        .pend { display:flex; align-items:center; gap:10px; font-size:14px; padding:8px 0; border-bottom:1px solid #f1f5f9; }
+        .pend { display:flex; align-items:center; gap:10px; font-size:14px; padding:8px 0; border-bottom:1px solid var(--crema-100); }
         .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
         @media (max-width:800px){ .grid2 { grid-template-columns:1fr; } }
     </style>
 
     <div class="dash-wrap">
-        <div class="dash-head">
-            <div style="display:flex; align-items:center; gap:10px;"><i class="chart bar icon big" style="color:#0d9488;"></i><h2>Panel del comité</h2></div>
-            <span style="font-size:12px; color:#94a3b8;" id="dash-updated"></span>
-        </div>
+        <div class="page-header"><div class="page-header-left"><div class="page-icon"><i class="chart bar icon"></i></div><div><h1 class="page-title">Panel del comité</h1><p class="page-subtitle">Así va el condominio hoy.</p></div></div><span style="font-size:13px; color:#cfe5d8;" id="dash-updated"></span></div>
 
         <div class="kpi-grid" id="kpis"></div>
 
@@ -51,16 +48,19 @@
 
     <script>
         // Cifras completas, con centavos: son montos de dinero, no estimados.
+        // Todo dato que llega del servidor y se pinta con .html() pasa por aqui.
+        const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+
         const fmt = new Intl.NumberFormat('es-MX', {
             style: 'currency', currency: 'MXN',
             minimumFractionDigits: 2, maximumFractionDigits: 2
         });
 
-        function cargar() {
-            $.get('{{ route("admin.dashboard.datos") }}', function (r) {
+        function cargar(silencioso) {
+            $.ajax({ url: '{{ route("admin.dashboard.datos") }}', global: !silencioso, success: function (r) {
                 if (!r.success) return;
                 pintar(r);
-            });
+            } });
         }
 
         function pintar(r) {
@@ -68,10 +68,10 @@
 
             const c = r.cobranza, casas = r.casas, part = r.participacion;
             $('#kpis').html(`
-                <div class="kpi"><div class="lbl">Recaudado este mes</div><div class="val">${fmt.format(c.recaudado)}</div><div class="sub" style="color:#0d9488;">${c.pct}% de ${fmt.format(c.esperado)}</div></div>
-                <div class="kpi"><div class="lbl">Casas al corriente</div><div class="val">${casas.al_corriente} / ${casas.total}</div><div class="sub" style="color:#64748b;">${casas.total ? Math.round(casas.al_corriente/casas.total*100) : 0}% del condominio</div></div>
-                <div class="kpi"><div class="lbl">Cartera vencida</div><div class="val" style="color:#ef4444;">${fmt.format(casas.cartera_vencida)}</div><div class="sub" style="color:#ef4444;">${casas.atrasadas} casa(s) atrasada(s)</div></div>
-                <div class="kpi"><div class="lbl">Participación última encuesta</div><div class="val">${part.votantes} / ${part.total}</div><div class="sub" style="color:#64748b;">${part.pct}% ${part.titulo ? 'votó' : 'sin encuestas'}</div></div>
+                <div class="kpi"><div class="lbl">Recaudado este mes</div><div class="val">${fmt.format(c.recaudado)}</div><div class="sub" style="color:#0b6b45;">${c.pct}% de ${fmt.format(c.esperado)}</div></div>
+                <div class="kpi"><div class="lbl">Casas al corriente</div><div class="val">${casas.al_corriente} / ${casas.total}</div><div class="sub" style="color:#5d695f;">${casas.total ? Math.round(casas.al_corriente/casas.total*100) : 0}% del condominio</div></div>
+                <div class="kpi"><div class="lbl">Cartera vencida</div><div class="val" style="color:#c0432c;">${fmt.format(casas.cartera_vencida)}</div><div class="sub" style="color:#c0432c;">${casas.atrasadas} casa(s) atrasada(s)</div></div>
+                <div class="kpi"><div class="lbl">Participación última encuesta</div><div class="val">${part.votantes} / ${part.total}</div><div class="sub" style="color:#5d695f;">${part.pct}% ${esc(part.titulo) ? 'votó' : 'sin encuestas'}</div></div>
             `);
 
             // Barras 6 meses
@@ -79,7 +79,7 @@
             const max = Math.max(1, ...meses.map(m => m.total));
             $('#bars').html(meses.map((m, i) => {
                 const h = Math.round((m.total / max) * 100);
-                return `<div class="dbar-col"><div class="dbar ${i === meses.length - 1 ? 'last' : ''}" style="height:${Math.max(h,3)}%;" title="${fmt.format(m.total)}"></div><span style="font-size:12px; color:#64748b;">${m.label}</span></div>`;
+                return `<div class="dbar-col"><div class="dbar ${i === meses.length - 1 ? 'last' : ''}" style="height:calc((100% - 24px) * ${Math.max(h,3) / 100});" title="${fmt.format(m.total)}"></div><span style="font-size:12px; color:#5d695f;">${m.label}</span></div>`;
             }).join(''));
 
             // Casas con adeudo
@@ -94,53 +94,53 @@
                     ? deu.lista.map(v => {
                         // El atraso distingue un despiste del mes de un rezago
                         // serio; es lo que decide a quién llamar primero.
-                        const alerta = v.dias > 60 ? '#b91c1c' : (v.dias > 30 ? '#d97706' : '#64748b');
+                        const alerta = v.dias > 60 ? '#8f3220' : (v.dias > 30 ? '#a87612' : '#5d695f');
                         const atraso = v.dias > 0
                             ? `<span style="color:${alerta}; font-size:12px;">${v.dias} día(s) de atraso</span>`
-                            : '<span style="color:#64748b; font-size:12px;">por vencer</span>';
+                            : '<span style="color:#5d695f; font-size:12px;">por vencer</span>';
 
                         return `
                             <a href="{{ url('/administrador/estado-cuenta/pdf') }}/${v.id}" target="_blank"
                                style="display:flex; align-items:center; justify-content:space-between; gap:10px;
-                                      padding:9px 2px; border-bottom:1px solid #f1f5f9; text-decoration:none; color:inherit;">
+                                      padding:9px 2px; border-bottom:1px solid #f3eee0; text-decoration:none; color:inherit;">
                                 <span style="min-width:0;">
-                                    <span style="font-weight:600; font-size:13px;">Casa ${v.casa}</span>
-                                    <span style="color:#64748b; font-size:13px;"> · ${v.nombre}</span>
+                                    <span style="font-weight:600; font-size:13px;">Casa ${esc(v.casa)}</span>
+                                    <span style="color:#5d695f; font-size:13px;"> · ${esc(v.nombre)}</span>
                                     <br>${atraso}
                                 </span>
-                                <span style="white-space:nowrap; font-weight:700; color:#b91c1c;">
+                                <span style="white-space:nowrap; font-weight:700; color:#8f3220;">
                                     ${fmt.format(v.pendiente)}
                                 </span>
                             </a>`;
                     }).join('') +
                     (deu.total > deu.lista.length
                         ? `<div style="padding-top:9px; font-size:13px;">
-                               <a href="{{ route('admin.estadoCuenta.index') }}" style="color:#6366f1;">
+                               <a href="{{ route('admin.estadoCuenta.index') }}" style="color:#0b6b45;">
                                    Ver las ${deu.total} casas con adeudo
                                </a></div>`
                         : `<div style="padding-top:9px; font-size:13px;">
-                               <a href="{{ route('admin.estadoCuenta.index') }}" style="color:#6366f1;">
+                               <a href="{{ route('admin.estadoCuenta.index') }}" style="color:#0b6b45;">
                                    Ir a Estado de Cuenta
                                </a></div>`)
-                    : '<div style="padding:18px 2px; color:#10b981; font-size:13px;">'
+                    : '<div style="padding:18px 2px; color:#17895c; font-size:13px;">'
                       + '<i class="check circle icon"></i> Todas las casas al corriente.</div>'
             );
 
             // Estado casas
             const t = casas.total || 1;
             $('#estado-casas').html(`
-                <div class="estado-row"><div style="display:flex; justify-content:space-between; font-size:13px;"><span><i class="check circle icon" style="color:#10b981;"></i> Al corriente</span><span>${casas.al_corriente}</span></div><div class="estado-bar"><div class="estado-fill" style="width:${casas.al_corriente/t*100}%; background:#10b981;"></div></div></div>
-                <div class="estado-row"><div style="display:flex; justify-content:space-between; font-size:13px;"><span><i class="warning circle icon" style="color:#ef4444;"></i> Atrasadas</span><span>${casas.atrasadas}</span></div><div class="estado-bar"><div class="estado-fill" style="width:${casas.atrasadas/t*100}%; background:#ef4444;"></div></div></div>
+                <div class="estado-row"><div style="display:flex; justify-content:space-between; font-size:13px;"><span><i class="check circle icon" style="color:#17895c;"></i> Al corriente</span><span>${casas.al_corriente}</span></div><div class="estado-bar"><div class="estado-fill" style="width:${casas.al_corriente/t*100}%; background:#17895c;"></div></div></div>
+                <div class="estado-row"><div style="display:flex; justify-content:space-between; font-size:13px;"><span><i class="warning circle icon" style="color:#c0432c;"></i> Atrasadas</span><span>${casas.atrasadas}</span></div><div class="estado-bar"><div class="estado-fill" style="width:${casas.atrasadas/t*100}%; background:#c0432c;"></div></div></div>
             `);
 
             // Pendientes
             const pend = r.pendientes || [];
-            $('#pendientes').html(pend.length ? pend.map(p => `<div class="pend"><i class="${p.icono} icon" style="color:#0d9488;"></i><span style="flex:1;">${p.texto}</span><span style="font-size:12px; color:#94a3b8;">${p.nota}</span></div>`).join('') : '<p style="color:#94a3b8;">Sin pendientes.</p>');
+            $('#pendientes').html(pend.length ? pend.map(p => `<div class="pend"><i class="${p.icono} icon" style="color:#0b6b45;"></i><span style="flex:1;">${esc(p.texto)}</span><span style="font-size:12px; color:#6f6a58;">${p.nota}</span></div>`).join('') : '<p style="color:#6f6a58;">Sin pendientes.</p>');
         }
 
         $(function () {
             cargar();
-            setInterval(cargar, 60000);
+            setInterval(function () { cargar(true); }, 60000);
         });
     </script>
 </x-app-layout>

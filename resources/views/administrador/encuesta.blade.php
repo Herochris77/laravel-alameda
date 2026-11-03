@@ -307,18 +307,18 @@
 
     <style>
         :root {
-            --encuesta-primary: #8b5cf6;
-            --encuesta-primary-dark: #7c3aed;
-            --encuesta-secondary: #667eea;
-            --encuesta-success: #10b981;
-            --encuesta-danger: #ef4444;
-            --encuesta-warning: #f59e0b;
-            --encuesta-text-main: #0f172a;
-            --encuesta-text-muted: #64748b;
-            --encuesta-text-soft: #94a3b8;
-            --encuesta-border: #e2e8f0;
+            --encuesta-primary: var(--brand-500);
+            --encuesta-primary-dark: var(--brand-700);
+            --encuesta-secondary: var(--brand-600);
+            --encuesta-success: var(--brand-500);
+            --encuesta-danger: var(--danger);
+            --encuesta-warning: var(--oro-700);
+            --encuesta-text-main: var(--ink);
+            --encuesta-text-muted: var(--ink-3);
+            --encuesta-text-soft: var(--ink-4);
+            --encuesta-border: var(--arena);
             --encuesta-surface: #ffffff;
-            --encuesta-soft-bg: #f8fafc;
+            --encuesta-soft-bg: var(--crema-50);
         }
 
         .encuestas-admin-page {
@@ -419,7 +419,7 @@
             background: var(--encuesta-surface);
             border: 1px solid var(--encuesta-border);
             border-radius: 22px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
             overflow: hidden;
         }
 
@@ -430,8 +430,8 @@
 
         .encuesta-card-header {
             padding: 18px 20px;
-            border-bottom: 1px solid #f1f5f9;
-            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border-bottom: 1px solid var(--crema-100);
+            background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
         }
 
         .encuesta-card-title-wrap {
@@ -451,7 +451,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 8px 18px rgba(139, 92, 246, 0.24);
+            box-shadow: 0 8px 18px rgba(23,137,92, 0.24);
         }
 
         .encuesta-card-icon.secondary {
@@ -505,8 +505,8 @@
         }
 
         .encuesta-input:focus {
-            border-color: rgba(139, 92, 246, 0.65) !important;
-            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12) !important;
+            border-color: rgba(23,137,92, 0.65) !important;
+            box-shadow: 0 0 0 4px rgba(23,137,92, 0.12) !important;
             outline: none;
             background: white;
         }
@@ -556,7 +556,7 @@
         }
 
         .time-input:disabled {
-            background-color: #f5f5f5;
+            background-color: var(--crema-100);
             color: #aaa;
             cursor: not-allowed;
         }
@@ -569,7 +569,7 @@
 
         .encuesta-check-card {
             background: var(--encuesta-soft-bg);
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--crema-100);
             border-radius: 14px;
             padding: 14px;
         }
@@ -627,7 +627,7 @@
             justify-content: center;
             gap: 8px;
             font-weight: 900;
-            box-shadow: 0 8px 18px rgba(139, 92, 246, 0.22);
+            box-shadow: 0 8px 18px rgba(23,137,92, 0.22);
         }
 
         .btn-submit-encuesta i {
@@ -640,7 +640,7 @@
             grid-template-columns: minmax(0, 1fr) minmax(160px, 200px) minmax(180px, 220px) auto;
             gap: 14px;
             align-items: end;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--crema-100);
         }
 
         .filter-field {
@@ -679,7 +679,7 @@
             align-items: center;
             gap: 12px;
             background: var(--encuesta-soft-bg);
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--crema-100);
             border-radius: 16px;
             padding: 12px 14px;
         }
@@ -688,7 +688,7 @@
             width: 42px;
             height: 42px;
             border-radius: 14px;
-            background: #ede9fe;
+            background: var(--brand-100);
             color: var(--encuesta-primary-dark);
             display: flex;
             align-items: center;
@@ -733,7 +733,7 @@
             border: 1px solid var(--encuesta-border);
             border-radius: 18px;
             background: white;
-            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 6px 18px rgba(20,32,26, 0.05);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -741,14 +741,14 @@
         }
 
         .encuesta-item-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(139, 92, 246, 0.35);
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            
+            border-color: rgba(23,137,92, 0.35);
+            box-shadow: 0 10px 24px rgba(20,32,26, 0.08);
         }
 
         .encuesta-item-header {
             padding: 16px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--crema-100);
             display: flex;
             align-items: flex-start;
             gap: 12px;
@@ -758,7 +758,7 @@
             width: 46px;
             height: 46px;
             border-radius: 14px;
-            background: #ede9fe;
+            background: var(--brand-100);
             color: var(--encuesta-primary-dark);
             display: flex;
             align-items: center;
@@ -811,23 +811,23 @@
         }
 
         .encuesta-badge.abierta {
-            background: #dcfce7;
-            color: #166534;
+            background: var(--ok-bg);
+            color: var(--brand-800);
         }
 
         .encuesta-badge.cerrada {
-            background: #fee2e2;
-            color: #991b1b;
+            background: var(--danger-bg);
+            color: var(--danger);
         }
 
         .encuesta-badge.tipo {
-            background: #dbeafe;
-            color: #1d4ed8;
+            background: var(--info-bg);
+            color: var(--info);
         }
 
         .encuesta-badge.votos {
-            background: #fef3c7;
-            color: #92400e;
+            background: var(--warn-bg);
+            color: var(--warn);
         }
 
         .encuesta-item-body {
@@ -855,8 +855,8 @@
 
         .encuesta-item-footer {
             padding: 14px 16px 16px;
-            border-top: 1px solid #f1f5f9;
-            background: #fbfdff;
+            border-top: 1px solid var(--crema-100);
+            background: var(--crema-50);
         }
 
         .encuesta-actions {
@@ -901,27 +901,27 @@
         }
 
         .encuesta-actions .btn-ver {
-            background: #eff6ff !important;
-            color: #1d4ed8 !important;
-            border: 1px solid #bfdbfe !important;
+            background: var(--info-bg) !important;
+            color: var(--info) !important;
+            border: 1px solid var(--info-bg) !important;
         }
 
         .encuesta-actions .btn-cerrar {
-            background: #fef3c7 !important;
-            color: #92400e !important;
-            border: 1px solid #fde68a !important;
+            background: var(--warn-bg) !important;
+            color: var(--warn) !important;
+            border: 1px solid var(--warn-bg) !important;
         }
 
         .encuesta-actions .btn-abrir {
-            background: #dcfce7 !important;
-            color: #166534 !important;
-            border: 1px solid #bbf7d0 !important;
+            background: var(--ok-bg) !important;
+            color: var(--brand-800) !important;
+            border: 1px solid var(--brand-100) !important;
         }
 
         .encuesta-actions .btn-eliminar {
-            background: #fef2f2 !important;
-            color: #b91c1c !important;
-            border: 1px solid #fecaca !important;
+            background: var(--danger-bg) !important;
+            color: var(--danger) !important;
+            border: 1px solid var(--danger-bg) !important;
         }
 
         .encuestas-pagination {
@@ -945,16 +945,16 @@
         }
 
         .pagination-btn:hover {
-            background: #f5f3ff;
+            background: var(--brand-50);
             color: var(--encuesta-primary-dark);
-            border-color: rgba(139, 92, 246, 0.35);
+            border-color: rgba(23,137,92, 0.35);
         }
 
         .pagination-btn.active {
             background: linear-gradient(135deg, var(--encuesta-primary) 0%, var(--encuesta-primary-dark) 100%);
             color: #ffffff;
             border-color: transparent;
-            box-shadow: 0 8px 18px rgba(139, 92, 246, 0.22);
+            box-shadow: 0 8px 18px rgba(23,137,92, 0.22);
         }
 
         .pagination-btn:disabled {
@@ -982,7 +982,7 @@
             height: 78px;
             border-radius: 24px;
             margin: 0 auto 18px;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(124, 58, 237, 0.16));
+            background: linear-gradient(135deg, rgba(23,137,92, 0.12), rgba(124, 58, 237, 0.16));
             color: var(--encuesta-primary-dark);
             display: flex;
             align-items: center;
@@ -990,7 +990,7 @@
         }
 
         .empty-encuestas-icon.error {
-            background: #fee2e2;
+            background: var(--danger-bg);
             color: var(--encuesta-danger);
         }
 
@@ -1001,7 +1001,7 @@
 
         .empty-encuestas-card h3 {
             margin: 0 0 8px 0;
-            color: #475569;
+            color: var(--ink-2);
             font-weight: 900;
         }
 
@@ -1033,7 +1033,7 @@
             flex-wrap: wrap;
             padding: 16px 20px !important;
             background: var(--encuesta-soft-bg) !important;
-            border-top: 1px solid #f1f5f9 !important;
+            border-top: 1px solid var(--crema-100) !important;
         }
 
         .resultado-title {
@@ -1059,7 +1059,7 @@
 
         .resultado-option {
             padding: 12px 0;
-            border-bottom: 1px solid #eef2f7;
+            border-bottom: 1px solid var(--crema-100);
         }
 
         .resultado-option-header {
@@ -1073,7 +1073,7 @@
 
         .resultado-progress {
             height: 12px;
-            background: #f1f5f9;
+            background: var(--crema-100);
             border-radius: 999px;
             overflow: hidden;
         }
@@ -2012,32 +2012,32 @@
             const ranking = data.ranking || [];
 
             let html = '<div style="margin-top:18px;">';
-            html += '<h4 style="margin:0 0 4px; display:flex; align-items:center; gap:8px;"><i class="trophy icon" style="color:#0d9488;"></i> Orden ganador</h4>';
-            html += `<p style="color:#64748b; font-size:13px; margin:0 0 14px;">${votantes} votante(s) · método de puntos (posición #1 = ${n} pts … #${n} = 1 pt)</p>`;
+            html += '<h4 style="margin:0 0 4px; display:flex; align-items:center; gap:8px;"><i class="trophy icon" style="color:#0b6b45;"></i> Orden ganador</h4>';
+            html += `<p style="color:#5d695f; font-size:13px; margin:0 0 14px;">${votantes} votante(s) · método de puntos (posición #1 = ${n} pts … #${n} = 1 pt)</p>`;
 
             ranking.forEach(function(fila, i) {
                 const pct = Number(fila.pct || 0);
                 html += `
                     <div style="margin-bottom:14px;">
                         <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
-                            <span style="width:24px; height:24px; border-radius:50%; background:${i === 0 ? '#0d9488' : '#e2e8f0'}; color:${i === 0 ? '#fff' : '#0f172a'}; display:inline-flex; align-items:center; justify-content:center; font-weight:600; font-size:13px;">${i + 1}</span>
+                            <span style="width:24px; height:24px; border-radius:50%; background:${i === 0 ? '#0b6b45' : '#e4dabd'}; color:${i === 0 ? '#fff' : '#14201a'}; display:inline-flex; align-items:center; justify-content:center; font-weight:600; font-size:13px;">${i + 1}</span>
                             <strong style="flex:1;">${escapeHtml(fila.opcion)}</strong>
                             <span style="font-weight:600; font-size:13px;">${escapeHtml(fila.puntos)} pts</span>
                         </div>
-                        <div style="height:8px; background:#f1f5f9; border-radius:99px; overflow:hidden;">
-                            <div style="width:${pct}%; height:100%; background:#0d9488;"></div>
+                        <div style="height:8px; background:#f3eee0; border-radius:99px; overflow:hidden;">
+                            <div style="width:${pct}%; height:100%; background:#0b6b45;"></div>
                         </div>
-                        <p style="margin:4px 0 0; font-size:12px; color:#94a3b8;">${escapeHtml(fila.primeros || 0)} vecino(s) lo pusieron en #1</p>
+                        <p style="margin:4px 0 0; font-size:12px; color:#6f6a58;">${escapeHtml(fila.primeros || 0)} vecino(s) lo pusieron en #1</p>
                     </div>
                 `;
             });
 
             // Matriz: cuántos vecinos pusieron cada opción en cada posición.
-            html += '<h4 style="margin:22px 0 4px; display:flex; align-items:center; gap:8px;"><i class="th icon" style="color:#0d9488;"></i> Cómo votaron los vecinos</h4>';
-            html += '<p style="color:#64748b; font-size:13px; margin:0 0 12px;">Cuántos vecinos colocaron cada proyecto en cada posición.</p>';
-            html += '<div style="overflow-x:auto;"><table style="width:100%; border-collapse:separate; border-spacing:4px; font-size:13px;"><thead><tr><th style="text-align:left; color:#64748b; font-weight:600;"></th>';
+            html += '<h4 style="margin:22px 0 4px; display:flex; align-items:center; gap:8px;"><i class="th icon" style="color:#0b6b45;"></i> Cómo votaron los vecinos</h4>';
+            html += '<p style="color:#5d695f; font-size:13px; margin:0 0 12px;">Cuántos vecinos colocaron cada proyecto en cada posición.</p>';
+            html += '<div style="overflow-x:auto;"><table style="width:100%; border-collapse:separate; border-spacing:4px; font-size:13px;"><thead><tr><th style="text-align:left; color:#5d695f; font-weight:600;"></th>';
             for (let p = 1; p <= n; p++) {
-                html += `<th style="color:#64748b; font-weight:600; min-width:38px;">#${p}</th>`;
+                html += `<th style="color:#5d695f; font-weight:600; min-width:38px;">#${p}</th>`;
             }
             html += '</tr></thead><tbody>';
 
@@ -2046,8 +2046,8 @@
                 for (let p = 1; p <= n; p++) {
                     const c = Number((fila.conteo_pos && fila.conteo_pos[p]) || 0);
                     const alpha = votantes > 0 ? (c / votantes) : 0;
-                    const bg = `rgba(13,148,136,${(alpha * 0.85).toFixed(2)})`;
-                    const color = alpha > 0.45 ? '#fff' : '#0f172a';
+                    const bg = `rgba(11,107,69,${(alpha * 0.85).toFixed(2)})`;
+                    const color = alpha > 0.45 ? '#fff' : '#14201a';
                     html += `<td style="text-align:center; padding:8px 0; border-radius:6px; background:${bg}; color:${color};">${c}</td>`;
                 }
                 html += '</tr>';
@@ -2056,14 +2056,14 @@
 
             // Detalle voto por voto (solo admin).
             if (incluirVotantes && Array.isArray(data.votantes) && data.votantes.length) {
-                html += '<details style="margin-top:18px;"><summary style="cursor:pointer; font-weight:600; color:#0d9488;">Ver el orden que eligió cada vecino</summary>';
+                html += '<details style="margin-top:18px;"><summary style="cursor:pointer; font-weight:600; color:#0b6b45;">Ver el orden que eligió cada vecino</summary>';
                 html += '<div style="margin-top:10px; display:flex; flex-direction:column; gap:10px;">';
                 data.votantes.forEach(function(v) {
                     const lista = (v.orden || []).map(function(op, idx) {
                         return `<span style="display:inline-block; margin:2px 4px 2px 0; font-size:12px;"><strong>${idx + 1}.</strong> ${escapeHtml(op)}</span>`;
                     }).join('');
                     html += `
-                        <div style="border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px;">
+                        <div style="border:1px solid #e4dabd; border-radius:8px; padding:8px 12px;">
                             <div style="font-size:13px; font-weight:600; margin-bottom:4px;">${escapeHtml(v.nombre)} · Casa ${escapeHtml(v.casa)}</div>
                             <div>${lista}</div>
                         </div>
@@ -2087,12 +2087,12 @@
 
             let lista = '';
             if (!votantes.length) {
-                lista = '<p style="color:#64748b;">Aún no hay votos registrados en esta opción.</p>';
+                lista = '<p style="color:#5d695f;">Aún no hay votos registrados en esta opción.</p>';
             } else {
                 lista = '<div style="display:flex; flex-direction:column; gap:8px;">';
                 votantes.forEach(function(v) {
                     lista += `
-                        <div style="border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                        <div style="border:1px solid #e4dabd; border-radius:8px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
                             <span style="font-weight:600; font-size:14px; color:var(--encuesta-text-main);">${escapeHtml(v.nombre)}</span>
                             <span class="encuesta-badge votos"><i class="home icon"></i> Casa ${escapeHtml(v.casa)}</span>
                         </div>
@@ -2220,9 +2220,10 @@
         }
 
         function extraerTexto(valor) {
-            const temporal = document.createElement('div');
-            temporal.innerHTML = valor || '';
-            return temporal.textContent || temporal.innerText || '';
+            // DOMParser crea un documento INERTE: no carga imagenes ni ejecuta
+        // onerror/onload. Un div.innerHTML sobre un elemento suelto SI los ejecuta,
+        // y por eso un nombre como <img src=x onerror=...> corria codigo aqui.
+        return new DOMParser().parseFromString(String(valor || ''), 'text/html').body.textContent || '';
         }
 
         function escapeHtml(text) {

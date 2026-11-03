@@ -232,7 +232,7 @@
     </div>
 
     <div class="drawer-body">
-        <img id="imagen-evidencia" src="" alt="Evidencia">
+        <img id="imagen-evidencia" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Evidencia">
     </div>
 </div>
 
@@ -360,6 +360,49 @@
     </div>
 </div>
 
+{{-- Acuerdo para no cobrar el recargo por mora a un recibo --}}
+<div class="ui modal detalle-edit-modal" id="modal-exonerar">
+    <div class="header">
+        <i class="handshake outline icon"></i>
+        Recargo por mora
+    </div>
+
+    <div class="content">
+        <p id="exonerar-quien" style="font-weight:700; margin-bottom:6px;"></p>
+
+        <div id="exonerar-actual" style="display:none; margin-bottom:14px; padding:12px 14px; border-radius:12px; background:var(--ok-bg); color:#0a4a31;"></div>
+
+        <div id="exonerar-formulario">
+            <p style="color:var(--ink-2);">
+                Úsalo cuando la mesa directiva acordó <strong>no cobrar el recargo</strong>
+                a este vecino aunque pague después del vencimiento. Se le avisa y a su
+                formulario de pago ya no se le suma el recargo. Queda registrado quién lo
+                autorizó y por qué.
+            </p>
+
+            <div class="form-group">
+                <label class="form-label" for="exonerar-motivo">Motivo del acuerdo *</label>
+                <textarea id="exonerar-motivo" class="form-input detalle-input" rows="3" maxlength="255"
+                          placeholder="Ej.: Acuerdo con la mesa directiva el 2 de noviembre, por enfermedad."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions detalle-modal-actions">
+        <div class="ui deny button btn-modal-cancel">Cerrar</div>
+
+        <button type="button" id="btn-quitar-exoneracion" class="btn btn-secondary" hidden>
+            <i class="undo icon"></i>
+            Volver a cobrar el recargo
+        </button>
+
+        <button type="button" id="btn-confirmar-exoneracion" class="btn btn-primary">
+            <i class="handshake outline icon"></i>
+            Exonerar el recargo
+        </button>
+    </div>
+</div>
+
 <div class="ui modal detalle-add-modal" id="modal-agregar-usuario">
     <div class="header">
         <i class="user plus icon"></i>
@@ -413,18 +456,18 @@
 
 <style>
     :root {
-        --detalle-primary: #3b82f6;
-        --detalle-primary-dark: #2563eb;
-        --detalle-secondary: #667eea;
-        --detalle-success: #10b981;
-        --detalle-danger: #ef4444;
-        --detalle-warning: #f59e0b;
-        --detalle-text-main: #0f172a;
-        --detalle-text-muted: #64748b;
-        --detalle-text-soft: #94a3b8;
-        --detalle-border: #e2e8f0;
+        --detalle-primary: var(--brand-500);
+        --detalle-primary-dark: var(--brand-600);
+        --detalle-secondary: var(--brand-600);
+        --detalle-success: var(--brand-500);
+        --detalle-danger: var(--danger);
+        --detalle-warning: var(--oro-700);
+        --detalle-text-main: var(--ink);
+        --detalle-text-muted: var(--ink-3);
+        --detalle-text-soft: var(--ink-4);
+        --detalle-border: var(--arena);
         --detalle-surface: #ffffff;
-        --detalle-soft-bg: #f8fafc;
+        --detalle-soft-bg: var(--crema-50);
     }
 
     .detalle-pagos-page {
@@ -441,7 +484,7 @@
         padding: 26px;
         color: white;
         margin-bottom: 22px;
-        box-shadow: 0 12px 30px rgba(37, 99, 235, 0.18);
+        box-shadow: 0 12px 30px rgba(11,107,69, 0.18);
         overflow: hidden;
     }
 
@@ -528,7 +571,7 @@
         border-radius: 999px;
         background: rgba(255,255,255,0.92);
         border: 1px solid rgba(255,255,255,0.35);
-        color: #047857;
+        color: var(--brand-600);
         font-size: 0.86rem;
         font-weight: 800;
         text-decoration: none;
@@ -538,7 +581,7 @@
 
     .btn-exportar-concepto:hover {
         background: #ffffff;
-        color: #065f46;
+        color: var(--brand-700);
     }
 
     .btn-exportar-concepto i {
@@ -569,7 +612,7 @@
         background: var(--detalle-surface);
         border: 1px solid var(--detalle-border);
         border-radius: 22px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
         overflow: hidden;
     }
 
@@ -589,7 +632,7 @@
         align-items: center;
         gap: 12px;
         background: var(--detalle-soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 18px;
         padding: 14px;
         min-width: 0;
@@ -607,15 +650,15 @@
     }
 
     .detalle-summary-icon.concepto {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-800) 100%);
     }
 
     .detalle-summary-icon.monto {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-600) 100%);
     }
 
     .detalle-summary-icon.fecha {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        background: linear-gradient(135deg, var(--oro-700) 0%, var(--oro-700) 100%);
     }
 
     .detalle-summary-icon i {
@@ -640,8 +683,8 @@
 
     .detalle-card-header {
         padding: 18px 20px;
-        border-bottom: 1px solid #f1f5f9;
-        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        border-bottom: 1px solid var(--crema-100);
+        background: linear-gradient(180deg, #ffffff 0%, var(--crema-50) 100%);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -666,7 +709,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(59, 130, 246, 0.24);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.24);
     }
 
     .detalle-card-icon i {
@@ -709,7 +752,7 @@
         grid-template-columns: minmax(0, 1fr) minmax(150px, 190px) minmax(170px, 210px) minmax(160px, 210px) auto;
         gap: 14px;
         align-items: end;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
     }
 
     .filter-field {
@@ -739,8 +782,8 @@
     }
 
     .detalle-input:focus {
-        border-color: rgba(59, 130, 246, 0.65) !important;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12) !important;
+        border-color: rgba(23,137,92, 0.65) !important;
+        box-shadow: 0 0 0 4px rgba(23,137,92, 0.12) !important;
         outline: none;
         background: white;
     }
@@ -809,7 +852,7 @@
         align-items: center;
         gap: 12px;
         background: var(--detalle-soft-bg);
-        border: 1px solid #eef2f7;
+        border: 1px solid var(--crema-100);
         border-radius: 16px;
         padding: 12px 14px;
     }
@@ -818,7 +861,7 @@
         width: 42px;
         height: 42px;
         border-radius: 14px;
-        background: #dbeafe;
+        background: var(--info-bg);
         color: var(--detalle-primary-dark);
         display: flex;
         align-items: center;
@@ -850,10 +893,10 @@
         gap: 10px;
         margin: 0 20px 14px;
         padding: 10px 14px;
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
+        background: var(--info-bg);
+        border: 1px solid var(--info-bg);
         border-radius: 11px;
-        color: #1e40af;
+        color: var(--info);
         font-size: .85rem;
         line-height: 1.45;
     }
@@ -864,8 +907,8 @@
 
     .aviso-filtros-btn {
         background: #fff;
-        border: 1px solid #93c5fd;
-        color: #1d4ed8;
+        border: 1px solid var(--info-bg);
+        color: var(--info);
         border-radius: 8px;
         padding: 5px 12px;
         font-size: .82rem;
@@ -874,7 +917,7 @@
         white-space: nowrap;
     }
 
-    .aviso-filtros-btn:hover { background: #dbeafe; }
+    .aviso-filtros-btn:hover { background: var(--info-bg); }
 
     @media (max-width: 640px) {
         .aviso-filtros { flex-direction: column; align-items: flex-start; margin: 0 14px 12px; }
@@ -899,7 +942,7 @@
         border: 1px solid var(--detalle-border);
         border-radius: 18px;
         background: white;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+        box-shadow: 0 6px 18px rgba(20,32,26, 0.05);
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -912,9 +955,9 @@
     }
 
     .detalle-pago-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(59, 130, 246, 0.35);
-        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        
+        border-color: rgba(23,137,92, 0.35);
+        box-shadow: 0 10px 24px rgba(20,32,26, 0.08);
     }
 
     .detalle-pago-card.tarde-card:hover {
@@ -923,7 +966,7 @@
 
     .detalle-pago-header {
         padding: 16px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
         display: flex;
         align-items: flex-start;
         gap: 12px;
@@ -933,7 +976,7 @@
         width: 46px;
         height: 46px;
         border-radius: 14px;
-        background: #dbeafe;
+        background: var(--info-bg);
         color: var(--detalle-primary-dark);
         display: flex;
         align-items: center;
@@ -942,8 +985,8 @@
     }
 
     .detalle-pago-card.tarde-card .detalle-pago-icon {
-        background: #fef3c7;
-        color: #b45309;
+        background: var(--warn-bg);
+        color: var(--warn);
     }
 
     .detalle-pago-icon i {
@@ -983,40 +1026,45 @@
     }
 
     .detalle-badge.pendiente {
-        background: #fef3c7;
-        color: #92400e;
+        background: var(--warn-bg);
+        color: var(--warn);
     }
 
     .detalle-badge.pagado {
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
     }
 
     .detalle-badge.rechazado {
-        background: #fee2e2;
-        color: #991b1b;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .detalle-badge.comprobante {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: var(--info-bg);
+        color: var(--info);
     }
 
     .detalle-badge.sin-comprobante {
-        background: #f1f5f9;
-        color: #475569;
+        background: var(--crema-100);
+        color: var(--ink-2);
     }
 
     .detalle-badge.tarde {
-        background: #ffedd5;
+        background: var(--warn-bg);
         color: #c2410c;
         border: 1px solid rgba(249, 115, 22, 0.18);
     }
 
+    .detalle-badge.exonerado {
+        background: var(--ok-bg);
+        color: #0a4a31;
+    }
+
     .detalle-badge.atiempo {
-        background: #ecfdf5;
-        color: #047857;
-        border: 1px solid rgba(16, 185, 129, 0.18);
+        background: var(--brand-50);
+        color: var(--brand-600);
+        border: 1px solid rgba(23,137,92, 0.18);
     }
 
     .detalle-pago-body {
@@ -1043,13 +1091,13 @@
     }
 
     .detalle-pago-card.tarde-card .detalle-meta-item i {
-        color: #b45309;
+        color: var(--warn);
     }
 
     .detalle-pago-footer {
         padding: 14px 16px 16px;
-        border-top: 1px solid #f1f5f9;
-        background: #fbfdff;
+        border-top: 1px solid var(--crema-100);
+        background: var(--crema-50);
     }
 
     .detalle-actions {
@@ -1088,33 +1136,33 @@
     }
 
     .detalle-actions .btn-ver-evidencia {
-        background: #f8fafc !important;
-        color: #475569 !important;
-        border: 1px solid #cbd5e1 !important;
+        background: var(--crema-50) !important;
+        color: var(--ink-2) !important;
+        border: 1px solid var(--arena-2) !important;
     }
 
     .detalle-actions .btn-editar {
-        background: #eff6ff !important;
-        color: #1d4ed8 !important;
-        border: 1px solid #bfdbfe !important;
+        background: var(--info-bg) !important;
+        color: var(--info) !important;
+        border: 1px solid var(--info-bg) !important;
     }
 
     .detalle-actions .btn-eliminar {
-        background: #fef2f2 !important;
-        color: #b91c1c !important;
-        border: 1px solid #fecaca !important;
+        background: var(--danger-bg) !important;
+        color: var(--danger) !important;
+        border: 1px solid var(--danger-bg) !important;
     }
 
     .detalle-actions .btn-ver-evidencia:hover {
-        background: #e2e8f0 !important;
+        background: var(--arena) !important;
     }
 
     .detalle-actions .btn-editar:hover {
-        background: #dbeafe !important;
+        background: var(--info-bg) !important;
     }
 
     .detalle-actions .btn-eliminar:hover {
-        background: #fee2e2 !important;
+        background: var(--danger-bg) !important;
     }
 
     .detalle-pagos-pagination {
@@ -1139,16 +1187,16 @@
     }
 
     .pagination-btn:hover {
-        background: #eff6ff;
+        background: var(--info-bg);
         color: var(--detalle-primary-dark);
-        border-color: rgba(59, 130, 246, 0.35);
+        border-color: rgba(23,137,92, 0.35);
     }
 
     .pagination-btn.active {
         background: linear-gradient(135deg, var(--detalle-primary) 0%, var(--detalle-primary-dark) 100%);
         color: #ffffff;
         border-color: transparent;
-        box-shadow: 0 8px 18px rgba(59, 130, 246, 0.22);
+        box-shadow: 0 8px 18px rgba(23,137,92, 0.22);
     }
 
     .pagination-btn:disabled {
@@ -1176,7 +1224,7 @@
         height: 78px;
         border-radius: 24px;
         margin: 0 auto 18px;
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(37, 99, 235, 0.16));
+        background: linear-gradient(135deg, rgba(23,137,92, 0.12), rgba(11,107,69, 0.16));
         color: var(--detalle-primary-dark);
         display: flex;
         align-items: center;
@@ -1184,7 +1232,7 @@
     }
 
     .empty-detalle-icon.error {
-        background: #fee2e2;
+        background: var(--danger-bg);
         color: var(--detalle-danger);
     }
 
@@ -1195,7 +1243,7 @@
 
     .empty-detalle-card h3 {
         margin: 0 0 8px 0;
-        color: #475569;
+        color: var(--ink-2);
         font-weight: 900;
     }
 
@@ -1208,8 +1256,8 @@
     .ui.right.sidebar#drawer-evidencia {
         width: 520px !important;
         background: #ffffff;
-        border-left: 1px solid rgba(148,163,184,0.22);
-        box-shadow: -8px 0 30px rgba(15,23,42,0.1);
+        border-left: 1px solid rgba(111,106,88,0.22);
+        box-shadow: -8px 0 30px rgba(20,32,26,0.1);
         overflow-y: auto;
         z-index: 1002;
     }
@@ -1218,7 +1266,7 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(15,23,42,0.45);
+        background: rgba(20,32,26,0.45);
         z-index: 1001;
         cursor: pointer;
     }
@@ -1263,7 +1311,7 @@
     #imagen-evidencia {
         max-width: 100%;
         border-radius: 14px;
-        box-shadow: 0 8px 24px rgba(15,23,42,0.18);
+        box-shadow: 0 8px 24px rgba(20,32,26,0.18);
         object-fit: contain;
     }
 
@@ -1280,7 +1328,7 @@
     }
 
     .detalle-add-modal > .header {
-        background: linear-gradient(135deg, var(--detalle-success) 0%, #059669 100%) !important;
+        background: linear-gradient(135deg, var(--detalle-success) 0%, var(--brand-600) 100%) !important;
         color: white !important;
         font-weight: 900 !important;
     }
@@ -1302,7 +1350,7 @@
         flex-wrap: wrap;
         padding: 16px 20px !important;
         background: var(--detalle-soft-bg) !important;
-        border-top: 1px solid #f1f5f9 !important;
+        border-top: 1px solid var(--crema-100) !important;
     }
 
     .detalle-modal-actions .button,
@@ -1529,6 +1577,9 @@
 
 <script>
     const BASE_URL = "{{ url('/') }}";
+    // Solo tiene sentido ofrecer el acuerdo si el concepto lleva recargo y quien mira es tesorería.
+    const PUEDE_EXONERAR = {{ (float) ($info->recargo_pct ?? 0) > 0 && auth()->user()->puedeGestionarPagos() ? 'true' : 'false' }};
+    const RECARGO_PCT = {{ (float) ($info->recargo_pct ?? 0) }};
     const id_pago = '{{ $id_pago }}';
 
     let detallePagosOriginales = [];
@@ -1757,9 +1808,39 @@
                 `
                 : '';
 
+            const exonerado = detalle.recargo_exonerado === true || detalle.recargo_exonerado === 1 || detalle.recargo_exonerado === '1';
+            const motivoExoneracion = detalle.recargo_exonerado_motivo || '';
+
+            const badgeExonerado = exonerado
+                ? `
+                    <span class="detalle-badge exonerado" title="${escapeHtml('Acuerdo: ' + motivoExoneracion)}">
+                        <i class="handshake outline icon"></i>
+                        Recargo exonerado
+                    </span>
+                `
+                : '';
+
+            const exonerarButton = PUEDE_EXONERAR
+                ? `
+                    <button
+                        type="button"
+                        class="btn btn-secondary btn-sm btn-exonerar"
+                        data-id="${escapeHtml(id)}"
+                        data-usuario="${escapeHtml(usuario)}"
+                        data-exonerado="${exonerado ? '1' : '0'}"
+                        data-motivo="${escapeHtml(motivoExoneracion)}"
+                        title="Acuerdo para no cobrar el recargo por mora a este vecino"
+                    >
+                        <i class="handshake outline icon"></i>
+                        ${exonerado ? 'Acuerdo de recargo' : 'Exonerar recargo'}
+                    </button>
+                `
+                : '';
+
             const accionesHtml = `
                 ${evidenciaButton}
 
+                ${exonerarButton}
                 ${reciboButton}
 
                 <button
@@ -1806,6 +1887,8 @@
                                 </span>
 
                                 ${badgeTarde}
+
+                                ${badgeExonerado}
                             </div>
                         </div>
                     </div>
@@ -2256,6 +2339,72 @@
         }, 100);
     });
 
+    // ---- Acuerdo para no cobrar el recargo ---------------------------------
+    let reciboExonerar = null;
+
+    $(document).on('click', '.btn-exonerar', function () {
+        const $b = $(this);
+        reciboExonerar = $b.data('id');
+        const yaExonerado = String($b.data('exonerado')) === '1';
+
+        $('#exonerar-quien').text($b.data('usuario') + ' · recargo del ' + RECARGO_PCT + ' %');
+        $('#exonerar-motivo').val('');
+
+        if (yaExonerado) {
+            $('#exonerar-actual').show().html('<strong>Recargo exonerado.</strong><br>Motivo: ' + escapeHtml($b.data('motivo') || '—'));
+            $('#exonerar-formulario').hide();
+            $('#btn-confirmar-exoneracion').prop('hidden', true);
+            $('#btn-quitar-exoneracion').prop('hidden', false);
+        } else {
+            $('#exonerar-actual').hide();
+            $('#exonerar-formulario').show();
+            $('#btn-confirmar-exoneracion').prop('hidden', false);
+            $('#btn-quitar-exoneracion').prop('hidden', true);
+        }
+
+        $('#modal-exonerar').modal('show');
+    });
+
+    function enviarExoneracion(accion, motivo) {
+        $('#btn-confirmar-exoneracion, #btn-quitar-exoneracion').prop('disabled', true);
+
+        $.ajax({
+            url: `${BASE_URL}/administrador/pago/exonerar-recargo/${reciboExonerar}`,
+            method: 'POST',
+            data: { accion: accion, motivo: motivo },
+            success: function (res) {
+                alertify.alert(res.header, res.message, function () {
+                    $('#modal-exonerar').modal('hide');
+                    cargarDetallePagos();
+                });
+            },
+            error: function (xhr) {
+                const res = xhr.responseJSON;
+                if (res && res.message) {
+                    alertify.alert(res.header || 'No se pudo guardar', res.message);
+                }
+            },
+            complete: function () {
+                $('#btn-confirmar-exoneracion, #btn-quitar-exoneracion').prop('disabled', false);
+            }
+        });
+    }
+
+    $('#btn-confirmar-exoneracion').on('click', function () {
+        const motivo = ($('#exonerar-motivo').val() || '').trim();
+
+        if (motivo.length < 5) {
+            alertify.error('Escribe el motivo del acuerdo (mínimo 5 caracteres).');
+            $('#exonerar-motivo').focus();
+            return;
+        }
+
+        enviarExoneracion('exonerar', motivo);
+    });
+
+    $('#btn-quitar-exoneracion').on('click', function () {
+        enviarExoneracion('quitar', '');
+    });
     $(document).on('click', '#btn-agregar-usuario', function() {
         $('#modal-agregar-usuario').modal('show');
     });
@@ -2338,9 +2487,10 @@
     }
 
     function extraerTexto(valor) {
-        const temporal = document.createElement('div');
-        temporal.innerHTML = valor || '';
-        return temporal.textContent || temporal.innerText || '';
+        // DOMParser crea un documento INERTE: no carga imagenes ni ejecuta
+        // onerror/onload. Un div.innerHTML sobre un elemento suelto SI los ejecuta,
+        // y por eso un nombre como <img src=x onerror=...> corria codigo aqui.
+        return new DOMParser().parseFromString(String(valor || ''), 'text/html').body.textContent || '';
     }
 
     function escapeHtml(text) {

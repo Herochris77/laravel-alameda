@@ -66,17 +66,16 @@
 
 <style>
     :root {
-        --primary: #667eea;
-        --primary-dark: #4f46e5;
-        --danger: #ef4444;
-        --danger-dark: #dc2626;
-        --success: #10b981;
-        --success-dark: #059669;
-        --text-main: #0f172a;
-        --text-muted: #64748b;
-        --border: #e2e8f0;
+        --primary: var(--brand-600);
+        --primary-dark: var(--brand-700);
+        --danger-dark: var(--danger);
+        --success: var(--brand-500);
+        --success-dark: var(--brand-600);
+        --text-main: var(--ink);
+        --text-muted: var(--ink-3);
+        --border: var(--arena);
         --surface: #ffffff;
-        --soft-bg: #f8fafc;
+        --soft-bg: var(--crema-50);
     }
 
     .filters-card {
@@ -85,7 +84,7 @@
         border-radius: 20px;
         padding: 20px;
         margin-bottom: 24px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 8px 24px rgba(20,32,26, 0.06);
     }
 
     .filters-header {
@@ -148,16 +147,16 @@
         overflow: hidden;
         background: var(--surface);
         border: 1px solid var(--border);
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 6px 18px rgba(20,32,26, 0.06);
         transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
         display: flex;
         flex-direction: column;
     }
 
     .contacto-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
-        border-color: rgba(102, 126, 234, 0.35);
+        
+        box-shadow: 0 14px 32px rgba(20,32,26, 0.12);
+        border-color: rgba(11,107,69, 0.35);
     }
 
     .contacto-header {
@@ -165,7 +164,7 @@
         display: flex;
         align-items: center;
         gap: 14px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--crema-100);
         min-width: 0;
     }
 
@@ -177,7 +176,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+        box-shadow: 0 8px 18px rgba(20,32,26, 0.12);
     }
 
     .contacto-icon.emergencia {
@@ -219,13 +218,13 @@
     }
 
     .contacto-tipo.emergencia {
-        background: #fee2e2;
-        color: #991b1b;
+        background: var(--danger-bg);
+        color: var(--danger);
     }
 
     .contacto-tipo.recomendado {
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ok-bg);
+        color: var(--brand-800);
     }
 
     .contacto-body {
@@ -269,7 +268,7 @@
 
     .contacto-footer {
         padding: 16px 18px 18px;
-        border-top: 1px solid #f1f5f9;
+        border-top: 1px solid var(--crema-100);
         display: grid;
         grid-template-columns: 1fr auto;
         gap: 10px;
@@ -436,8 +435,8 @@
                 $('#contactos-container').html(`
                     <div class="card" style="grid-column: 1 / -1; border-radius: 20px;">
                         <div class="empty-state">
-                            <div class="empty-state-icon" style="background: #fee2e2;">
-                                <i class="warning icon" style="color: #ef4444;"></i>
+                            <div class="empty-state-icon" style="background: #f8e3dc;">
+                                <i class="warning icon" style="color: #c0432c;"></i>
                             </div>
                             <h3>Error al cargar</h3>
                             <p>No se pudieron cargar los contactos. Intenta de nuevo.</p>
@@ -507,7 +506,7 @@
                             <i class="phone icon"></i>
                             ${numero
                                 ? `<a href="tel:${escapeAttribute(numero)}">${escapeHtml(numero)}</a>`
-                                : `<span style="color:#94a3b8;">Sin número registrado</span>`
+                                : `<span style="color:#6f6a58;">Sin número registrado</span>`
                             }
                         </div>
 

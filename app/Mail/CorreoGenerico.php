@@ -18,7 +18,9 @@ class CorreoGenerico extends Mailable
 
     public function __construct($subject, $titulo, $mensaje)
     {
-        $this->subjectLine = $subject;
+        // Un salto de linea en el asunto permite inyectar cabeceras de correo
+        // (CCO, destinatarios extra). Nunca debe llegar al transporte.
+        $this->subjectLine = trim(preg_replace('/[\r\n\0]+/', ' ', (string) $subject));
         $this->titulo = $titulo;
         $this->mensaje = $mensaje;
     }

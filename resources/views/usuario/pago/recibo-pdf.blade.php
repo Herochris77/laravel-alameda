@@ -31,7 +31,7 @@
 
             line-height: 1.45;
 
-            color: #334155;
+            color: #1d2a23;
 
             background: #ffffff;
         }
@@ -98,7 +98,7 @@
 
             border-radius: 12px;
 
-            background: #2563eb;
+            background: #0b6b45;
 
             color: #ffffff;
 
@@ -114,7 +114,7 @@
         .brand-title {
             margin: 0;
 
-            color: #0f172a;
+            color: #1d2a23;
 
             font-size: 19px;
 
@@ -126,13 +126,13 @@
         .brand-subtitle {
             margin-top: 4px;
 
-            color: #64748b;
+            color: #5d695f;
 
             font-size: 9px;
         }
 
         .folio-label {
-            color: #94a3b8;
+            color: #6f6a58;
 
             font-size: 8px;
 
@@ -146,7 +146,7 @@
         .folio-number {
             margin-top: 3px;
 
-            color: #0f172a;
+            color: #1d2a23;
 
             font-size: 15px;
 
@@ -156,7 +156,7 @@
         .folio-date {
             margin-top: 3px;
 
-            color: #64748b;
+            color: #5d695f;
 
             font-size: 8.5px;
         }
@@ -173,7 +173,7 @@
 
             margin-bottom: 20px;
 
-            background: #2563eb;
+            background: #0b6b45;
         }
 
 
@@ -194,13 +194,13 @@
 
             padding: 7px 15px;
 
-            border: 1px solid #a7f3d0;
+            border: 1px solid #e1eee5;
 
             border-radius: 14px;
 
-            background: #ecfdf5;
+            background: #f0f7f2;
 
-            color: #047857;
+            color: #0b6b45;
 
             font-size: 10px;
 
@@ -219,11 +219,11 @@
 
             padding: 17px 20px;
 
-            border: 1px solid #dbeafe;
+            border: 1px solid #e1edf9;
 
             border-radius: 12px;
 
-            background: #eff6ff;
+            background: #e1edf9;
 
             text-align: center;
         }
@@ -231,7 +231,7 @@
         .amount-label {
             margin-bottom: 5px;
 
-            color: #64748b;
+            color: #5d695f;
 
             font-size: 9px;
 
@@ -243,7 +243,7 @@
         }
 
         .amount-value {
-            color: #1d4ed8;
+            color: #1f5fa6;
 
             font-size: 31px;
 
@@ -255,7 +255,7 @@
         .amount-currency {
             margin-top: 5px;
 
-            color: #64748b;
+            color: #5d695f;
 
             font-size: 9px;
         }
@@ -269,7 +269,7 @@
             margin:
                 0 0 8px;
 
-            color: #0f172a;
+            color: #1d2a23;
 
             font-size: 10px;
 
@@ -291,7 +291,7 @@
             margin-bottom: 16px;
 
             border:
-                1px solid #e2e8f0;
+                1px solid #e4dabd;
 
             border-radius: 10px;
 
@@ -309,7 +309,7 @@
             vertical-align: top;
 
             border-bottom:
-                1px solid #f1f5f9;
+                1px solid #f3eee0;
         }
 
         .data-card tr:last-child td {
@@ -319,7 +319,7 @@
         .data-card .label {
             width: 30%;
 
-            color: #64748b;
+            color: #5d695f;
 
             font-size: 8.5px;
 
@@ -331,7 +331,7 @@
         .data-card .value {
             width: 70%;
 
-            color: #0f172a;
+            color: #1d2a23;
 
             font-size: 10.5px;
 
@@ -373,17 +373,17 @@
             padding: 11px 12px;
 
             border:
-                1px solid #e2e8f0;
+                1px solid #e4dabd;
 
             border-radius: 10px;
 
-            background: #f8fafc;
+            background: #fbf9f2;
         }
 
         .mini-label {
             margin-bottom: 5px;
 
-            color: #94a3b8;
+            color: #6f6a58;
 
             font-size: 8px;
 
@@ -395,7 +395,7 @@
         }
 
         .mini-value {
-            color: #0f172a;
+            color: #1d2a23;
 
             font-size: 10px;
 
@@ -415,15 +415,15 @@
             padding: 13px 14px;
 
             border-left:
-                4px solid #2563eb;
+                4px solid #1f5fa6;
 
-            background: #f8fafc;
+            background: #fbf9f2;
         }
 
         .concept-label {
             margin-bottom: 4px;
 
-            color: #64748b;
+            color: #5d695f;
 
             font-size: 8px;
 
@@ -433,7 +433,7 @@
         }
 
         .concept-value {
-            color: #0f172a;
+            color: #1d2a23;
 
             font-size: 12px;
 
@@ -451,11 +451,11 @@
             padding: 11px 13px;
 
             border:
-                1px solid #d1fae5;
+                1px solid #e1eee5;
 
             border-radius: 9px;
 
-            background: #f0fdf4;
+            background: #f0f7f2;
         }
 
         .validation-table {
@@ -476,7 +476,7 @@
 
             border-radius: 13px;
 
-            background: #10b981;
+            background: #17895c;
 
             border-collapse: collapse;
         }
@@ -503,7 +503,7 @@
         }
 
         .validation-title {
-            color: #047857;
+            color: #0b6b45;
 
             font-size: 9.5px;
 
@@ -513,7 +513,7 @@
         .validation-text {
             margin-top: 2px;
 
-            color: #64748b;
+            color: #5d695f;
 
             font-size: 8px;
 
@@ -551,24 +551,24 @@
         .firma-dato span {
             display: block;
             font-size: 9px;
-            color: #64748b;
+            color: #5d695f;
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
 
         .firma-dato strong {
             font-size: 12px;
-            color: #0f172a;
+            color: #1d2a23;
         }
 
         .firma-efectivo {
             margin-top: 10px;
             padding: 8px 10px;
-            background: #fffbeb;
-            border: 1px solid #fcd34d;
+            background: #fbefd0;
+            border: 1px solid #e4cc84;
             border-radius: 6px;
             font-size: 9.5px;
-            color: #92400e;
+            color: #8f5a08;
             line-height: 1.45;
         }
 
@@ -591,7 +591,7 @@
         }
 
         .firma-linea {
-            border-top: 1px solid #334155;
+            border-top: 1px solid #1d2a23;
             margin: 0 auto;
         }
 
@@ -599,12 +599,12 @@
             margin-top: 5px;
             font-size: 11px;
             font-weight: bold;
-            color: #0f172a;
+            color: #1d2a23;
         }
 
         .firma-cargo {
             font-size: 9px;
-            color: #64748b;
+            color: #5d695f;
         }
 
         .footer {
@@ -613,11 +613,11 @@
             padding-top: 11px;
 
             border-top:
-                1px solid #e2e8f0;
+                1px solid #e4dabd;
 
             text-align: center;
 
-            color: #94a3b8;
+            color: #6f6a58;
 
             font-size: 7.5px;
 
@@ -625,7 +625,7 @@
         }
 
         .footer strong {
-            color: #64748b;
+            color: #5d695f;
         }
 
 
@@ -636,7 +636,7 @@
         .internal-id {
             margin-top: 9px;
 
-            color: #cbd5e1;
+            color: #d6cba8;
 
             font-size: 7px;
 
