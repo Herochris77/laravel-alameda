@@ -52,9 +52,9 @@ class DocumentosController extends Controller
                     if ($d->doc_path) {
                         $url = asset('storage/'.$d->doc_path);
 
-                        return '<a href="'.$url.'" target="_blank" class="ui mini teal button">
+                        return '<button type="button" class="ui mini teal button" data-visor="'.e($url).'" data-titulo="'.e($d->titulo).'">
                             <i class="eye icon"></i> Ver
-                        </a>';
+                        </button>';
                     }
 
                     return '—';

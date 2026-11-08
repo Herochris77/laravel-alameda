@@ -420,37 +420,6 @@
     </script>
 </x-app-layout>
 
-<div class="ui fullscreen modal documento-preview-modal" id="modal-archivo">
-    <div class="header">
-        <i class="file alternate icon"></i>
-        Documento cargado
-    </div>
-
-    <div class="content">
-        <div id="contenedor-imagen" class="preview-modal-body">
-            <img id="archivo-preview-img" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Vista previa">
-        </div>
-
-        <div id="contenedor-pdf" class="preview-modal-body">
-            <iframe id="archivo-preview-pdf" src="about:blank" title="Vista previa del documento"></iframe>
-        </div>
-
-        <div id="contenedor-download" class="preview-modal-download">
-            <div class="download-icon">
-                <i class="download icon"></i>
-            </div>
-
-            <h3>Vista previa no disponible</h3>
-            <p>Este tipo de archivo puede descargarse para consultarlo.</p>
-
-            <a id="archivo-preview-download" href="" target="_blank" class="btn btn-primary">
-                <i class="download icon"></i>
-                Descargar documento
-            </a>
-        </div>
-    </div>
-</div>
-
 <style>
     :root {
         --primary: var(--brand-500);
@@ -1166,6 +1135,15 @@
         align-items: center;
         justify-content: center;
         gap: 7px;
+        margin: 0 !important;
+    }
+
+    /* Editar y eliminar vienen dentro de un contenedor propio: se separan entre sí. */
+    .documento-actions > .ui.center.aligned {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
     }
 
     .documentos-pagination {
@@ -1494,6 +1472,10 @@
             flex-direction: column;
         }
 
+        .documento-actions > .ui.center.aligned {
+            flex-direction: column;
+        }
+
         .documento-actions .btn,
         .documento-actions button,
         .documento-actions a {
@@ -1512,7 +1494,6 @@
     let isSubmittingDocumento = false;
 
     $(document).ready(function() {
-        $('#modal-archivo').modal();
 
         $('#tipo-documento').dropdown();
         $('#categoria-gasto').dropdown();
@@ -2173,33 +2154,6 @@
         $('#filtro-tipo-documento').dropdown('set selected', 'todos');
         renderizarDocumentos(documentosOriginales);
     }
-
-    $(document).on('click', '.btn-ver-archivo', function() {
-        const src = $(this).data('img');
-        const extension = String(src || '').split('.').pop().toLowerCase();
-
-        $('#archivo-preview-img').hide().attr('src', '');
-        $('#archivo-preview-pdf').hide().attr('src', '');
-        $('#contenedor-download').hide();
-        $('#archivo-preview-download').attr('href', '');
-
-        if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(extension)) {
-            $('#archivo-preview-img').attr('src', src).show();
-            $('#contenedor-imagen').show();
-            $('#contenedor-pdf').hide();
-        } else if (extension === 'pdf') {
-            $('#archivo-preview-pdf').attr('src', src).show();
-            $('#contenedor-pdf').show();
-            $('#contenedor-imagen').hide();
-        } else {
-            $('#archivo-preview-download').attr('href', src);
-            $('#contenedor-download').show();
-            $('#contenedor-imagen').hide();
-            $('#contenedor-pdf').hide();
-        }
-
-        $('#modal-archivo').modal('show');
-    });
 
     $(document).on('click', '.btn-eliminar', function() {
         const id = $(this).data('id');

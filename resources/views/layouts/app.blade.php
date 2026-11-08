@@ -78,6 +78,7 @@
     @include('layouts.partials.webpush')
     @include('layouts.partials.comprimir-imagen')
     @include('layouts.partials.validacion-formularios')
+    @include('layouts.partials.visor-documentos')
 </body>
 
 </html>

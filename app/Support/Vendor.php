@@ -47,6 +47,12 @@ final class Vendor
         'sortable.js' => ['sortablejs/1.15.2/Sortable.min.js', 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js'],
         'chart.js' => ['chartjs/4.4.0/chart.umd.js', 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js'],
 
+        // Lector de PDF (build "legacy": funciona también en celulares viejos). Sin CDN de
+        // respaldo a propósito: el worker debe ser del mismo sitio (CSP worker-src 'self'),
+        // y sin la librería el visor ofrece descargar el archivo.
+        'pdfjs.js' => ['pdfjs/3.11.174/pdf.min.js', null],
+        'pdfjs-worker.js' => ['pdfjs/3.11.174/pdf.worker.min.js', null],
+
         'inter.woff2' => ['fonts/inter/inter-latin-wght-normal.woff2', null],
         'fraunces.woff2' => ['fonts/fraunces/fraunces-latin-wght-normal.woff2', null],
         'fraunces-italic.woff2' => ['fonts/fraunces/fraunces-latin-wght-italic.woff2', null],

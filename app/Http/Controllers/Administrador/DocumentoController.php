@@ -168,7 +168,7 @@ class DocumentoController extends Controller
                     if ($c->doc_path) {
                         $url = asset('storage/'.$c->doc_path);
 
-                        return '<button class="ui mini teal button btn-ver-archivo" data-img="'.$url.'">
+                        return '<button type="button" class="ui mini teal button btn-ver-archivo" data-visor="'.e($url).'" data-titulo="'.e($c->titulo).'">
                                     Ver documento
                                 </button>';
                     }

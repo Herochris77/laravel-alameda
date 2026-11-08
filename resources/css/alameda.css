@@ -1195,7 +1195,40 @@ html body .btn[hidden], html body button[hidden], html body a[hidden] { display:
 @media (max-width: 768px) {
     main .ui.button, main .btn, main .btn-sm { min-height: 44px !important; }
     main .ui.icon.button { min-width: 44px; }
-    main .ui.icon.button + .ui.icon.button, main .ui.icon.button + .btn, main .btn + .ui.icon.button { margin-left: 8px !important; }
+    main td .ui.icon.button + .ui.icon.button { margin-left: 8px !important; }
     /* Botones propios de cada pantalla (pa-btn, pagination-btn...): mismo mínimo, sin tocar los de icono flotante. */
     main button:not(.close):not(.search-clear):not(.zoom-photo-btn):not(.enlace-boton):not(.sheet-cerrar):not([class*="close"]) { min-height: 44px; }
+}
+
+/* ---------- 26. Visor de documentos (imágenes y PDF) ---------- */
+.ui.modal.visor-doc { width: min(920px, calc(100% - 32px)) !important; }
+.visor-doc > .header { display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, var(--brand-600), var(--brand-800)) !important; color: #fff !important; border-bottom: 0; }
+.visor-doc > .header > span { min-width: 0; overflow-wrap: anywhere; line-height: 1.25; }
+.visor-doc > .content.visor-cuerpo { padding: 12px !important; background: var(--crema-50); }
+#visor-doc-imagen { text-align: center; }
+#visor-doc-img { max-width: 100%; max-height: calc(100vh - 260px); max-height: calc(100dvh - 260px); border-radius: var(--r-md); box-shadow: var(--sombra-2); }
+
+.visor-barra { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.visor-pagina-actual { font-weight: 700; color: var(--brand-800); font-size: 14px; }
+.visor-zoom { display: inline-flex; gap: 6px; }
+.visor-zoom .ui.button { margin: 0 !important; }
+
+.visor-paginas {
+    height: calc(100vh - 290px); height: calc(100dvh - 290px); min-height: 280px;
+    overflow-x: auto; overflow-y: scroll; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+    background: var(--arena); border-radius: var(--r-md); padding: 8px;
+}
+.visor-hoja { position: relative; margin: 0 auto 10px; background: #fff; box-shadow: var(--sombra-1); }
+.visor-hoja canvas { display: block; width: 100%; height: 100%; }
+
+.visor-otro { text-align: center; padding: 36px 16px; }
+.visor-otro-icono { width: 72px; height: 72px; margin: 0 auto 14px; border-radius: 22px; display: grid; place-items: center; background: var(--brand-100); color: var(--brand-700); font-size: 30px; }
+.visor-otro-icono .icon { margin: 0; }
+.visor-otro h3 { font-family: var(--font-display); color: var(--brand-800); margin: 0 0 6px; }
+.visor-otro p { color: var(--ink-3); margin: 0; }
+
+@media (max-width: 768px) {
+    .ui.modal.visor-doc { width: calc(100% - 16px) !important; }
+    .visor-paginas { height: calc(100vh - 320px); height: calc(100dvh - 320px); }
+    .visor-barra { gap: 6px; }
 }

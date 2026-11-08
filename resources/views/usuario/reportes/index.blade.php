@@ -2648,8 +2648,8 @@
             document.getElementById('mes-lista').innerHTML = d.gastos.map(g => {
 
                 const comprobante = g.comprobante
-                    ? `<a href="${esc(g.comprobante)}" target="_blank" rel="noopener"
-                          class="mes-comprobante" title="Ver comprobante">
+                    ? `<a href="${esc(g.comprobante)}" target="_blank" rel="noopener" data-visor="${esc(g.comprobante)}"
+                          data-titulo="Comprobante" class="mes-comprobante" title="Ver comprobante">
                            <i class="file alternate outline icon"></i></a>`
                     : `<i class="exclamation triangle icon mes-sin-archivo"
                           title="Sin comprobante adjunto"></i>`;
