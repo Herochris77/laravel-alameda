@@ -363,7 +363,7 @@ main { max-width: 100vw; overflow-x: hidden; }
 .notification-section-title { font: 700 11px/1 var(--font-ui); letter-spacing: .18em; text-transform: uppercase; color: var(--bronce); padding: 16px 8px 8px; }
 .notification-item {
     display: flex; gap: 12px; padding: 13px 10px; border-radius: var(--r-md); text-decoration: none; color: var(--ink);
-    border: 1px solid transparent;
+    border: 1px solid transparent; margin-bottom: 8px;
 }
 .notification-item:hover { background: var(--crema); }
 .notification-item.unread { background: var(--brand-50); border-color: var(--brand-100); }
@@ -1152,3 +1152,50 @@ main .compress-box { background: var(--brand-50) !important; border: 1px solid v
 html body .btn[hidden], html body button[hidden], html body a[hidden] { display: none !important; }
 
 .asamblea-card .card-header { justify-content: flex-start; }
+
+/* ---------- 24. Ventanas (modales) completas en el celular ---------- */
+/*
+   Antes el fondo de la ventana quedaba DEBAJO de la barra de pestañas inferior
+   (que es fija y de capa más alta): cuando el formulario era largo, los botones
+   quedaban tapados y no se podían pulsar. Ahora la ventana va por encima de la
+   barra. Los botones NO van fijos: quedan al final del formulario, como en
+   una hoja, para que nadie guarde sin haber visto los campos de abajo.
+*/
+.ui.dimmer.modals { z-index: 1500 !important; }
+
+/*
+   Botones de las ventanas: misma altura y alineados (Fomantic les deja un margen
+   inferior que descuadraba un botón <div> frente a uno <button>). Cancelar/Cerrar
+   es secundario (contorno), la acción principal conserva el color: así no compiten.
+*/
+.ui.modal > .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; }
+.ui.modal > .actions > .button, .ui.modal > .actions > .btn { margin: 0 !important; }
+.ui.modal > .actions .ui.black.button, .ui.modal > .actions .ui.deny.button, .ui.modal > .actions .ui.cancel.button {
+    background: transparent; color: var(--ink-2); box-shadow: 0 0 0 1.5px var(--arena-2) inset;
+}
+.ui.modal > .actions .ui.black.button:hover, .ui.modal > .actions .ui.deny.button:hover, .ui.modal > .actions .ui.cancel.button:hover {
+    background: var(--crema-200); color: var(--ink);
+}
+
+@media (max-width: 768px) {
+    .ui.dimmer.modals { padding-bottom: 0 !important; }
+    .ui.modal { margin-top: 8px !important; margin-bottom: 16px !important; width: calc(100% - 16px) !important; max-width: none !important; }
+    /* Los botones respiran al final del formulario (el margen bajo la ventana no cuenta al desplazar). */
+    .ui.modal > .actions { padding-bottom: 24px !important; }
+    .ui.modal > .actions .btn, .ui.modal > .actions .ui.button { min-height: 46px; }
+    /* Los botones se reparten el ancho: fáciles de tocar y nunca uno encima de otro a medias. */
+    .ui.modal > .actions > .button, .ui.modal > .actions > .btn { flex: 1 1 130px; justify-content: center; text-align: center; }
+}
+
+/* ---------- 25. Botones cómodos de tocar en el celular ---------- */
+/*
+   Tamaño mínimo de 44 px (lo recomendado para dedos) para todos los botones de la
+   pantalla, y un respiro entre botones de icono que van juntos (editar / eliminar).
+*/
+@media (max-width: 768px) {
+    main .ui.button, main .btn, main .btn-sm { min-height: 44px !important; }
+    main .ui.icon.button { min-width: 44px; }
+    main .ui.icon.button + .ui.icon.button, main .ui.icon.button + .btn, main .btn + .ui.icon.button { margin-left: 8px !important; }
+    /* Botones propios de cada pantalla (pa-btn, pagination-btn...): mismo mínimo, sin tocar los de icono flotante. */
+    main button:not(.close):not(.search-clear):not(.zoom-photo-btn):not(.enlace-boton):not(.sheet-cerrar):not([class*="close"]) { min-height: 44px; }
+}

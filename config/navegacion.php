@@ -18,7 +18,7 @@ return [
         [
             'clave' => 'casa',
             'titulo' => 'Mi casa',
-            'icono' => 'home',
+            'icono' => 'building',
             'items' => [
                 ['titulo' => 'Pagos', 'desc' => 'Tus recibos, comprobantes y estado de cuenta', 'ruta' => 'usuario.pago.index', 'activa' => 'usuario.pago.*', 'icono' => 'money bill alternate outline', 'buscar' => 'pagos pago cuotas mantenimiento dinero recibos comprobante'],
                 ['titulo' => 'Mi perfil', 'desc' => 'Tus datos, foto y privacidad', 'ruta' => 'usuario.perfil.index', 'activa' => 'usuario.perfil.*', 'icono' => 'user outline', 'buscar' => 'perfil mi perfil cuenta usuario datos directorio contraseña'],
