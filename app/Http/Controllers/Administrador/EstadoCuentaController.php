@@ -113,6 +113,7 @@ class EstadoCuentaController extends Controller
                 'vencimiento' => optional($c['vencimiento'])->format('d/m/Y'),
                 'esperado' => $c['esperado'],
                 'recargo' => $c['recargo'],
+                'saldo' => $c['saldo'],
                 'estado' => $c['estado'],
                 'con_saldo' => $c['con_saldo'],
                 'tarde' => $c['tarde'],

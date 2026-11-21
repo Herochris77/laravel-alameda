@@ -88,7 +88,8 @@
                     @forelse($recibos as $r)
                         <div class="row">
                             <div><div>{{ $r['concepto'] }}</div><div class="muted">${{ number_format($r['monto'], 2) }} · {{ $r['fecha'] }}</div></div>
-                            @if($r['estado'] === 'pagado')<span class="pill p-ok">Pagado</span>
+                            @if($r['estado'] === 'pagado' && ($r['saldo'] ?? 0) > 0)<span class="pill p-pend">Pagado · falta ${{ number_format($r['saldo'], 2) }}</span>
+                            @elseif($r['estado'] === 'pagado')<span class="pill p-ok">Pagado</span>
                             @elseif($r['estado'] === 'pendiente')<span class="pill p-pend">Pendiente</span>
                             @else<span class="pill p-grey">{{ ucfirst($r['estado']) }}</span>@endif
                         </div>

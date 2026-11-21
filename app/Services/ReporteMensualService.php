@@ -105,7 +105,10 @@ class ReporteMensualService
             $desglose = $d->desglosePago();
             $esMantenimiento = stripos($d->pago->concepto, 'mantenimiento') !== false;
 
-            $recargos += $desglose['recargo'];
+            // Solo cuenta el recargo que de verdad entró: si el vecino pagó la
+            // cuota sola, el recargo sigue pendiente y no es ingreso todavía
+            // (de lo contrario el reporte diría más dinero del que hay en el banco).
+            $recargos += min($desglose['recargo'], max($desglose['pagado'] - $desglose['cuota'], 0));
             $adelantos += $desglose['excedente'];
 
             $base = min((float) $d->cantidad_pago, (float) $d->pago->cantidad);

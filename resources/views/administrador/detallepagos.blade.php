@@ -1061,6 +1061,11 @@
         color: #0a4a31;
     }
 
+    .detalle-badge.saldo {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+
     .detalle-badge.atiempo {
         background: var(--brand-50);
         color: var(--brand-600);
@@ -1808,6 +1813,17 @@
                 `
                 : '';
 
+            const saldoPendiente = parseFloat(detalle.saldo_pendiente || 0) || 0;
+
+            const badgeSaldo = saldoPendiente > 0
+                ? `
+                    <span class="detalle-badge saldo" title="El recibo está pagado, pero la cuenta no está saldada. Mientras exista este saldo no se expide constancia de no adeudo.">
+                        <i class="exclamation circle icon"></i>
+                        Saldo pendiente $${saldoPendiente.toFixed(2)}
+                    </span>
+                `
+                : '';
+
             const exonerado = detalle.recargo_exonerado === true || detalle.recargo_exonerado === 1 || detalle.recargo_exonerado === '1';
             const motivoExoneracion = detalle.recargo_exonerado_motivo || '';
 
@@ -1887,6 +1903,8 @@
                                 </span>
 
                                 ${badgeTarde}
+
+                                ${badgeSaldo}
 
                                 ${badgeExonerado}
                             </div>

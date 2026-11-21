@@ -212,6 +212,93 @@
            MONTO
         ===================================================== */
 
+        /* Pago parcial: la cuota entró pero falta cubrir el recargo. */
+        .status-badge.parcial {
+            border: 1px solid #e4cc84;
+
+            background: #fbefd0;
+
+            color: #6b4306;
+        }
+
+        .desglose-table {
+            width: 100%;
+
+            margin-bottom: 9px;
+
+            border-collapse: collapse;
+        }
+
+        .desglose-table td {
+            padding: 3px 4px;
+
+            border-bottom: 1px solid #e4dabd;
+
+            color: #1d2a23;
+
+            font-size: 10px;
+        }
+
+        .desglose-table td.cifra {
+            width: 90px;
+
+            text-align: right;
+
+            font-weight: bold;
+        }
+
+        .desglose-table tr.pendiente td {
+            border-bottom: 0;
+
+            color: #7a2a1a;
+
+            font-size: 11px;
+
+            font-weight: bold;
+        }
+
+        .desglose-nota {
+            margin: -3px 0 9px;
+
+            color: #5d695f;
+
+            font-size: 8px;
+
+            line-height: 1.4;
+        }
+
+        .pendiente-box {
+            margin-bottom: 10px;
+
+            padding: 7px 12px;
+
+            border: 1px solid #e4cc84;
+
+            border-left: 4px solid #c0a45a;
+
+            border-radius: 9px;
+
+            background: #fbefd0;
+        }
+
+        .pendiente-title {
+            color: #6b4306;
+
+            font-size: 10.5px;
+
+            font-weight: bold;
+        }
+
+        .pendiente-text {
+            margin-top: 3px;
+
+            color: #5d695f;
+
+            font-size: 8.5px;
+
+            line-height: 1.45;
+        }
+
         .amount-box {
             width: 100%;
 
@@ -732,11 +819,20 @@
              ESTADO
         ====================================================== --}}
 
-        <div class="status-wrapper">
+        {{-- Con desglose (recargo) el recibo lleva más renglones: se compacta para que siga cabiendo en una hoja. --}}
+        @php($compacto = $desglose['recargo'] > 0 || $recargoCondonado > 0 || $saldoPendiente > 0)
 
-            <span class="status-badge">
-                ✓ PAGO APROBADO
-            </span>
+        <div class="status-wrapper" @if($compacto) style="margin-bottom: 10px;" @endif>
+
+            @if($saldoPendiente > 0)
+                <span class="status-badge parcial">
+                    PAGO PARCIAL · SALDO PENDIENTE
+                </span>
+            @else
+                <span class="status-badge">
+                    ✓ PAGO APROBADO
+                </span>
+            @endif
 
         </div>
 
@@ -745,7 +841,7 @@
              MONTO
         ====================================================== --}}
 
-        <div class="amount-box">
+        <div class="amount-box" @if($compacto) style="margin-bottom: 11px; padding: 11px 20px;" @endif>
 
             <div class="amount-label">
                 Total pagado
@@ -760,6 +856,45 @@
             </div>
 
         </div>
+
+        @if($desglose['recargo'] > 0 || $recargoCondonado > 0 || $saldoPendiente > 0)
+            <table class="desglose-table">
+                <tr>
+                    <td>Cuota del concepto</td>
+                    <td class="cifra">${{ number_format($desglose['cuota'], 2) }}</td>
+                </tr>
+                @if($desglose['recargo'] > 0)
+                    <tr>
+                        <td>Recargo por pago posterior a la fecha de vencimiento</td>
+                        <td class="cifra">${{ number_format($desglose['recargo'], 2) }}</td>
+                    </tr>
+                @endif
+                @if($desglose['recargo'] > 0 || $saldoPendiente > 0)
+                    <tr>
+                        <td>Total que correspondía pagar</td>
+                        <td class="cifra">${{ number_format($desglose['esperado'], 2) }}</td>
+                    </tr>
+                @endif
+            </table>
+
+            @if($recargoCondonado > 0)
+                <div class="desglose-nota">
+                    El recargo de ${{ number_format($recargoCondonado, 2) }} no se cobró por acuerdo con la mesa directiva.
+                </div>
+            @endif
+        @endif
+
+        @if($saldoPendiente > 0)
+            <div class="pendiente-box">
+                <div class="pendiente-title">
+                    Queda un saldo pendiente de ${{ number_format($saldoPendiente, 2) }}
+                </div>
+                <div class="pendiente-text">
+                    Este recibo comprueba lo que se pagó, pero {{ $pago->causaSaldo() }}.
+                    Mientras exista este saldo no puede expedirse la constancia de no adeudo.
+                </div>
+            </div>
+        @endif
 
 
         {{-- =====================================================
@@ -890,6 +1025,7 @@
              VALIDACION
         ====================================================== --}}
 
+        @if($saldoPendiente <= 0)
         <div class="validation-box">
 
             <table class="validation-table">
@@ -931,6 +1067,7 @@
             </table>
 
         </div>
+        @endif
 
 
         {{-- =====================================================

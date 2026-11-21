@@ -92,13 +92,26 @@ class EstadoCuentaService
                 $vence = $d->pago->vencimiento ? Carbon::parse($d->pago->vencimiento) : null;
                 $fechaPago = $d->fechaEfectivaPago();
 
+                // Lo que REALMENTE se pagó, no lo que se esperaba. Un recibo
+                // "pagado" con la cuota sola (sin el recargo) deja un saldo.
+                // Sin monto capturado se da por cubierto: no se inventa una deuda.
+                $pagado = 0.0;
+                $saldo = 0.0;
+
+                if ($d->estado === 'pagado') {
+                    $capturado = (float) $d->cantidad_pago;
+                    $pagado = $capturado > 0 ? min($capturado, $desglose['esperado']) : $desglose['esperado'];
+                    $saldo = $d->saldoPendiente();
+                }
+
                 return [
                     'concepto' => $d->pago->concepto,
                     'vencimiento' => $vence,
                     'cuota' => $desglose['cuota'],
                     'recargo' => $desglose['recargo'],
                     'esperado' => $desglose['esperado'],
-                    'pagado' => $d->estado === 'pagado' ? $desglose['esperado'] : 0.0,
+                    'pagado' => round($pagado, 2),
+                    'saldo' => $saldo,
                     'estado' => $d->estado,
                     'fecha_pago' => $fechaPago,
                     'con_saldo' => $this->liquidadoConSaldo($d->id),
@@ -171,21 +184,26 @@ class EstadoCuentaService
         $col = collect($cargos);
         $pagados = $col->where('estado', 'pagado');
 
-        $conSaldo = $pagados->where('con_saldo', true)->sum('esperado');
+        $conSaldo = $pagados->where('con_saldo', true)->sum('pagado');
 
         $multasPendientes = collect($multas)->where('pagada', false)->sum('monto');
+
+        // Lo que dejaron los recibos ya pagados de menos (casi siempre recargo).
+        $saldoRecibos = $pagados->sum('saldo');
 
         return [
             'cargado' => round($col->sum('esperado'), 2),
             'recargos' => round($col->sum('recargo'), 2),
-            'pagado' => round($pagados->sum('esperado'), 2),
+            'pagado' => round($pagados->sum('pagado'), 2),
             // De lo pagado, cuánto fue dinero nuevo y cuánto adelanto previo.
             'con_saldo' => round($conSaldo, 2),
-            'en_efectivo' => round($pagados->sum('esperado') - $conSaldo, 2),
+            'en_efectivo' => round($pagados->sum('pagado') - $conSaldo, 2),
+            'saldo_recibos' => round($saldoRecibos, 2),
             'multas' => round(collect($multas)->sum('monto'), 2),
             'multas_pendientes' => round($multasPendientes, 2),
+            // Recibos sin pagar, más lo que falta de los pagados de menos, más multas.
             'pendiente' => round(
-                $col->where('estado', '!=', 'pagado')->sum('esperado') + $multasPendientes,
+                $col->where('estado', '!=', 'pagado')->sum('esperado') + $saldoRecibos + $multasPendientes,
                 2
             ),
             'pagos_tardios' => $pagados->where('tarde', true)->count(),
@@ -209,6 +227,7 @@ class EstadoCuentaService
                     'casa' => $u->casa,
                     'nombre' => $u->nombre,
                     'pendiente' => $d['totales']['pendiente'],
+                    'saldo_recibos' => $d['totales']['saldo_recibos'],
                     'saldo_favor' => $d['saldo_favor'],
                     'neto' => $d['neto'],
                     'al_corriente' => $d['al_corriente'],

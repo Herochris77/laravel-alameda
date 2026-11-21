@@ -246,6 +246,50 @@ class Detallepago extends Model
         ];
     }
 
+    /**
+     * Lo que le falta por cubrir a un recibo que YA se marcó como pagado.
+     *
+     * Pasa cuando el vecino pagó tarde y transfirió solo la cuota, sin el
+     * recargo: el recibo queda "pagado" (la cuota entró) pero la cuenta no está
+     * saldada. Todo lo que diga "al corriente" o "sin adeudo" debe contar esto.
+     *
+     * Vale 0 para recibos pendientes o rechazados (ahí el adeudo es el recibo
+     * completo) y para pagos sin monto capturado: no se inventa una deuda.
+     */
+    public function saldoPendiente(): float
+    {
+        if ($this->estado !== 'pagado' || ! $this->pago || (float) $this->cantidad_pago <= 0) {
+            return 0.0;
+        }
+
+        return $this->desglosePago()['faltante'];
+    }
+
+    /**
+     * Frase que explica POR QUÉ falta dinero, para usarla dentro de un mensaje.
+     *
+     * No siempre es el recargo: quien paga de menos a tiempo no debe recargo,
+     * debe parte de la cuota. Decir "falta el recargo" ahí sería falso.
+     * Devuelve null si no hay saldo pendiente.
+     */
+    public function causaSaldo(): ?string
+    {
+        if ($this->saldoPendiente() <= 0) {
+            return null;
+        }
+
+        $d = $this->desglosePago();
+        $faltaCuota = round(max($d['cuota'] - $d['pagado'], 0), 2) > 0;
+
+        if (! $faltaCuota) {
+            return 'falta el recargo por pagar después de la fecha de vencimiento';
+        }
+
+        return $d['recargo'] > 0
+            ? 'el monto pagado es menor a la cuota más el recargo'
+            : 'el monto pagado es menor a la cuota';
+    }
+
     // Sobreescribir el método delete para guardar quien eliminó
     public function delete()
     {

@@ -657,8 +657,8 @@ i.loading.icon, i.spinner.icon, i.notched.circle.loading.icon, .survey-loader, .
 .estado-casa h2 { margin: 6px 0 4px; font-size: clamp(22px, 3vw, 30px); color: var(--brand-800); }
 .estado-casa p { margin: 0; color: var(--ink-2); }
 .estado-casa .ctas { display: flex; flex-direction: column; gap: 8px; }
-.estado-casa.porpagar .techo, .estado-casa.revision .techo { background: var(--warn-bg); color: var(--warn); }
-.estado-casa.porpagar h2, .estado-casa.revision h2 { color: var(--warn); }
+.estado-casa.porpagar .techo, .estado-casa.revision .techo, .estado-casa.saldo .techo { background: var(--warn-bg); color: var(--warn); }
+.estado-casa.porpagar h2, .estado-casa.revision h2, .estado-casa.saldo h2 { color: var(--warn); }
 .estado-casa.atrasada, .estado-casa.rechazado { border-color: #e2b4a8; }
 .estado-casa.atrasada .techo, .estado-casa.rechazado .techo { background: var(--danger-bg); color: var(--danger); }
 .estado-casa.atrasada h2, .estado-casa.rechazado h2 { color: var(--danger); }
@@ -1232,3 +1232,7 @@ html body .btn[hidden], html body button[hidden], html body a[hidden] { display:
     .visor-paginas { height: calc(100vh - 320px); height: calc(100dvh - 320px); }
     .visor-barra { gap: 6px; }
 }
+
+/* ---------- 27. Saldo pendiente en un recibo ya pagado ---------- */
+.aviso-saldo { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0 0; padding: 10px 12px; border-radius: var(--r-md); background: var(--warn-bg); color: var(--warn); font-size: 14.5px; line-height: 1.4; }
+.aviso-saldo .icon { margin: 2px 0 0; flex: none; }

@@ -73,6 +73,11 @@ class InicioController extends Controller
             ->sortBy(fn ($r) => $r->pago->vencimiento);
 
         $enRevision = $recibos->filter(fn ($r) => $r->estado === 'pendiente' && ! is_null($r->path_pago));
+
+        // Recibos ya pagados pero de menos (casi siempre sin el recargo por pagar tarde):
+        // la cuenta no está saldada aunque el recibo diga "pagado".
+        $conSaldo = $recibos->filter(fn ($r) => $r->saldoPendiente() > 0);
+        $saldoPendiente = round((float) $conSaldo->sum(fn ($r) => $r->saldoPendiente()), 2);
         $rechazados = $recibos->where('estado', 'rechazado')->count();
 
         $pagadoAnio = (float) $recibos
@@ -87,6 +92,8 @@ class InicioController extends Controller
             $situacion = 'atrasada';
             $r = $vencidos->sortBy(fn ($x) => $x->pago->vencimiento)->first();
             $proximo = $this->describir($r, true);
+        } elseif ($saldoPendiente > 0) {
+            $situacion = 'saldo';
         } elseif ($rechazados > 0) {
             $situacion = 'rechazado';
         } elseif ($porPagar->isNotEmpty()) {
@@ -105,6 +112,12 @@ class InicioController extends Controller
             $situacion === 'atrasada' => [
                 $vencidos->count() === 1 ? 'Tienes 1 pago vencido' : "Tienes {$vencidos->count()} pagos vencidos",
                 'Ponte al corriente subiendo tu comprobante.',
+            ],
+            $situacion === 'saldo' => [
+                'Te faltan $'.number_format($saldoPendiente, 2).' por cubrir',
+                $conSaldo->count() === 1
+                    ? 'Tu pago de «'.$conSaldo->first()->pago->concepto.'» se registró, pero '.$conSaldo->first()->causaSaldo().'. Acércate con la tesorería.'
+                    : 'Tus pagos se registraron, pero les falta dinero por cubrir. Acércate con la tesorería.',
             ],
             $situacion === 'rechazado' => [$rechazados === 1 ? 'Tu comprobante fue rechazado' : 'Tienes comprobantes rechazados', 'Revisa el motivo y vuelve a subirlo.'],
             $situacion === 'porpagar' => ['Tienes un pago por realizar', 'Sube tu comprobante antes de la fecha de vencimiento.'],

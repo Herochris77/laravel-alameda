@@ -47,6 +47,12 @@ class ReciboService
             'tipo' => $detalle->user->tipo ?? 'residente',
             'concepto' => $detalle->pago->concepto,
             'cantidad' => number_format($detalle->cantidad_pago, 2),
+
+            // Cuota, recargo y, si el vecino pagó de menos, lo que aún debe:
+            // el recibo no puede decir "pagado" a secas cuando falta dinero.
+            'desglose' => $detalle->desglosePago(),
+            'saldoPendiente' => $detalle->saldoPendiente(),
+            'recargoCondonado' => $detalle->recargoCondonado(),
             'vencimiento' => Carbon::parse($detalle->pago->vencimiento)->format('d/m/Y'),
 
             // Fecha real del movimiento, no la de validación: el recibo debe

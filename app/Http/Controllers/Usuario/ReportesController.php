@@ -1271,6 +1271,37 @@ class ReportesController extends Controller
             }
 
             /*
+             * Recibos ya "pagados" pero de menos (casi siempre sin el recargo
+             * por pagar tarde): la casa tampoco está al corriente.
+             */
+            $conSaldo = Detallepago::with('pago')
+                ->where('estado', 'pagado')
+                ->where('cantidad_pago', '>', 0)
+                ->get();
+
+            foreach ($conSaldo as $d) {
+                if ($d->saldoPendiente() <= 0) {
+                    continue;
+                }
+
+                $casa = $casaPorUser[$d->user_id] ?? null;
+
+                if (! $casa) {
+                    continue;
+                }
+
+                $atrasadas[$casa] = true;
+
+                $venc = $d->pago->vencimiento ? Carbon::parse($d->pago->vencimiento) : null;
+
+                $pendientesPorCasa[$casa][] = [
+                    'concepto' => ($d->pago->concepto ?? 'Recibo').' (saldo pendiente)',
+                    'vence' => $venc ? $venc->format('d/m/Y') : '—',
+                    'dias' => $venc && $venc->lt($hoy) ? (int) $venc->diffInDays($hoy) : 0,
+                ];
+            }
+
+            /*
              * Casas únicas del condominio.
              */
             $casasTotales = User::where(

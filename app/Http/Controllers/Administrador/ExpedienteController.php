@@ -32,6 +32,16 @@ class ExpedienteController extends Controller
             }
         }
 
+        // Un recibo pagado de menos (recargo sin cubrir) también deja a la casa con adeudo.
+        foreach (Detallepago::with('pago')->where('estado', 'pagado')->where('cantidad_pago', '>', 0)->get() as $d) {
+            if ($d->saldoPendiente() > 0) {
+                $casa = $casaPorUser[$d->user_id] ?? null;
+                if ($casa) {
+                    $casasAdeudo[$casa] = true;
+                }
+            }
+        }
+
         $casasSancion = [];
         foreach (Sancion::where('estado', 'pendiente')->get() as $s) {
             $casa = $casaPorUser[$s->user_id] ?? null;
@@ -83,9 +93,14 @@ class ExpedienteController extends Controller
                 $adeudo += floatval($d->pago ? $d->pago->cantidad : $monto);
             }
 
+            // Pagado de menos (recargo sin cubrir): lo que falta también es adeudo.
+            $saldo = $d->saldoPendiente();
+            $adeudo += $saldo;
+
             return [
                 'concepto' => $d->pago->concepto ?? 'Recibo',
                 'estado' => $d->estado,
+                'saldo' => $saldo,
                 'monto' => $monto,
                 'fecha' => Carbon::parse($d->updated_at)->format('d/m/Y'),
             ];

@@ -637,6 +637,8 @@ class PagoController extends Controller
             // puntualidad buscando la palabra "tarde" dentro del HTML, lo que
             // se rompía en silencio al cambiar cualquier etiqueta.
             ->addColumn('es_tarde', fn ($c) => $c->esPagoTardio())
+            // Recibo ya "pagado" pero de menos (casi siempre sin el recargo).
+            ->addColumn('saldo_pendiente', fn ($c) => $c->saldoPendiente())
             // Saldo a favor del vecino, para que tesorería sepa que ese recibo
             // puede liquidarse con dinero que el vecino ya entregó.
             ->addColumn('saldo_favor', fn ($c) => app(\App\Services\SaldoService::class)->saldo($c->user_id))
@@ -759,6 +761,11 @@ class PagoController extends Controller
             $saldos = app(\App\Services\SaldoService::class);
             $movimiento = $saldos->registrarExcedente($pago->fresh('pago'));
 
+            // Si se aprobó con menos de lo que correspondía (típico: pagó tarde y
+            // solo la cuota), el recibo queda "pagado" pero la cuenta no está
+            // saldada. Se le avisa al vecino y a quien valida.
+            $faltante = $pago->fresh('pago')->saldoPendiente();
+
             // notificar a usuario de actualización
             $correo = $pago->user->correo;
             $subject = '🔃 Actualización de tu pago';
@@ -773,6 +780,13 @@ class PagoController extends Controller
                     .number_format($movimiento->monto, 2)
                     .' de más. Ese monto quedó a tu favor y se aplicará automáticamente a tu próxima cuota. Tu saldo disponible es de $'
                     .number_format($saldos->saldo($pago->user_id), 2).'.';
+            }
+
+            if ($faltante > 0) {
+                $avisoSaldo .= '<br><br><strong>Saldo pendiente:</strong> $'
+                    .number_format($faltante, 2)
+                    .'. Tu pago se registró, pero '.$pago->fresh('pago')->causaSaldo().'. '
+                    .'Acércate con la tesorería para cubrirlo.';
             }
 
             // El motivo del rechazo es lo único que el vecino necesita leer,
@@ -809,12 +823,22 @@ class PagoController extends Controller
                     : 'Se actualizó el estado de tu pago.
                 <strong>Concepto:</strong> '.e($pago->pago->concepto).'
                 <strong>Monto:</strong> $'.number_format($montoMostrar, 2).'
-                <strong>Estado:</strong> '.$pago->estado,
+                <strong>Estado:</strong> '.$pago->estado
+                .($faltante > 0 ? ' <strong>Saldo pendiente:</strong> $'.number_format($faltante, 2).' ('.$pago->fresh('pago')->causaSaldo().').' : ''),
                 'pagos',
                 $esRechazo ? 'usuario/pago?tab=rechazados' : 'usuario/pago',
                 null,
                 $esRechazo ? '<i class="times circle icon"></i>' : '<i class="money bill wave icon"></i>'
             ));
+
+            if ($faltante > 0) {
+                return response()->json([
+                    'header' => '⚠️ Guardado, con saldo pendiente',
+                    'message' => 'El pago quedó registrado, pero a este vecino aún le faltan $'
+                        .number_format($faltante, 2).' ('.$pago->fresh('pago')->causaSaldo().'). '
+                        .'Mientras no lo cubra, su casa no aparece al corriente y no se le puede expedir la constancia de no adeudo.',
+                ]);
+            }
 
             return response()->json([
                 'header' => '✅ Editado correctamente',

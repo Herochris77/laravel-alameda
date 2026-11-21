@@ -169,6 +169,22 @@ class DashboardController extends Controller
                 }
             }
 
+            // Recibos ya "pagados" pero de menos (casi siempre el recargo sin cubrir):
+            // esa casa tampoco está al corriente y lo que falta es cartera vencida.
+            foreach (Detallepago::with('pago')->where('estado', 'pagado')->where('cantidad_pago', '>', 0)->get() as $d) {
+                $saldo = $d->saldoPendiente();
+
+                if ($saldo <= 0) {
+                    continue;
+                }
+
+                $casa = $mapa[$d->user_id] ?? null;
+                if ($casa) {
+                    $atrasadas[$casa] = true;
+                }
+                $carteraVencida += $saldo;
+            }
+
             $numAtrasadas = count($atrasadas);
 
             return [

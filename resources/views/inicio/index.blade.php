@@ -67,7 +67,7 @@
             @if($casa['aplica'])
                 <a class="btn btn-primary" href="{{ route('usuario.pago.index') }}">
                     <i class="money bill alternate outline icon"></i>
-                    {{ in_array($casa['situacion'], ['alcorriente', 'revision'], true) ? 'Mis pagos' : 'Pagar ahora' }}
+                    {{ in_array($casa['situacion'], ['alcorriente', 'revision', 'saldo'], true) ? 'Mis pagos' : 'Pagar ahora' }}
                 </a>
             @endif
             <a class="btn btn-secondary" href="{{ route('usuario.perfil.index') }}">

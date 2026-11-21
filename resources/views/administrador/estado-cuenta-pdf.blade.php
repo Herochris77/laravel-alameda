@@ -147,7 +147,10 @@
                     <td class="num">{{ $c['recargo'] > 0 ? '$ '.number_format($c['recargo'], 2) : '—' }}</td>
                     <td class="num">$ {{ number_format($c['esperado'], 2) }}</td>
                     <td>
-                        @if($c['estado'] === 'pagado')
+                        @if($c['estado'] === 'pagado' && $c['saldo'] > 0)
+                            Pagado, con saldo
+                            <div class="marca">Falta $ {{ number_format($c['saldo'], 2) }}</div>
+                        @elseif($c['estado'] === 'pagado')
                             Pagado
                             @if($c['con_saldo'])
                                 <div class="marca">con saldo a favor</div>
@@ -234,6 +237,12 @@
                 <td class="num">$ {{ number_format($datos['totales']['con_saldo'], 2) }}</td>
             </tr>
         @endif
+        @if($datos['totales']['saldo_recibos'] > 0)
+            <tr>
+                <td class="rotulo">Saldo de recibos pagados de menos (falta por cubrir)</td>
+                <td class="num">$ {{ number_format($datos['totales']['saldo_recibos'], 2) }}</td>
+            </tr>
+        @endif
         @if($datos['totales']['multas'] > 0)
             <tr>
                 <td class="rotulo">Multas</td>
@@ -253,6 +262,12 @@
     @if($datos['neto'] > 0.009)
         <div class="veredicto debe">
             Adeudo de $ {{ number_format($datos['neto'], 2) }}
+        </div>
+    @elseif(! $datos['al_corriente'])
+        {{-- Tiene saldo a favor mayor que lo pendiente, pero lo pendiente sigue ahí: no es "al corriente". --}}
+        <div class="veredicto debe">
+            Pendiente de $ {{ number_format($datos['totales']['pendiente'], 2) }}
+            · saldo a favor de $ {{ number_format($datos['saldo_favor'], 2) }} aún sin aplicar a este adeudo
         </div>
     @elseif($datos['neto'] < -0.009)
         <div class="veredicto ok">

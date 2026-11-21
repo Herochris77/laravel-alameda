@@ -3271,23 +3271,48 @@
 
 
                                 @include('usuario.pago._exonerado', ['pago' => $pago])
+
+                                @php($saldoPendiente = $pago->saldoPendiente())
+
+                                @if($saldoPendiente > 0)
+                                    {{-- Pagó tarde y solo la cuota: la cuenta no está saldada. --}}
+                                    <div class="aviso-saldo" role="note">
+                                        <i class="exclamation circle icon"></i>
+                                        <span>
+                                            <strong>Te faltan ${{ number_format($saldoPendiente, 2) }} por cubrir.</strong>
+                                            Tu pago se registró, pero {{ $pago->causaSaldo() }}.
+                                            Acércate con la tesorería para cubrirlo.
+                                        </span>
+                                    </div>
+                                @endif
+
                                 <div class="pago-state">
 
-                                    <span class="status-badge paid">
+                                    @if($saldoPendiente > 0)
+                                        <span class="status-badge pending">
 
-                                        <i class="check icon"></i>
+                                            <i class="exclamation icon"></i>
 
-                                        Pagado
+                                            Pagado · falta ${{ number_format($saldoPendiente, 2) }}
 
-                                    </span>
+                                        </span>
+                                    @else
+                                        <span class="status-badge paid">
+
+                                            <i class="check icon"></i>
+
+                                            Pagado
+
+                                        </span>
 
 
-                                    <div class="status-helper">
+                                        <div class="status-helper">
 
-                                        Este pago ya fue aprobado
-                                        por la administración.
+                                            Este pago ya fue aprobado
+                                            por la administración.
 
-                                    </div>
+                                        </div>
+                                    @endif
 
                                 </div>
 

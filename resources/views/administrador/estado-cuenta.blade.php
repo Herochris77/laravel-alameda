@@ -216,6 +216,10 @@
                     if (v.neto > 0.009) {
                         situacion = '<span class="ec-pill debe">Debe</span>';
                         neto = `<span class="ec-neto-debe">${fmt(v.neto)}</span>`;
+                    } else if (!v.al_corriente) {
+                        // Hay saldo a favor, pero lo pendiente sigue ahí: no se llama "al corriente".
+                        situacion = '<span class="ec-pill debe">Debe</span>';
+                        neto = `<span class="ec-neto-debe">${fmt(v.pendiente)}</span>`;
                     } else if (v.neto < -0.009) {
                         situacion = '<span class="ec-pill favor">A favor</span>';
                         neto = `<span class="ec-neto-favor">${fmt(Math.abs(v.neto))}</span>`;
@@ -226,6 +230,10 @@
 
                     const tarde = v.pagos_tardios > 0
                         ? `<span class="ec-tarde">${v.pagos_tardios} pago(s) tardío(s)</span>` : '';
+
+                    // Recibos que se marcaron pagados pero quedaron de menos (casi siempre el recargo).
+                    const saldoRecibos = v.saldo_recibos > 0
+                        ? `<span class="ec-tarde">Incluye ${fmt(v.saldo_recibos)} de recibos pagados de menos</span>` : '';
 
                     // La constancia solo se ofrece a quien puede recibirla.
                     const constancia = v.al_corriente
@@ -238,7 +246,7 @@
                     return `
                         <tr>
                             <td><span class="ec-casa">${esc(v.casa)}</span></td>
-                            <td>${esc(v.nombre)}${tarde}</td>
+                            <td>${esc(v.nombre)}${saldoRecibos}${tarde}</td>
                             <td class="num">${v.pendiente > 0 ? fmt(v.pendiente) : '—'}</td>
                             <td class="num">${v.saldo_favor > 0 ? fmt(v.saldo_favor) : '—'}</td>
                             <td class="num">${neto}</td>
